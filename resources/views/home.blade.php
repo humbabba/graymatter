@@ -6,7 +6,7 @@
         <div>
             <div>
                 <div>
-                  <h1 class="ph10">My games</h1>
+                  <h1 class="ph10">My stuff</h1>
                   <div class="grid">
                     <div class="cell x30">
                       <p>Welcome.</p>
