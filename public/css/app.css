@@ -42,12 +42,12 @@ nav {
     font-size: 1.6rem;
     padding: 10px;
     width: 100%; }
-    @media only screen and (min-width: 640px) {
+    @media only screen and (min-width: 768px) {
       nav .nav-links-mobile {
         display: none; } }
   nav .nav-links {
     display: none; }
-    @media only screen and (min-width: 640px) {
+    @media only screen and (min-width: 768px) {
       nav .nav-links {
         display: flex;
         flex-direction: row;
@@ -126,65 +126,65 @@ h1 {
   width: 100%;
   word-wrap: break-word; }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x90 {
     max-width: 90%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x80 {
     max-width: 80%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x75 {
     max-width: 75%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x70 {
     max-width: 70%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x60 {
     max-width: 60%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x50 {
     max-width: 50%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x40 {
     max-width: 40%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x33 {
     max-width: 33.33%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x30 {
     max-width: 30%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x25 {
     max-width: 25%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x20 {
     max-width: 20%; } }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 768px) {
   .x10 {
     max-width: 10%; } }
 
 .spd {
   flex-grow: 1;
   display: none; }
-  @media only screen and (min-width: 640px) {
+  @media only screen and (min-width: 768px) {
     .spd {
       display: block; } }
 
 .spm {
   flex-grow: 1;
   display: block; }
-  @media only screen and (min-width: 640px) {
+  @media only screen and (min-width: 768px) {
     .spm {
       display: none; } }
 
