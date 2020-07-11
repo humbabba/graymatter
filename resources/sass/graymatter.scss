@@ -141,7 +141,7 @@ h1 {
 }
 
 //Grids & cells
-.grid {
+.centum {
   border: 1px solid $black;
   display: flex;
   flex-direction: row;
@@ -277,47 +277,8 @@ h1 {
   padding-top: 15px;
   padding-bottom: 15px;
 }
-.m0 {
-  margin: 0;
-}
-.m5 {
-  margin: 5px;
-}
-.m10 {
-  margin: 10px;
-}
-.m15 {
-  margin: 15px;
-}
-.mh0 {
-  margin-left: 0;
-  margin-right: 0;
-}
-.mh5 {
-  margin-left: 5px;
-  margin-right: 5px;
-}
-.mh10 {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-.mh15 {
-  margin-left: 15px;
-  margin-right: 15px;
-}
-.mv0 {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-.mv5 {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-.mv10 {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.mv15 {
-  margin-top: 15px;
-  margin-bottom: 15px;
+
+/*Borders*/
+.border-1 {
+  border: 1px solid $secondary;
 }
