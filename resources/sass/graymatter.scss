@@ -1,0 +1,323 @@
+//Fonts
+@import url('https://fonts.googleapis.com/css?family=Mukta');
+
+// Variables
+@import 'graymatter_variables';
+
+//Elements
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background-color: $background;
+  font-family: $ff-base;
+  font-size: $fs-base;
+  line-height: $lh-base;
+}
+
+body {
+  color: $fc-base;
+  max-height: 100%;
+  margin: 0;
+}
+
+nav {
+  background-color: $primary;
+  color: $fc-light;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: center;
+  height: 54px;
+  white-space: nowrap;
+  z-index: 100000;
+
+  .brand {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: center;
+    font-size: $fs-bigger;
+  }
+
+  .nav-links-mobile {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-content: center;
+    font-size: $fs-bigger;
+    padding: 10px;
+    width: 100%;
+    @media only screen and (min-width: $break) {
+      display: none;
+    }
+  }
+
+  .nav-links { //Separate ULs
+    display: none;
+    @media only screen and (min-width: $break) {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      width: 100%;
+
+      ul {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-content: center;
+        justify-content: flex-start;
+        list-style-type: none;
+        font-size: $fs-big;
+        margin: 0;
+        padding: 0;
+
+        li {
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          align-content: flex-start;
+          justify-content: center;
+          padding: 0 10px;
+          line-height: 34px;
+          &.dropdown ul {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  a {
+    color: $fc-light;
+    cursor: pointer;
+    padding: 10px;
+    text-decoration: none;
+    transition-duration: $transition;
+    &:hover {
+      background-color: $secondary;
+    }
+  }
+}
+
+main {
+  background-color: $white;
+  height: calc(100vh - 104px);
+  margin: 10px;
+  overflow: auto;
+}
+
+footer {
+  background-color: $primary;
+  color: $fc-light;
+  height: 30px;
+  padding: 5px;
+  text-align: center;
+  a {
+    color: $fc-light;
+    text-decoration: underline;
+  }
+}
+
+p {
+  display: block;
+  margin: 0 0 10px 0;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+h1 {
+  font-size: $fs-biggest;
+  font-weight: 800;
+  margin: 0;
+}
+
+//Grids & cells
+.grid {
+  border: 1px solid $black;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.cell {
+  border: 1px solid $green;
+  display: block;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding: 10px;
+  width: 100%;
+  word-wrap: break-word;
+}
+.x90 {
+  @media only screen and (min-width: $break) {
+    max-width: 90%;
+  }
+}
+.x80 {
+  @media only screen and (min-width: $break) {
+    max-width: 80%;
+  }
+}
+.x75 {
+  @media only screen and (min-width: $break) {
+    max-width: 75%;
+  }
+}
+.x70 {
+  @media only screen and (min-width: $break) {
+    max-width: 70%;
+  }
+}
+.x60 {
+  @media only screen and (min-width: $break) {
+    max-width: 60%;
+  }
+}
+.x50 {
+  @media only screen and (min-width: $break) {
+    max-width: 50%;
+  }
+}
+.x40 {
+  @media only screen and (min-width: $break) {
+    max-width: 40%;
+  }
+}
+.x33 {
+  @media only screen and (min-width: $break) {
+    max-width: 33.33%;
+  }
+}
+.x30 {
+  @media only screen and (min-width: $break) {
+    max-width: 30%;
+  }
+}
+.x25 {
+  @media only screen and (min-width: $break) {
+    max-width: 25%;
+  }
+}
+.x20 {
+  @media only screen and (min-width: $break) {
+    max-width: 20%;
+  }
+}
+.x10 {
+  @media only screen and (min-width: $break) {
+    max-width: 10%;
+  }
+}
+
+//Spacers and padding
+.spd {
+  flex-grow: 1;
+  display: none;
+  @media only screen and (min-width: $break) {
+    display: block;
+  }
+}
+.spm {
+  flex-grow: 1;
+  display: block;
+  @media only screen and (min-width: $break) {
+    display: none;
+  }
+}
+.p0 {
+  padding: 0;
+}
+.p5 {
+  padding: 5px;
+}
+.p10 {
+  padding: 10px;
+}
+.p15 {
+  padding: 15px;
+}
+.ph0 {
+  padding-left: 0;
+  padding-right: 0;
+}
+.ph5 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.ph10 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.ph15 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.pv0 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.pv5 {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.pv10 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.pv15 {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.m0 {
+  margin: 0;
+}
+.m5 {
+  margin: 5px;
+}
+.m10 {
+  margin: 10px;
+}
+.m15 {
+  margin: 15px;
+}
+.mh0 {
+  margin-left: 0;
+  margin-right: 0;
+}
+.mh5 {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.mh10 {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.mh15 {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+.mv0 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.mv5 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.mv10 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.mv15 {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
