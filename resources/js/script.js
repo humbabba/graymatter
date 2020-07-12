@@ -1,1 +1,1 @@
-//Project-specific JS goes here
+//App-specific JS goes here

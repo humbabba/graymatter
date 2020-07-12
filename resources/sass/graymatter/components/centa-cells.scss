@@ -1,0 +1,75 @@
+//Centa and cells
+.centum {
+  border: 1px solid $black;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.cell {
+  border: 1px solid $green;
+  display: block;
+  padding: 10px;
+  width: 100%;
+  word-wrap: break-word;
+}
+.x90 {
+  @media only screen and (min-width: $break) {
+    max-width: 90%;
+  }
+}
+.x80 {
+  @media only screen and (min-width: $break) {
+    max-width: 80%;
+  }
+}
+.x75 {
+  @media only screen and (min-width: $break) {
+    max-width: 75%;
+  }
+}
+.x70 {
+  @media only screen and (min-width: $break) {
+    max-width: 70%;
+  }
+}
+.x60 {
+  @media only screen and (min-width: $break) {
+    max-width: 60%;
+  }
+}
+.x50 {
+  @media only screen and (min-width: $break) {
+    max-width: 50%;
+  }
+}
+.x40 {
+  @media only screen and (min-width: $break) {
+    max-width: 40%;
+  }
+}
+.x33 {
+  @media only screen and (min-width: $break) {
+    max-width: 33.33%;
+  }
+}
+.x30 {
+  @media only screen and (min-width: $break) {
+    max-width: 30%;
+  }
+}
+.x25 {
+  @media only screen and (min-width: $break) {
+    max-width: 25%;
+  }
+}
+.x20 {
+  @media only screen and (min-width: $break) {
+    max-width: 20%;
+  }
+}
+.x10 {
+  @media only screen and (min-width: $break) {
+    max-width: 10%;
+  }
+}
