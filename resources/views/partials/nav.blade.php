@@ -15,15 +15,18 @@
       <li>
           <a href="{{ route('login') }}">Log in</a>
       </li>
-    @if (Route::has('register'))
-      <li>
-          <a href="{{ route('register') }}">Register</a>
-      </li>
-    @endif
+      @if (Route::has('register'))
+        <li>
+            <a href="{{ route('register') }}">Register</a>
+        </li>
+      @endif
     @else
       <li class="dropdown">
         <a>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
-        <ul>
+        <ul style="display: none">
+          <li>
+            <a href="{{ route('dashboard')}}">Dashboard</a>
+          </li>
           <li>
             <a href="{{ route('logout') }}"
                onclick="event.preventDefault();

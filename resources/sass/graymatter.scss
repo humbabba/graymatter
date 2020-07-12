@@ -31,7 +31,7 @@ nav {
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-content: center;
-  height: 54px;
+  height: $nav-height;
   white-space: nowrap;
   z-index: 100000;
 
@@ -45,7 +45,6 @@ nav {
   }
 
   .nav-links-mobile {
-    cursor: pointer;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -54,6 +53,9 @@ nav {
     font-size: $fs-bigger;
     padding: 10px;
     width: 100%;
+    svg {
+        cursor: pointer;
+    }
     @media only screen and (min-width: $break) {
       display: none;
     }
@@ -85,10 +87,18 @@ nav {
           flex-wrap: nowrap;
           align-content: flex-start;
           justify-content: center;
-          padding: 0 10px;
+          padding: 0 $body-margin;
           line-height: 34px;
           &.dropdown ul {
-            display: none;
+            background-color: $primary;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            opacity: 0.8;
+            position: absolute;
+            top: $nav-height;
+            right: 0;
+            padding-bottom: $body-margin;
           }
         }
       }
@@ -109,15 +119,15 @@ nav {
 
 main {
   background-color: $white;
-  height: calc(100vh - 104px);
-  margin: 10px;
+  height: $main-height;
+  margin: $body-margin;
   overflow: auto;
 }
 
 footer {
   background-color: $primary;
   color: $fc-light;
-  height: 30px;
+  height: $footer-height;
   padding: 5px;
   text-align: center;
   a {
@@ -151,8 +161,6 @@ h1 {
 .cell {
   border: 1px solid $green;
   display: block;
-  flex-direction: column;
-  flex-wrap: wrap;
   padding: 10px;
   width: 100%;
   word-wrap: break-word;
@@ -281,4 +289,30 @@ h1 {
 /*Borders*/
 .border-1 {
   border: 1px solid $secondary;
+}
+
+/*Positioning*/
+.center {
+  text-align: center;
+}
+
+/*Text styles*/
+.bold {
+  font-weight: 800;
+}
+
+.big {
+  font-size: $fs-big;
+}
+
+.bigger {
+  font-size: $fs-bigger;
+}
+
+.biggest {
+  font-size: $fs-biggest;
+}
+
+.giant {
+  font-size: $fs-giant;
 }

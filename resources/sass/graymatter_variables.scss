@@ -4,6 +4,7 @@ $fs-base: 0.9rem;
 $fs-big: 1.3rem;
 $fs-bigger: 1.6rem;
 $fs-biggest: 2rem;
+$fs-giant: 6rem;
 $lh-base: 1.6;
 
 // Colors
@@ -27,8 +28,11 @@ $background: #eee;
 $fc-base: #595959;
 $fc-light: #f2f2f2;
 
-//Breakpoints
+//Measurements
 $break: 768px;
+$nav-height: 54px;
+$footer-height: 30px;
+$body-margin: 10px;
+$main-height: calc(100vh - 104px); //This 100vh minus the sum of $nav-height and $footer-height plus 2x $body-margin
 
-//Animations
 $transition: 0.4s;
