@@ -41,9 +41,18 @@ function addDropdownHandler(el) {
   addWindowClickHandler(dropdownLinksUl);
   //Handle cliks on the main link to show or hide dropdown items
   mainLink.on('click',function(e) {
+    console.log('dropdownLinksUl');
+    console.log(dropdownLinksUl);
     if('none' === dropdownLinksUl.css('display')) {
       dropdownLinksUl.fadeIn(400);
     } else {
+      dropdownLinksUl.fadeOut(400);
+    }
+  });
+
+  //Remove if window is resized (or mobile orientation changes)
+  $(window).resize(function() {
+    if('none' !== dropdownLinksUl.css('display')) {
       dropdownLinksUl.fadeOut(400);
     }
   });
@@ -68,10 +77,17 @@ function addHamburgerHandler(el) {
         hamburgerLinksContainer.append(hamburgerLinks);
         navHamburger.append(hamburgerLinksContainer);
         let hamburgerDropdownLinks = hamburgerLinks.find('.nav-links-dropdown');
+
         hamburgerDropdownLinks.each(function(index,el) {
-          $(el).find('ul').addClass('nav-links-dropdown-bulleted');
-          addDropdownHandler($(el));
+          let hamburgerDropdownMenu = $(el);
+          let hamburgerSubmenu = $(el).find('ul');
+          hamburgerSubmenu.each(function(index,el) {
+            if($(el).hasClass('nav-links-dropdown-submenu')) {
+              addDropdownHandler(hamburgerDropdownMenu);
+            }
+          });
         });
+
         hamburgerLinksContainer.fadeIn();
         addWindowClickHandler(hamburgerLinksContainer);
 
