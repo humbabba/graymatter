@@ -5,12 +5,12 @@
   <div class="nav-links-hamburger"><i class="fas fa-bars"></i></div>
 </div>
 <div class="nav-links">
-  <ul class="nav-links-main">
-    <li><a href="{{ url('/')}} ">Item 1</a></li>
-    <li><a href="{{ url('/')}} ">Item 2</a></li>
-    <li><a href="{{ url('/')}} ">Item 3</a></li>
+  <ul class="nav-links-primary">
+    <li><a href="{{ url('/news')}} ">News</a></li>
+    <li><a href="{{ url('/sports')}} ">Sports</a></li>
+    <li><a href="{{ url('/weather')}} ">Weather</a></li>
   </ul>
-  <ul>
+  <ul class="nav-links-secondary">
     @guest
       <li>
           <a href="{{ route('login') }}">Log in</a>
@@ -23,7 +23,7 @@
     @else
       <li class="nav-links-dropdown">
         <a>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
-        <ul style="display: none" class="dropdown-submenu">
+        <ul style="display: none" class="nav-links-dropdown-submenu">
           <li>
             <a href="{{ route('dashboard')}}">Dashboard</a>
           </li>
