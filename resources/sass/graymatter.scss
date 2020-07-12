@@ -133,6 +133,17 @@ nav {
       font-size: $fs-big;
       margin: 0;
       padding: 0;
+      &.nav-links-dropdown-bulleted {
+        background-color: $secondary;
+        font-size: $fs-base;
+        a {
+            color: $primary;
+            &:hover {
+              background-color: $primary;
+              color: $fc-light;
+            }
+        }
+      }
       li {
         display: block;
         width: 100%;

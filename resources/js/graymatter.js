@@ -55,13 +55,30 @@ function addHamburgerHandler(el) {
       e.stopPropagation();
       let hamburgerLinksContainer = $('.nav-links-hamburger-container');
       if(hamburgerLinksContainer.length) {
-        console.log('Yep');
+        if('none' === hamburgerLinksContainer.css('display')) {
+          hamburgerLinksContainer.fadeIn();
+        } else {
+          hamburgerLinksContainer.fadeOut(400,function() { $(this).remove()});
+        }
       } else {
         hamburgerLinksContainer = $('<div>');
+        hamburgerLinksContainer.css('display','none');
         hamburgerLinksContainer.addClass('nav-links-hamburger-container');
         hamburgerLinks = allNavItems.clone();
         hamburgerLinksContainer.append(hamburgerLinks);
         navHamburger.append(hamburgerLinksContainer);
+        let hamburgerDropdownLinks = hamburgerLinks.find('.nav-links-dropdown');
+        hamburgerDropdownLinks.each(function(index,el) {
+          $(el).find('ul').addClass('nav-links-dropdown-bulleted');
+          addDropdownHandler($(el));
+        });
+        hamburgerLinksContainer.fadeIn();
+        addWindowClickHandler(hamburgerLinksContainer);
+
+        //Remove if window is resized (or mobile orientation changes)
+        $(window).resize(function() {
+          hamburgerLinksContainer.fadeOut(400,function() { $(this).remove()});
+        });
       }
   })
 }
