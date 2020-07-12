@@ -1,14 +1,15 @@
 console.log('Graymatter JS loaded.');
 
 //Establish vars
-let dropdownNavItems,
+let allNavItems,
+  dropdownNavItems,
   mainLink,
   dropdownLinksUl,
   navHamburger;
 
 //Define vars
-navHamburger = $('nav-links-mobile svg');
-console.log(navHamburger);
+allNavItems = $('.nav-links ul');
+navHamburger = $('.nav-links-mobile .nav-links-hamburger');
 dropdownNavItems = $('li.dropdown');
 
 
@@ -47,7 +48,7 @@ function addDropdownHandlers(el) {
 
 function addHamburgerHandler(hamburger) {
   hamburger.on('click',function () {
-    console.log('Clicked');
+    console.log(allNavItems);
   });
 }
 

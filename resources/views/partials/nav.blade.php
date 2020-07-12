@@ -2,10 +2,10 @@
   <a href="{{ url('/')}} ">{{ config('app.name') }}</a>
 </div>
 <div class="nav-links-mobile">
-  <i class="fas fa-bars"></i>
+  <div class="nav-links-hamburger"><i class="fas fa-bars"></i></div>
 </div>
 <div class="nav-links">
-  <ul>
+  <ul class="nav-links-main">
     <li><a href="{{ url('/')}} ">Item 1</a></li>
     <li><a href="{{ url('/')}} ">Item 2</a></li>
     <li><a href="{{ url('/')}} ">Item 3</a></li>
@@ -21,9 +21,9 @@
         </li>
       @endif
     @else
-      <li class="dropdown">
+      <li class="nav-links-dropdown">
         <a>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
-        <ul style="display: none">
+        <ul style="display: none" class="dropdown-submenu">
           <li>
             <a href="{{ route('dashboard')}}">Dashboard</a>
           </li>

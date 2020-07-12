@@ -89,7 +89,7 @@ nav {
           justify-content: center;
           padding: 0 $body-margin;
           line-height: 34px;
-          &.dropdown ul {
+          &.nav-links-dropdown ul.dropdown-submenu {
             background-color: $primary;
             display: flex;
             flex-direction: column;
