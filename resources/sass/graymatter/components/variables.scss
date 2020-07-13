@@ -1,11 +1,15 @@
 // Typography
 $ff-base: 'Mukta', sans-serif;
-$fs-base: 0.9rem;
+$fs-base: 1rem;
 $fs-big: 1.3rem;
 $fs-bigger: 1.6rem;
 $fs-biggest: 2rem;
 $fs-giant: 6rem;
-$lh-base: 1.6;
+$lh-base: 1.6rem;
+$lh-big: 1.8rem;
+$lh-bigger: 2rem;
+$lh-biggest: 2.3rem;
+$lh-giant: 3rem;
 
 // Colors
 $blue: #3490dc;
@@ -33,6 +37,7 @@ $break: 768px;
 $nav-height: 54px;
 $footer-height: 30px;
 $body-margin: 10px;
+$default-padding: 10px;
 $main-height: calc(100vh - 104px); //This 100vh minus the sum of $nav-height and $footer-height plus 2x $body-margin
 
 $transition: 0.4s;

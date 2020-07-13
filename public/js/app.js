@@ -30254,10 +30254,11 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /***/ (function(module, exports) {
 
 //Declare globals
-var allNavItems, dropdownNavItems, mainLink, dropdownLinksUl, navHamburger, hamburgerLinks; //Define globals
+var allNavItems, dropdownNavItems, mainLink, navHamburger, hamburgerLinks, hamburgerLinksContainer; //Define globals
 
 allNavItems = $('.nav-links ul');
 navHamburger = $('.nav-links-mobile .nav-links-hamburger');
+hamburgerLinksContainer = navHamburger.find('.nav-links-hamburger-links-container');
 dropdownNavItems = $('li.nav-links-dropdown'); //Set handlers
 
 setHandlers();
@@ -30272,6 +30273,7 @@ function setHandlers() {
 
   if (navHamburger.length) {
     addHamburgerHandler(navHamburger);
+    addWindowClickHandler(hamburgerLinksContainer);
   }
 }
 
@@ -30282,13 +30284,10 @@ function addDropdownHandler(el) {
   }); //Define target elements - the main link and any ULs within the nav item
 
   mainLink = el.find('a').first();
-  dropdownLinksUl = el.find('ul');
+  var dropdownLinksUl = el.find('ul');
   addWindowClickHandler(dropdownLinksUl); //Handle cliks on the main link to show or hide dropdown items
 
   mainLink.on('click', function (e) {
-    console.log('dropdownLinksUl');
-    console.log(dropdownLinksUl);
-
     if ('none' === dropdownLinksUl.css('display')) {
       dropdownLinksUl.fadeIn(400);
     } else {
@@ -30301,47 +30300,25 @@ function addDropdownHandler(el) {
       dropdownLinksUl.fadeOut(400);
     }
   });
-}
+} //Remove if window is resized (or mobile orientation changes)
+
+
+$(window).resize(function () {
+  hamburgerLinksContainer.fadeOut(400);
+});
 
 function addHamburgerHandler(el) {
   //Make sure clicks on the hamburger don't go through to the window
   el.on('click', function (e) {
     e.stopPropagation();
-    var hamburgerLinksContainer = $('.nav-links-hamburger-container');
+    var hamburgerLinksContainer = $('.nav-links-hamburger-links-container');
 
     if (hamburgerLinksContainer.length) {
       if ('none' === hamburgerLinksContainer.css('display')) {
         hamburgerLinksContainer.fadeIn();
       } else {
-        hamburgerLinksContainer.fadeOut(400, function () {
-          $(this).remove();
-        });
+        hamburgerLinksContainer.fadeOut(400);
       }
-    } else {
-      hamburgerLinksContainer = $('<div>');
-      hamburgerLinksContainer.css('display', 'none');
-      hamburgerLinksContainer.addClass('nav-links-hamburger-container');
-      hamburgerLinks = allNavItems.clone();
-      hamburgerLinksContainer.append(hamburgerLinks);
-      navHamburger.append(hamburgerLinksContainer);
-      var hamburgerDropdownLinks = hamburgerLinks.find('.nav-links-dropdown');
-      hamburgerDropdownLinks.each(function (index, el) {
-        var hamburgerDropdownMenu = $(el);
-        var hamburgerSubmenu = $(el).find('ul');
-        hamburgerSubmenu.each(function (index, el) {
-          if ($(el).hasClass('nav-links-dropdown-submenu')) {
-            addDropdownHandler(hamburgerDropdownMenu);
-          }
-        });
-      });
-      hamburgerLinksContainer.fadeIn();
-      addWindowClickHandler(hamburgerLinksContainer); //Remove if window is resized (or mobile orientation changes)
-
-      $(window).resize(function () {
-        hamburgerLinksContainer.fadeOut(400, function () {
-          $(this).remove();
-        });
-      });
     }
   });
 }
