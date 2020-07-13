@@ -38,26 +38,29 @@ nav {
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
+    opacity: 0.9;
     position: absolute;
     top: $nav-height;
-    right: $body-margin;
+    right: 0;
     ul {
       line-height: $lh-biggest;
       list-style-type: none;
       margin: 0;
       padding: 0;
-      z-index: 10000000;
       li {
-        padding: 0 $default-padding;
-        &:hover {
-          background-color: $secondary;
+        a {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          width: 100%;
+          padding: 10px;
+          &:hover {
+            background-color: $secondary;
+          }
         }
       }
       .nav-links-dropdown {
         cursor: pointer;
-        &:hover {
-          background-color: inherit;
-        }
         .nav-links-dropdown-submenu {
           background-color: $secondary;
           list-style-type: none;
@@ -65,6 +68,15 @@ nav {
           padding: 0;
           font-size: $fs-base;
           li {
+            a {
+              &:hover {
+                background-color: $primary;
+              }
+            }
+          }
+        }
+        &.nav-links-dropdown-open {
+          a{
             &:hover {
               background-color: $primary;
             }

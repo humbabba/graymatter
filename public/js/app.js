@@ -30254,11 +30254,10 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /***/ (function(module, exports) {
 
 //Declare globals
-var allNavItems, dropdownNavItems, mainLink, navHamburger, hamburgerLinks, hamburgerLinksContainer; //Define globals
+var allNavItems, dropdownNavItems, mainLink, navHamburger; //Define globals
 
-allNavItems = $('.nav-links ul');
-navHamburger = $('.nav-links-mobile .nav-links-hamburger');
-hamburgerLinksContainer = navHamburger.find('.nav-links-hamburger-links-container');
+allNavItems = $('.nav-links');
+navHamburger = $('.nav-hamburger');
 dropdownNavItems = $('li.nav-links-dropdown'); //Set handlers
 
 setHandlers();
@@ -30273,7 +30272,6 @@ function setHandlers() {
 
   if (navHamburger.length) {
     addHamburgerHandler(navHamburger);
-    addWindowClickHandler(hamburgerLinksContainer);
   }
 }
 
@@ -30289,8 +30287,10 @@ function addDropdownHandler(el) {
 
   mainLink.on('click', function (e) {
     if ('none' === dropdownLinksUl.css('display')) {
+      el.addClass('nav-links-dropdown-open');
       dropdownLinksUl.fadeIn(400);
     } else {
+      el.removeClass('nav-links-dropdown-open');
       dropdownLinksUl.fadeOut(400);
     }
   }); //Remove if window is resized (or mobile orientation changes)
@@ -30311,13 +30311,12 @@ function addHamburgerHandler(el) {
   //Make sure clicks on the hamburger don't go through to the window
   el.on('click', function (e) {
     e.stopPropagation();
-    var hamburgerLinksContainer = $('.nav-links-hamburger-links-container');
 
-    if (hamburgerLinksContainer.length) {
-      if ('none' === hamburgerLinksContainer.css('display')) {
-        hamburgerLinksContainer.fadeIn();
+    if (allNavItems.length) {
+      if ('none' === allNavItems.css('display')) {
+        allNavItems.fadeIn(400);
       } else {
-        hamburgerLinksContainer.fadeOut(400);
+        allNavItems.fadeOut(400);
       }
     }
   });

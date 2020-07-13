@@ -93,9 +93,10 @@ nav .nav-links {
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: flex-start;
+  opacity: 0.9;
   position: absolute;
   top: 54px;
-  right: 10px;
+  right: 0;
 }
 
 nav .nav-links ul {
@@ -103,23 +104,22 @@ nav .nav-links ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  z-index: 10000000;
 }
 
-nav .nav-links ul li {
-  padding: 0 10px;
+nav .nav-links ul li a {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
 }
 
-nav .nav-links ul li:hover {
+nav .nav-links ul li a:hover {
   background-color: #999999;
 }
 
 nav .nav-links ul .nav-links-dropdown {
   cursor: pointer;
-}
-
-nav .nav-links ul .nav-links-dropdown:hover {
-  background-color: inherit;
 }
 
 nav .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
@@ -130,7 +130,11 @@ nav .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
   font-size: 1rem;
 }
 
-nav .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu li:hover {
+nav .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu li a:hover {
+  background-color: #404040;
+}
+
+nav .nav-links ul .nav-links-dropdown.nav-links-dropdown-open a:hover {
   background-color: #404040;
 }
 
