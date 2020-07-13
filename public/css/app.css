@@ -87,7 +87,23 @@ nav .nav-hamburger {
   font-size: 2rem;
 }
 
-nav .nav-links {
+@media only screen and (min-width: 768px) {
+  nav .nav-hamburger {
+    display: none;
+  }
+}
+
+nav .nav-links-container {
+  display: none;
+}
+
+@media only screen and (min-width: 768px) {
+  nav .nav-links-container {
+    display: block;
+  }
+}
+
+nav .nav-links-container .nav-links {
   background-color: #404040;
   display: flex;
   flex-direction: column;
@@ -99,14 +115,29 @@ nav .nav-links {
   right: 0;
 }
 
-nav .nav-links ul {
+@media only screen and (min-width: 768px) {
+  nav .nav-links-container .nav-links {
+    flex-direction: row;
+    opacity: 1;
+    position: static;
+  }
+
+  nav .nav-links-container .nav-links ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+}
+
+nav .nav-links-container .nav-links ul {
   line-height: 2.3rem;
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-nav .nav-links ul li a {
+nav .nav-links-container .nav-links ul li a {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -114,15 +145,15 @@ nav .nav-links ul li a {
   padding: 10px;
 }
 
-nav .nav-links ul li a:hover {
+nav .nav-links-container .nav-links ul li a:hover {
   background-color: #999999;
 }
 
-nav .nav-links ul .nav-links-dropdown {
+nav .nav-links-container .nav-links ul .nav-links-dropdown {
   cursor: pointer;
 }
 
-nav .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
+nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
   background-color: #999999;
   list-style-type: none;
   margin: 0;
@@ -130,11 +161,11 @@ nav .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
   font-size: 1rem;
 }
 
-nav .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu li a:hover {
+nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu li a:hover {
   background-color: #404040;
 }
 
-nav .nav-links ul .nav-links-dropdown.nav-links-dropdown-open a:hover {
+nav .nav-links-container .nav-links ul .nav-links-dropdown.nav-links-dropdown-open a:hover {
   background-color: #404040;
 }
 

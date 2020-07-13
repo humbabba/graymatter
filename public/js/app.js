@@ -30254,9 +30254,9 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /***/ (function(module, exports) {
 
 //Declare globals
-var allNavItems, dropdownNavItems, mainLink, navHamburger; //Define globals
+var navLinksContainer, dropdownNavItems, mainLink, navHamburger; //Define globals
 
-allNavItems = $('.nav-links');
+navLinksContainer = $('.nav-links-container');
 navHamburger = $('.nav-hamburger');
 dropdownNavItems = $('li.nav-links-dropdown'); //Set handlers
 
@@ -30312,14 +30312,15 @@ function addHamburgerHandler(el) {
   el.on('click', function (e) {
     e.stopPropagation();
 
-    if (allNavItems.length) {
-      if ('none' === allNavItems.css('display')) {
-        allNavItems.fadeIn(400);
+    if (navLinksContainer.length) {
+      if ('none' === navLinksContainer.css('display')) {
+        navLinksContainer.fadeIn(400);
       } else {
-        allNavItems.fadeOut(400);
+        navLinksContainer.fadeOut(400);
       }
     }
   });
+  addWindowClickHandler(navLinksContainer);
 }
 
 function addWindowClickHandler(el) {

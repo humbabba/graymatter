@@ -1,11 +1,11 @@
 //Declare globals
-let allNavItems,
+let navLinksContainer,
   dropdownNavItems,
   mainLink,
   navHamburger;
 
 //Define globals
-allNavItems = $('.nav-links');
+navLinksContainer = $('.nav-links-container');
 navHamburger = $('.nav-hamburger');
 dropdownNavItems = $('li.nav-links-dropdown');
 
@@ -65,14 +65,15 @@ function addHamburgerHandler(el) {
   //Make sure clicks on the hamburger don't go through to the window
   el.on('click',function(e) {
       e.stopPropagation();
-      if(allNavItems.length) {
-        if('none' === allNavItems.css('display')) {
-          allNavItems.fadeIn(400);
+      if(navLinksContainer.length) {
+        if('none' === navLinksContainer.css('display')) {
+          navLinksContainer.fadeIn(400);
         } else {
-          allNavItems.fadeOut(400);
+          navLinksContainer.fadeOut(400);
         }
       }
   })
+  addWindowClickHandler(navLinksContainer);
 }
 
 function addWindowClickHandler(el) {
