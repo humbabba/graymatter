@@ -30300,12 +30300,7 @@ function addDropdownHandler(el) {
       dropdownLinksUl.fadeOut(400);
     }
   });
-} //Remove if window is resized (or mobile orientation changes)
-
-
-$(window).resize(function () {
-  hamburgerLinksContainer.fadeOut(400);
-});
+}
 
 function addHamburgerHandler(el) {
   //Make sure clicks on the hamburger don't go through to the window
@@ -30324,9 +30319,12 @@ function addHamburgerHandler(el) {
 }
 
 function addWindowClickHandler(el) {
-  //Clicks anywhere else will hide open dropdowns
+  var firstChild = el.children().first();
+  var isFlex = 'flex' === firstChild.css('display') ? true : false;
+  var isRow = 'row' === firstChild.css('flex-direction') ? true : false; //Clicks anywhere else will hide open dropdowns
+
   $(window).on('click', function () {
-    if ('none' !== el.css('display')) {
+    if ('none' !== el.css('display') && isFlex && !isRow) {
       el.fadeOut(400);
     }
   });

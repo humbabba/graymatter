@@ -9,7 +9,7 @@ nav {
   font-size: $fs-big;
   height: $nav-height;
   line-height: $nav-height;
-  padding: 0px $default-padding;
+  padding: 0px $padding-base;
   white-space: nowrap;
   z-index: 1000000;
 
@@ -24,7 +24,7 @@ nav {
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-content: center;
-    font-size: $fs-biggest;
+    font-size: $fs-bigger;
   }
 
   .nav-hamburger {
@@ -61,7 +61,7 @@ nav {
         }
       }
       ul {
-        line-height: $lh-biggest;
+        line-height: $lh-bigger;
         list-style-type: none;
         margin: 0;
         padding: 0;
@@ -71,7 +71,7 @@ nav {
             justify-content: flex-start;
             align-items: center;
             width: 100%;
-            padding: 10px;
+            padding: $padding-base;
             &:hover {
               background-color: $secondary;
             }
@@ -101,6 +101,9 @@ nav {
             }
           }
         }
+      }
+      .fas.fa-caret-down {
+        margin-left: $margin-small;
       }
     }
   }

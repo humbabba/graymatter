@@ -1,5 +1,6 @@
 // Typography
 $ff-base: 'Mukta', sans-serif;
+$fs-small: 0.8rem;
 $fs-base: 1rem;
 $fs-big: 1.3rem;
 $fs-bigger: 1.6rem;
@@ -37,7 +38,10 @@ $break: 768px;
 $nav-height: 54px;
 $footer-height: 30px;
 $body-margin: 10px;
-$default-padding: 10px;
+$padding-base: 10px;
+$padding-small: 5px;
+$margin-base: 10px;
+$margin-small: 10px;
 $main-height: calc(100vh - 104px); //This 100vh minus the sum of $nav-height and $footer-height plus 2x $body-margin
 
 $transition: 0.4s;

@@ -28,6 +28,7 @@ main {
 footer {
   background-color: $primary;
   color: $fc-light;
+  font-size: $fs-small;
   height: $footer-height;
   padding: 5px;
   text-align: center;
@@ -48,5 +49,5 @@ p {
 h1 {
   font-size: $fs-biggest;
   font-weight: 800;
-  margin: 0;
+  margin: $margin-base 0;
 }

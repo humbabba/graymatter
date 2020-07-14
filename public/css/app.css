@@ -27,6 +27,7 @@ main {
 footer {
   background-color: #404040;
   color: #f2f2f2;
+  font-size: 0.8rem;
   height: 30px;
   padding: 5px;
   text-align: center;
@@ -49,7 +50,7 @@ p:last-child {
 h1 {
   font-size: 2rem;
   font-weight: 800;
-  margin: 0;
+  margin: 10px 0;
 }
 
 nav {
@@ -79,7 +80,7 @@ nav .brand {
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-content: center;
-  font-size: 2rem;
+  font-size: 1.6rem;
 }
 
 nav .nav-hamburger {
@@ -131,7 +132,7 @@ nav .nav-links-container .nav-links {
 }
 
 nav .nav-links-container .nav-links ul {
-  line-height: 2.3rem;
+  line-height: 2rem;
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -167,6 +168,10 @@ nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-s
 
 nav .nav-links-container .nav-links ul .nav-links-dropdown.nav-links-dropdown-open a:hover {
   background-color: #404040;
+}
+
+nav .nav-links-container .nav-links .fas.fa-caret-down {
+  margin-left: 10px;
 }
 
 .centum {

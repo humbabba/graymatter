@@ -55,12 +55,6 @@ function addDropdownHandler(el) {
   });
 }
 
-
-  //Remove if window is resized (or mobile orientation changes)
-  $(window).resize(function() {
-    hamburgerLinksContainer.fadeOut(400);
-  });
-
 function addHamburgerHandler(el) {
   //Make sure clicks on the hamburger don't go through to the window
   el.on('click',function(e) {
@@ -77,9 +71,12 @@ function addHamburgerHandler(el) {
 }
 
 function addWindowClickHandler(el) {
+  let firstChild = el.children().first();
+  let isFlex = ('flex' === firstChild.css('display'))? true:false;
+  let isRow = ('row' === firstChild.css('flex-direction'))? true:false;
   //Clicks anywhere else will hide open dropdowns
   $(window).on('click',function() {
-    if('none' !== el.css('display')) {
+    if('none' !== el.css('display') && isFlex && !isRow) {
       el.fadeOut(400);
     }
   });
