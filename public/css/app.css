@@ -66,7 +66,7 @@ nav {
   line-height: 54px;
   padding: 0px 10px;
   white-space: nowrap;
-  z-index: 1000000;
+  z-index: 100;
 }
 
 nav a {
@@ -101,6 +101,8 @@ nav .nav-links-container {
 @media only screen and (min-width: 768px) {
   nav .nav-links-container {
     display: block;
+    padding-left: 10px;
+    width: 100%;
   }
 }
 
@@ -119,15 +121,11 @@ nav .nav-links-container .nav-links {
 @media only screen and (min-width: 768px) {
   nav .nav-links-container .nav-links {
     flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    height: 54px;
     opacity: 1;
     position: static;
-  }
-
-  nav .nav-links-container .nav-links ul {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
   }
 }
 
@@ -138,10 +136,20 @@ nav .nav-links-container .nav-links ul {
   padding: 0;
 }
 
+@media only screen and (min-width: 768px) {
+  nav .nav-links-container .nav-links ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+}
+
 nav .nav-links-container .nav-links ul li a {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  height: 54px;
   width: 100%;
   padding: 10px;
 }
@@ -152,6 +160,7 @@ nav .nav-links-container .nav-links ul li a:hover {
 
 nav .nav-links-container .nav-links ul .nav-links-dropdown {
   cursor: pointer;
+  z-index: 1000;
 }
 
 nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
@@ -160,6 +169,15 @@ nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-s
   margin: 0;
   padding: 0;
   font-size: 1rem;
+}
+
+@media only screen and (min-width: 768px) {
+  nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
 }
 
 nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu li a:hover {
@@ -187,7 +205,7 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
   display: block;
   padding: 10px;
   width: 100%;
-  word-wrap: break-word;
+  word-wrap: normal;
 }
 
 @media only screen and (min-width: 768px) {
@@ -372,6 +390,7 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
 
 .giant {
   font-size: 6rem;
+  line-height: 6.2rem;
 }
 
 /*Project-specific styles go here*/

@@ -11,7 +11,7 @@ nav {
   line-height: $nav-height;
   padding: 0px $padding-base;
   white-space: nowrap;
-  z-index: 1000000;
+  z-index: 100;
 
   a {
     color: $fc-light;
@@ -34,10 +34,14 @@ nav {
       display: none;
     }
   }
+
   .nav-links-container {
     display: none;
     @media only screen and (min-width: $break) {
       display: block;
+      padding-left: $padding-base;
+      width: 100%;
+
     }
     .nav-links {
       background-color: $primary;
@@ -51,25 +55,29 @@ nav {
       right: 0;
       @media only screen and (min-width: $break) {
         flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        height: $nav-height;
         opacity: 1;
         position: static;
-        ul {
-          display: flex;
-          flex-direction: row;
-          flex-wrap: nowrap;
-          justify-content: flex-start;
-        }
       }
       ul {
         line-height: $lh-bigger;
         list-style-type: none;
         margin: 0;
         padding: 0;
+        @media only screen and (min-width: $break) {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          justify-content: flex-start;
+        }
         li {
           a {
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            height: $nav-height;
             width: 100%;
             padding: $padding-base;
             &:hover {
@@ -79,12 +87,19 @@ nav {
         }
         .nav-links-dropdown {
           cursor: pointer;
+          z-index: 1000;
           .nav-links-dropdown-submenu {
             background-color: $secondary;
             list-style-type: none;
             margin: 0;
             padding: 0;
             font-size: $fs-base;
+            @media only screen and (min-width: $break) {
+              display: flex;
+              flex-direction: column;
+              flex-wrap: nowrap;
+              justify-content: flex-start;
+            }
             li {
               a {
                 &:hover {

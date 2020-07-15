@@ -3,7 +3,9 @@
 @section('content')
   <div class="centum">
       <div class="cell x100 center bold giant">
-          <div>{{ config('app.name') }}</div>
+          <div>Hi</div>
+      </div>
+      <div class="cell x100 center bold giant">
           <p>:)</p>
       </div>
   </div>
