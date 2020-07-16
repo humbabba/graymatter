@@ -41,7 +41,13 @@ nav {
       display: block;
       padding-left: $padding-base;
       width: 100%;
-
+    }
+    &.nav-mobile-show {
+      display: block;
+      animation: graymatter-fade-in 0.4s;
+      @media only screen and (min-width: $break) {
+        display: none;
+      }
     }
     .nav-links {
       background-color: $primary;
@@ -113,6 +119,13 @@ nav {
               &:hover {
                 background-color: $primary;
               }
+            }
+          }
+          ul.nav-links-dropdown-submenu {
+            display: none;
+            &.nav-links-show {
+              display: block;
+              animation: graymatter-fade-in 0.4s;
             }
           }
         }

@@ -9,7 +9,7 @@
         <li><a href="{{ url('/sports')}} ">Sports</a></li>
         <li class="nav-links-dropdown">
           <a>Weather <i class="fas fa-caret-down"></i></a>
-          <ul class="nav-links-dropdown-submenu" style="display: none;">
+          <ul class="nav-links-dropdown-submenu">
             <li>
               <a href="/forecast">Forecast</a>
             </li>
@@ -32,7 +32,7 @@
         @else
           <li class="nav-links-dropdown">
             <a>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
-            <ul class="nav-links-dropdown-submenu" style="display: none;">
+            <ul class="nav-links-dropdown-submenu">
               <li>
                 <a href="{{ route('dashboard')}}">Dashboard</a>
               </li>

@@ -1,4 +1,24 @@
-@import url(https://fonts.googleapis.com/css?family=Mukta);* {
+@import url(https://fonts.googleapis.com/css?family=Mukta);@-webkit-keyframes graymatter-fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes graymatter-fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+* {
   box-sizing: border-box;
   transition-duration: 0.4s;
 }
@@ -106,6 +126,18 @@ nav .nav-links-container {
   }
 }
 
+nav .nav-links-container.nav-mobile-show {
+  display: block;
+  -webkit-animation: graymatter-fade-in 0.4s;
+          animation: graymatter-fade-in 0.4s;
+}
+
+@media only screen and (min-width: 768px) {
+  nav .nav-links-container.nav-mobile-show {
+    display: none;
+  }
+}
+
 nav .nav-links-container .nav-links {
   background-color: #404040;
   display: flex;
@@ -186,6 +218,16 @@ nav .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-s
 
 nav .nav-links-container .nav-links ul .nav-links-dropdown.nav-links-dropdown-open a:hover {
   background-color: #404040;
+}
+
+nav .nav-links-container .nav-links ul .nav-links-dropdown ul.nav-links-dropdown-submenu {
+  display: none;
+}
+
+nav .nav-links-container .nav-links ul .nav-links-dropdown ul.nav-links-dropdown-submenu.nav-links-show {
+  display: block;
+  -webkit-animation: graymatter-fade-in 0.4s;
+          animation: graymatter-fade-in 0.4s;
 }
 
 nav .nav-links-container .nav-links .fas.fa-caret-down {

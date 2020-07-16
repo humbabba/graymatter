@@ -30286,18 +30286,19 @@ function addDropdownHandler(el) {
   addWindowClickHandler(dropdownLinksUl); //Handle cliks on the main link to show or hide dropdown items
 
   mainLink.on('click', function (e) {
-    if ('none' === dropdownLinksUl.css('display')) {
+    if (!dropdownLinksUl.hasClass('nav-links-show')) {
       el.addClass('nav-links-dropdown-open');
-      dropdownLinksUl.fadeIn(400);
+      dropdownLinksUl.addClass('nav-links-show');
     } else {
       el.removeClass('nav-links-dropdown-open');
-      dropdownLinksUl.fadeOut(400);
+      dropdownLinksUl.removeClass('nav-links-show');
     }
   }); //Remove if window is resized (or mobile orientation changes)
 
   $(window).resize(function () {
-    if ('none' !== dropdownLinksUl.css('display')) {
-      dropdownLinksUl.fadeOut(400);
+    if (dropdownLinksUl.hasClass('nav-links-show')) {
+      el.removeClass('nav-links-dropdown-open');
+      dropdownLinksUl.removeClass('nav-links-show');
     }
   });
 }
@@ -30308,24 +30309,27 @@ function addHamburgerHandler(el) {
     e.stopPropagation();
 
     if (navLinksContainer.length) {
-      if ('none' === navLinksContainer.css('display')) {
-        navLinksContainer.fadeIn(400);
+      if (navLinksContainer.hasClass('nav-mobile-show')) {
+        navLinksContainer.removeClass('nav-mobile-show');
       } else {
-        navLinksContainer.fadeOut(400);
+        navLinksContainer.addClass('nav-mobile-show');
       }
     }
   });
-  addWindowClickHandler(navLinksContainer);
+  addWindowClickHandler(navLinksContainer); //Remove if window is resized (or mobile orientation changes)
+
+  $(window).resize(function () {
+    if (navLinksContainer.hasClass('nav-mobile-show')) {
+      navLinksContainer.removeClass('nav-mobile-show');
+    }
+  });
 }
 
 function addWindowClickHandler(el) {
-  var firstChild = el.children().first();
-  var isFlex = 'flex' === firstChild.css('display') ? true : false;
-  var isRow = 'row' === firstChild.css('flex-direction') ? true : false; //Clicks anywhere else will hide open dropdowns
-
+  //Clicks anywhere else will hide open dropdowns
   $(window).on('click', function () {
-    if ('none' !== el.css('display') && isFlex && !isRow) {
-      el.fadeOut(400);
+    if (el.hasClass('nav-mobile-show')) {
+      el.removeClass('nav-mobile-show');
     }
   });
 }
