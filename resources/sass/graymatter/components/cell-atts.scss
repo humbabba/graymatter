@@ -1,12 +1,12 @@
 //Spacers and padding
-.spd { //Spacer desktop
+.spacer-d { //Spacer desktop
   flex-grow: 1;
   display: none;
   @media only screen and (min-width: $break) {
     display: block;
   }
 }
-.spm { //Spacer mobile
+.spacer-m { //Spacer mobile
   flex-grow: 1;
   display: block;
   @media only screen and (min-width: $break) {

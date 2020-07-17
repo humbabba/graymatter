@@ -322,24 +322,24 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
   }
 }
 
-.spd {
+.spacer-d {
   flex-grow: 1;
   display: none;
 }
 
 @media only screen and (min-width: 768px) {
-  .spd {
+  .spacer-d {
     display: block;
   }
 }
 
-.spm {
+.spacer-m {
   flex-grow: 1;
   display: block;
 }
 
 @media only screen and (min-width: 768px) {
-  .spm {
+  .spacer-m {
     display: none;
   }
 }

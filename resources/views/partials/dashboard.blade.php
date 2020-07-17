@@ -28,14 +28,14 @@
                         </div>
                       </div>
                     </div>
-                    <div class="cell p5 spm">
+                    <div class="cell p5 spacer-m">
                     </div>
                     <div class="cell x30">
                       <p>To here.</p>
                     </div>
-                    <div class="cell p5 spm">
+                    <div class="cell p5 spacer-m">
                     </div>
-                    <div class="cell x20 spd">
+                    <div class="cell x20 spacer-d">
                     </div>
                   </div>
                 </div>
