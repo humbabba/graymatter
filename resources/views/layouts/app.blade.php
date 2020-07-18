@@ -13,9 +13,6 @@
     <link href="{{ asset('css/fontawesome/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}?v={{ getVersion() }}" rel="stylesheet">
 
-    <!-- Scripts -->
-    <script type="module" src="{{ asset('js/app.js') }}?v={{ getVersion() }}" defer></script>
-
 </head>
 <body>
     <div id="app">
@@ -31,5 +28,9 @@
           @include('partials.footer')
         </footer>
     </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}?v={{ getVersion() }}"></script>
+    
 </body>
 </html>

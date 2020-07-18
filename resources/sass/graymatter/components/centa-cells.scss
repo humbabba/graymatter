@@ -1,75 +1,80 @@
 //Centa and cells
 .centum {
-  border: 1px solid $black;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
-}
-.cell {
-  border: 1px solid $green;
-  display: block;
-  padding: 10px;
-  width: 100%;
-  word-wrap: normal;
-}
-.x90 {
-  @media only screen and (min-width: $break) {
-    max-width: 90%;
+  .cell {
+    display: block;
+    padding: 10px;
+    width: 100%;
+    word-wrap: normal;
   }
-}
-.x80 {
-  @media only screen and (min-width: $break) {
-    max-width: 80%;
+  .x90 {
+    @media only screen and (min-width: $break) {
+      max-width: 90%;
+    }
   }
-}
-.x75 {
-  @media only screen and (min-width: $break) {
-    max-width: 75%;
+  .x80 {
+    @media only screen and (min-width: $break) {
+      max-width: 80%;
+    }
   }
-}
-.x70 {
-  @media only screen and (min-width: $break) {
-    max-width: 70%;
+  .x75 {
+    @media only screen and (min-width: $break) {
+      max-width: 75%;
+    }
   }
-}
-.x60 {
-  @media only screen and (min-width: $break) {
-    max-width: 60%;
+  .x70 {
+    @media only screen and (min-width: $break) {
+      max-width: 70%;
+    }
   }
-}
-.x50 {
-  @media only screen and (min-width: $break) {
-    max-width: 50%;
+  .x60 {
+    @media only screen and (min-width: $break) {
+      max-width: 60%;
+    }
   }
-}
-.x40 {
-  @media only screen and (min-width: $break) {
-    max-width: 40%;
+  .x50 {
+    @media only screen and (min-width: $break) {
+      max-width: 50%;
+    }
   }
-}
-.x33 {
-  @media only screen and (min-width: $break) {
-    max-width: 33.33%;
+  .x40 {
+    @media only screen and (min-width: $break) {
+      max-width: 40%;
+    }
   }
-}
-.x30 {
-  @media only screen and (min-width: $break) {
-    max-width: 30%;
+  .x33 {
+    @media only screen and (min-width: $break) {
+      max-width: 33.33%;
+    }
   }
-}
-.x25 {
-  @media only screen and (min-width: $break) {
-    max-width: 25%;
+  .x30 {
+    @media only screen and (min-width: $break) {
+      max-width: 30%;
+    }
   }
-}
-.x20 {
-  @media only screen and (min-width: $break) {
-    max-width: 20%;
+  .x25 {
+    @media only screen and (min-width: $break) {
+      max-width: 25%;
+    }
   }
-}
-.x10 {
-  @media only screen and (min-width: $break) {
-    max-width: 10%;
+  .x20 {
+    @media only screen and (min-width: $break) {
+      max-width: 20%;
+    }
+  }
+  .x10 {
+    @media only screen and (min-width: $break) {
+      max-width: 10%;
+    }
+  }
+
+  [class*="shift+"] {
+    unicode-bidi: normal;
+    @media only screen and (min-width: $break) {
+      unicode-bidi: isolate;
+    }
   }
 }

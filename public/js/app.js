@@ -30343,37 +30343,74 @@ function addWindowClickHandler(el) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var shifts = $('*[class*="shift"]'); //Confirm elements are Graymatter shifts, then process
-
-shifts.each(function (index, el) {
-  var classes = $(el).prop('class').split(/\s+/);
-  $(classes).each(function (index, elClass) {
-    if (elClass.startsWith('shift+')) {
-      var elSplitClass = elClass.split('+');
-
-      if (2 === elSplitClass.length && !isNaN(elSplitClass[1])) {
-        var target = elSplitClass[1];
-
-        if (0 > target) {
-          minusShift(el, target);
-        } else {
-          plusShift(el, target);
-        }
-      }
-    }
-  });
+var shifts = $('[class*="shift+"]');
+shifts.attr('data-original-position', function () {
+  return $(this).index();
 });
+checkForShifts();
 
-function plusShift(el, degree) {
-  console.log('Plus shifting:');
-  console.log(el);
-  console.log(degree);
+function checkForShifts() {
+  //Confirm elements are Graymatter shifts, then process
+  if (shifts.length) {
+    shifts.each(function (index, element) {
+      var el = $(element);
+      var classes = el.prop('class').split(/\s+/);
+      $(classes).each(function (index, elClass) {
+        if (elClass.startsWith('shift+')) {
+          var elSplitClass = elClass.split('+');
+
+          if (2 === elSplitClass.length && !isNaN(elSplitClass[1])) {
+            var degree = parseInt(elSplitClass[1]);
+            cellShift(el, degree);
+          }
+        }
+      });
+    });
+  }
+
+  $('body').show(); //We've hidden it in CSS till all shifts are done
 }
 
-function minusShift(el, degree) {
-  console.log('Minus shifting:');
-  console.log(el);
-  console.log(degree);
+$(window).resize(function () {
+  checkForShifts();
+}); //Shift the cell
+
+function cellShift(el, degree) {
+  var original = el.data('originalPosition');
+  var current = el.index();
+  var siblingsCount = el.siblings().length;
+
+  if ('isolate' === el.css('unicode-bidi')) {
+    //We're on desktop, so make sure it's in original position before moving
+    if (el.index() === original) {
+      var _final = current + degree;
+
+      if (_final < 0) {
+        //In case we overshoot, don't go below 0
+        _final = 0;
+      }
+
+      if (_final > siblingsCount) {
+        //And don't go beyond total siblings
+        _final = siblingsCount;
+      }
+
+      if (degree < 0) {
+        el.parent().children().eq(_final).before(el);
+      } else {
+        el.parent().children().eq(_final).after(el);
+      }
+    }
+  } else {
+    //We're on mobile, so make sure it's not in its original position before moving
+    if (el.index() !== original) {
+      if (degree < 0) {
+        el.parent().children().eq(original).after(el);
+      } else {
+        el.parent().children().eq(original).before(el);
+      }
+    }
+  }
 }
 
 /***/ }),

@@ -32,6 +32,7 @@ html {
 }
 
 body {
+  display: none;
   color: #595959;
   max-height: 100%;
   margin: 0;
@@ -235,15 +236,13 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
 }
 
 .centum {
-  border: 1px solid #000;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
 }
 
-.cell {
-  border: 1px solid #38c172;
+.centum .cell {
   display: block;
   padding: 10px;
   width: 100%;
@@ -251,74 +250,86 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
 }
 
 @media only screen and (min-width: 768px) {
-  .x90 {
+  .centum .x90 {
     max-width: 90%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x80 {
+  .centum .x80 {
     max-width: 80%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x75 {
+  .centum .x75 {
     max-width: 75%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x70 {
+  .centum .x70 {
     max-width: 70%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x60 {
+  .centum .x60 {
     max-width: 60%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x50 {
+  .centum .x50 {
     max-width: 50%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x40 {
+  .centum .x40 {
     max-width: 40%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x33 {
+  .centum .x33 {
     max-width: 33.33%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x30 {
+  .centum .x30 {
     max-width: 30%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x25 {
+  .centum .x25 {
     max-width: 25%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x20 {
+  .centum .x20 {
     max-width: 20%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  .x10 {
+  .centum .x10 {
     max-width: 10%;
+  }
+}
+
+.centum [class*="shift+"] {
+  unicode-bidi: normal;
+}
+
+@media only screen and (min-width: 768px) {
+  .centum [class*="shift+"] {
+    unicode-bidi: -webkit-isolate;
+    unicode-bidi: -moz-isolate;
+    unicode-bidi: isolate;
   }
 }
 
@@ -402,7 +413,7 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
 
 /*Borders*/
 
-.border-1 {
+.border-basic {
   border: 1px solid #999999;
 }
 
