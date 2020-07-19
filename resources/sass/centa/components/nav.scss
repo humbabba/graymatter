@@ -16,6 +16,9 @@ nav {
   a {
     color: $fc-light;
     text-decoration: none;
+    &:hover {
+      color: $fc-light;
+    }
   }
 
   .brand {

@@ -4,12 +4,12 @@
      <div class="cell x50 center">
         <h1 class="pv15">{{ __('Log in') }}</h1>
         @error('email')
-          <div class="alert alert-error">
-            <strong>{{ $message }}</strong>
+          <div class="alert error">
+            {{ $message }}
           </div>
         @enderror
         @error('password')
-          <div class="alert alert-error">
+          <div class="alert error">
             <strong>{{ $message }}</strong>
           </div>
         @enderror
@@ -27,7 +27,7 @@
           </div>
 
            <div class="centum">
-              <div class="cell ph0">
+              <div class="cell p0">
                  <button type="submit" class="btn btn-primary">
                  {{ __('Go') }}
                  </button>

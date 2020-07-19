@@ -2,10 +2,10 @@
 
 @section('content')
   <div class="centum bold giant">
-      <div class="cell inline justify-center">
+      <div class="cell align-center">
           Hi
       </div>
-      <div class="cell inline justify-center">
+      <div class="cell align-center">
           :)
       </div>
   </div>

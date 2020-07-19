@@ -1,0 +1,19 @@
+.alert {
+  padding: $padding-small $padding-base;
+  border: 1px solid $secondary;
+  border-radius: $border-radius-base;
+  font-weight: 900;
+  margin: $margin-base 0;
+  &.error {
+    background-color: $red;
+    color: $fc-light;
+  }
+  &.success {
+    background-color: $green;
+    color: $white;
+  }
+  &.notice {
+    background-color: $blue;
+    color: $white;
+  }
+}
