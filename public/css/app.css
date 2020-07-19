@@ -139,69 +139,93 @@
 }
 
 .centum.p0,
-.cell.p0 {
+.cell.p0,
+h1.p0,
+input.p0 {
   padding: 0;
 }
 
 .centum.p5,
-.cell.p5 {
+.cell.p5,
+h1.p5,
+input.p5 {
   padding: 5px;
 }
 
 .centum.p10,
-.cell.p10 {
+.cell.p10,
+h1.p10,
+input.p10 {
   padding: 10px;
 }
 
 .centum.p15,
-.cell.p15 {
+.cell.p15,
+h1.p15,
+input.p15 {
   padding: 15px;
 }
 
 .centum.ph0,
-.cell.ph0 {
+.cell.ph0,
+h1.ph0,
+input.ph0 {
   padding-left: 0;
   padding-right: 0;
 }
 
 .centum.ph5,
-.cell.ph5 {
+.cell.ph5,
+h1.ph5,
+input.ph5 {
   padding-left: 5px;
   padding-right: 5px;
 }
 
 .centum.ph10,
-.cell.ph10 {
+.cell.ph10,
+h1.ph10,
+input.ph10 {
   padding-left: 10px;
   padding-right: 10px;
 }
 
 .centum.ph15,
-.cell.ph15 {
+.cell.ph15,
+h1.ph15,
+input.ph15 {
   padding-left: 15px;
   padding-right: 15px;
 }
 
 .centum.pv0,
-.cell.pv0 {
+.cell.pv0,
+h1.pv0,
+input.pv0 {
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .centum.pv5,
-.cell.pv5 {
+.cell.pv5,
+h1.pv5,
+input.pv5 {
   padding-top: 5px;
   padding-bottom: 5px;
 }
 
 .centum.pv10,
-.cell.pv10 {
+.cell.pv10,
+h1.pv10,
+input.pv10 {
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
 .centum.pv15,
-.cell.pv15 {
+.cell.pv15,
+h1.pv15,
+input.pv15 {
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -214,8 +238,8 @@
 
 /*Positioning*/
 
-.center {
-  text-align: center;
+.cell.center {
+  margin: auto;
 }
 
 * {
@@ -259,6 +283,10 @@ footer a {
   text-decoration: underline;
 }
 
+label {
+  font-weight: 900;
+}
+
 p {
   display: block;
   margin: 0 0 10px 0;
@@ -272,6 +300,28 @@ h1 {
   font-size: 2rem;
   font-weight: 800;
   margin: 10px 0;
+}
+
+.cell form label {
+  display: block;
+}
+
+.cell form label.inline {
+  display: inline;
+}
+
+.cell form input[type=email],
+.cell form input[type=password],
+.cell form input[type=text] {
+  border: 1px solid #999999;
+  border-radius: 5px;
+  line-height: 1.6rem;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.cell form input[type=checkbox] {
+  margin: 0;
 }
 
 nav {

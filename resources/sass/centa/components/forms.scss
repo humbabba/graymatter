@@ -1,0 +1,25 @@
+.cell {
+  form {
+    label {
+      display: block;
+      &.inline {
+        display: inline;
+      }
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      border: 1px solid $secondary;
+      border-radius: 5px;
+      line-height: $lh-base;
+      margin-bottom: $margin-base;
+      width: 100%;
+    }
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+
+  }
+}
