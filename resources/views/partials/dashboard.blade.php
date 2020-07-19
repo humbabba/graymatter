@@ -6,7 +6,9 @@
         <div>
             <div>
                 <div>
-                  <h1 class="ph10">My stuff</h1>
+                  <div class="centum ph10">
+                    <h1>My stuff</h1>
+                  </div>
                   <div class="centum">
                     <div class="cell x60">
                       <p>Welcome.</p>

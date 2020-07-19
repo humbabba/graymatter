@@ -116,6 +116,108 @@
   }
 }
 
+.spacer-d {
+  flex-grow: 1;
+  display: none;
+}
+
+@media only screen and (min-width: 768px) {
+  .spacer-d {
+    display: block;
+  }
+}
+
+.spacer-m {
+  flex-grow: 1;
+  display: block;
+}
+
+@media only screen and (min-width: 768px) {
+  .spacer-m {
+    display: none;
+  }
+}
+
+.centum.p0,
+.cell.p0 {
+  padding: 0;
+}
+
+.centum.p5,
+.cell.p5 {
+  padding: 5px;
+}
+
+.centum.p10,
+.cell.p10 {
+  padding: 10px;
+}
+
+.centum.p15,
+.cell.p15 {
+  padding: 15px;
+}
+
+.centum.ph0,
+.cell.ph0 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.centum.ph5,
+.cell.ph5 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.centum.ph10,
+.cell.ph10 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.centum.ph15,
+.cell.ph15 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.centum.pv0,
+.cell.pv0 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.centum.pv5,
+.cell.pv5 {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.centum.pv10,
+.cell.pv10 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.centum.pv15,
+.cell.pv15 {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/*Borders*/
+
+.border-basic {
+  border: 1px solid #999999;
+}
+
+/*Positioning*/
+
+.center {
+  text-align: center;
+}
+
 * {
   box-sizing: border-box;
   transition-duration: 0.4s;
@@ -331,108 +433,6 @@ nav .nav-links-container .nav-links ul .nav-links-dropdown ul.nav-links-dropdown
 
 nav .nav-links-container .nav-links .fas.fa-caret-down {
   margin-left: 10px;
-}
-
-.spacer-d {
-  flex-grow: 1;
-  display: none;
-}
-
-@media only screen and (min-width: 768px) {
-  .spacer-d {
-    display: block;
-  }
-}
-
-.spacer-m {
-  flex-grow: 1;
-  display: block;
-}
-
-@media only screen and (min-width: 768px) {
-  .spacer-m {
-    display: none;
-  }
-}
-
-.centum.p0,
-.cell.p0 {
-  padding: 0;
-}
-
-.centum.p5,
-.cell.p5 {
-  padding: 5px;
-}
-
-.centum.p10,
-.cell.p10 {
-  padding: 10px;
-}
-
-.centum.p15,
-.cell.p15 {
-  padding: 15px;
-}
-
-.centum.ph0,
-.cell.ph0 {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.centum.ph5,
-.cell.ph5 {
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-.centum.ph10,
-.cell.ph10 {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.centum.ph15,
-.cell.ph15 {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.centum.pv0,
-.cell.pv0 {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.centum.pv5,
-.cell.pv5 {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.centum.pv10,
-.cell.pv10 {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.centum.pv15,
-.cell.pv15 {
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-
-/*Borders*/
-
-.border-basic {
-  border: 1px solid #999999;
-}
-
-/*Positioning*/
-
-.center {
-  text-align: center;
 }
 
 /*Text styles*/

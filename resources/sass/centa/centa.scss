@@ -2,8 +2,11 @@
 @import url('https://fonts.googleapis.com/css?family=Mukta');
 @import 'components/variables';
 @import 'components/centa-cells';
+//Mustload above first
+@import 'components/alerts';
 @import 'components/animations';
-@import 'components/elements';
-@import 'components/nav';
 @import 'components/cell-atts';
+@import 'components/elements';
+@import 'components/loader';
+@import 'components/nav';
 @import 'components/text';
