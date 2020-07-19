@@ -16,8 +16,8 @@
 
 .centum,
 .cell,
-h1,
-input {
+h1
+ {
   &.p0 {
     padding: 0;
   }
@@ -73,5 +73,14 @@ input {
 .cell {
   &.center {
     margin: auto;
+  }
+  &.align-center {
+    text-align: center;
+  }
+  &.align-right {
+    text-align: right;
+  }
+  &.align-left {
+    text-align: left;
   }
 }

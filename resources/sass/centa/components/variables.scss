@@ -41,7 +41,8 @@ $body-margin: 10px;
 $padding-base: 10px;
 $padding-small: 5px;
 $margin-base: 10px;
-$margin-small: 10px;
+$margin-small: 5px;
+$border-radius-base: 5px;
 $main-height: calc(100vh - 104px); //This 100vh minus the sum of $nav-height and $footer-height plus 2x $body-margin
 
 $transition: 0.4s;

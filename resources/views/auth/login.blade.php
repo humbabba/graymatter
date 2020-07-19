@@ -2,7 +2,7 @@
 @section('content')
   <div class="centum">
      <div class="cell x50 center">
-        <h1 class="pv15">{{ __('Login') }}</h1>
+        <h1 class="pv15">{{ __('Log in') }}</h1>
         @error('email')
           <div class="alert alert-error">
             <strong>{{ $message }}</strong>
@@ -26,14 +26,16 @@
             </div>
           </div>
 
-           <div class="form-group row mb-0">
-              <div class="col-md-8 offset-md-4">
+           <div class="centum">
+              <div class="cell ph0">
                  <button type="submit" class="btn btn-primary">
-                 {{ __('Login') }}
+                 {{ __('Go') }}
                  </button>
+               </div>
+               <div class="cell ph0">
                  @if (Route::has('password.request'))
-                 <a class="btn btn-link" href="{{ route('password.request') }}">
-                 {{ __('Forgot Your Password?') }}
+                   <a href="{{ route('password.request') }}">
+                   {{ __('Forgot your password?') }}
                  </a>
                  @endif
               </div>

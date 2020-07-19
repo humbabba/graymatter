@@ -1,0 +1,15 @@
+button {
+  background-color: $primary;
+  border: 1px solid $secondary;
+  border-radius: $border-radius-base;
+  color: $fc-light;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: $lh-base;
+  padding: $padding-small $padding-base;
+  text-transform: uppercase;
+  &:hover {
+    background-color: $secondary;
+    color: $fc-base;
+  }
+}

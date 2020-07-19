@@ -116,6 +116,23 @@
   }
 }
 
+button {
+  background-color: #404040;
+  border: 1px solid #999999;
+  border-radius: 5px;
+  color: #f2f2f2;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1.6rem;
+  padding: 5px 10px;
+  text-transform: uppercase;
+}
+
+button:hover {
+  background-color: #999999;
+  color: #595959;
+}
+
 .spacer-d {
   flex-grow: 1;
   display: none;
@@ -140,92 +157,80 @@
 
 .centum.p0,
 .cell.p0,
-h1.p0,
-input.p0 {
+h1.p0 {
   padding: 0;
 }
 
 .centum.p5,
 .cell.p5,
-h1.p5,
-input.p5 {
+h1.p5 {
   padding: 5px;
 }
 
 .centum.p10,
 .cell.p10,
-h1.p10,
-input.p10 {
+h1.p10 {
   padding: 10px;
 }
 
 .centum.p15,
 .cell.p15,
-h1.p15,
-input.p15 {
+h1.p15 {
   padding: 15px;
 }
 
 .centum.ph0,
 .cell.ph0,
-h1.ph0,
-input.ph0 {
+h1.ph0 {
   padding-left: 0;
   padding-right: 0;
 }
 
 .centum.ph5,
 .cell.ph5,
-h1.ph5,
-input.ph5 {
+h1.ph5 {
   padding-left: 5px;
   padding-right: 5px;
 }
 
 .centum.ph10,
 .cell.ph10,
-h1.ph10,
-input.ph10 {
+h1.ph10 {
   padding-left: 10px;
   padding-right: 10px;
 }
 
 .centum.ph15,
 .cell.ph15,
-h1.ph15,
-input.ph15 {
+h1.ph15 {
   padding-left: 15px;
   padding-right: 15px;
 }
 
 .centum.pv0,
 .cell.pv0,
-h1.pv0,
-input.pv0 {
+h1.pv0 {
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .centum.pv5,
 .cell.pv5,
-h1.pv5,
-input.pv5 {
+h1.pv5 {
   padding-top: 5px;
   padding-bottom: 5px;
 }
 
 .centum.pv10,
 .cell.pv10,
-h1.pv10,
-input.pv10 {
+h1.pv10 {
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
 .centum.pv15,
 .cell.pv15,
-h1.pv15,
-input.pv15 {
+h1.pv15 {
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -240,6 +245,18 @@ input.pv15 {
 
 .cell.center {
   margin: auto;
+}
+
+.cell.align-center {
+  text-align: center;
+}
+
+.cell.align-right {
+  text-align: right;
+}
+
+.cell.align-left {
+  text-align: left;
 }
 
 * {
@@ -321,7 +338,18 @@ h1 {
 }
 
 .cell form input[type=checkbox] {
-  margin: 0;
+  margin: 0 0 15px 0;
+}
+
+a {
+  color: #404040;
+  display: inline;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #999999;
+  text-decoration: none;
 }
 
 nav {
@@ -482,7 +510,7 @@ nav .nav-links-container .nav-links ul .nav-links-dropdown ul.nav-links-dropdown
 }
 
 nav .nav-links-container .nav-links .fas.fa-caret-down {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 /*Text styles*/
