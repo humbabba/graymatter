@@ -1,4 +1,102 @@
-@import url(https://fonts.googleapis.com/css?family=Mukta);@-webkit-keyframes centa-fade-in {
+@import url(https://fonts.googleapis.com/css?family=Mukta);.centum {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.centum .cell {
+  display: block;
+  padding: 10px;
+  width: 100%;
+  word-wrap: normal;
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x90 {
+    max-width: 90%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x80 {
+    max-width: 80%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x75 {
+    max-width: 75%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x70 {
+    max-width: 70%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x60 {
+    max-width: 60%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x50 {
+    max-width: 50%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x40 {
+    max-width: 40%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x33 {
+    max-width: 33.33%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x30 {
+    max-width: 30%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x25 {
+    max-width: 25%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x20 {
+    max-width: 20%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x10 {
+    max-width: 10%;
+  }
+}
+
+.centum [class*="shift+"] {
+  unicode-bidi: normal;
+}
+
+@media only screen and (min-width: 768px) {
+  .centum [class*="shift+"] {
+    unicode-bidi: -webkit-isolate;
+    unicode-bidi: -moz-isolate;
+    unicode-bidi: isolate;
+  }
+}
+
+@-webkit-keyframes centa-fade-in {
   0% {
     opacity: 0;
   }
@@ -235,104 +333,6 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
   margin-left: 10px;
 }
 
-.centum {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.centum .cell {
-  display: block;
-  padding: 10px;
-  width: 100%;
-  word-wrap: normal;
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x90 {
-    max-width: 90%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x80 {
-    max-width: 80%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x75 {
-    max-width: 75%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x70 {
-    max-width: 70%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x60 {
-    max-width: 60%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x50 {
-    max-width: 50%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x40 {
-    max-width: 40%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x33 {
-    max-width: 33.33%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x30 {
-    max-width: 30%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x25 {
-    max-width: 25%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x20 {
-    max-width: 20%;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .centum .x10 {
-    max-width: 10%;
-  }
-}
-
-.centum [class*="shift+"] {
-  unicode-bidi: normal;
-}
-
-@media only screen and (min-width: 768px) {
-  .centum [class*="shift+"] {
-    unicode-bidi: -webkit-isolate;
-    unicode-bidi: -moz-isolate;
-    unicode-bidi: isolate;
-  }
-}
-
 .spacer-d {
   flex-grow: 1;
   display: none;
@@ -355,58 +355,70 @@ nav .nav-links-container .nav-links .fas.fa-caret-down {
   }
 }
 
-.p0 {
+.centum.p0,
+.cell.p0 {
   padding: 0;
 }
 
-.p5 {
+.centum.p5,
+.cell.p5 {
   padding: 5px;
 }
 
-.p10 {
+.centum.p10,
+.cell.p10 {
   padding: 10px;
 }
 
-.p15 {
+.centum.p15,
+.cell.p15 {
   padding: 15px;
 }
 
-.ph0 {
+.centum.ph0,
+.cell.ph0 {
   padding-left: 0;
   padding-right: 0;
 }
 
-.ph5 {
+.centum.ph5,
+.cell.ph5 {
   padding-left: 5px;
   padding-right: 5px;
 }
 
-.ph10 {
+.centum.ph10,
+.cell.ph10 {
   padding-left: 10px;
   padding-right: 10px;
 }
 
-.ph15 {
+.centum.ph15,
+.cell.ph15 {
   padding-left: 15px;
   padding-right: 15px;
 }
 
-.pv0 {
+.centum.pv0,
+.cell.pv0 {
   padding-top: 0;
   padding-bottom: 0;
 }
 
-.pv5 {
+.centum.pv5,
+.cell.pv5 {
   padding-top: 5px;
   padding-bottom: 5px;
 }
 
-.pv10 {
+.centum.pv10,
+.cell.pv10 {
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
-.pv15 {
+.centum.pv15,
+.cell.pv15 {
   padding-top: 15px;
   padding-bottom: 15px;
 }

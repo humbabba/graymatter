@@ -19,8 +19,8 @@
                             <p>Wonderful.</p>
                             <p>Place.</p>
                         </div>
-                        <div class="cell x100 pv0 ph5">
-                          <div class="cell border-basic">
+                        <div class="cell x100 p0 border-basic">
+                          <div class="cell">
                               <p>Beautiful.</p>
                               <p>Face.</p>
                             </div>
