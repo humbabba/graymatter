@@ -7,7 +7,7 @@ shifts.attr('data-original-position',function() {
 checkForShifts();
 
 function checkForShifts() {
-  //Confirm elements are Graymatter shifts, then process
+  //Confirm elements are Centa shifts, then process
   if(shifts.length) {
     shifts.each(function(index,element) {
       let el = $(element);

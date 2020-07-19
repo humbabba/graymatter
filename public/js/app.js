@@ -30218,7 +30218,7 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 __webpack_require__(/*! ./script */ "./resources/js/script.js");
 
-__webpack_require__(/*! ./graymatter/graymatter */ "./resources/js/graymatter/graymatter.js");
+__webpack_require__(/*! ./centa/centa */ "./resources/js/centa/centa.js");
 
 /***/ }),
 
@@ -30246,10 +30246,23 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 
 /***/ }),
 
-/***/ "./resources/js/graymatter/components/nav.js":
-/*!***************************************************!*\
-  !*** ./resources/js/graymatter/components/nav.js ***!
-  \***************************************************/
+/***/ "./resources/js/centa/centa.js":
+/*!*************************************!*\
+  !*** ./resources/js/centa/centa.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(/*! ./components/nav */ "./resources/js/centa/components/nav.js");
+
+__webpack_require__(/*! ./components/shift */ "./resources/js/centa/components/shift.js");
+
+/***/ }),
+
+/***/ "./resources/js/centa/components/nav.js":
+/*!**********************************************!*\
+  !*** ./resources/js/centa/components/nav.js ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -30336,10 +30349,10 @@ function addWindowClickHandler(el) {
 
 /***/ }),
 
-/***/ "./resources/js/graymatter/components/shift.js":
-/*!*****************************************************!*\
-  !*** ./resources/js/graymatter/components/shift.js ***!
-  \*****************************************************/
+/***/ "./resources/js/centa/components/shift.js":
+/*!************************************************!*\
+  !*** ./resources/js/centa/components/shift.js ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -30350,7 +30363,7 @@ shifts.attr('data-original-position', function () {
 checkForShifts();
 
 function checkForShifts() {
-  //Confirm elements are Graymatter shifts, then process
+  //Confirm elements are Centa shifts, then process
   if (shifts.length) {
     shifts.each(function (index, element) {
       var el = $(element);
@@ -30412,19 +30425,6 @@ function cellShift(el, degree) {
     }
   }
 }
-
-/***/ }),
-
-/***/ "./resources/js/graymatter/graymatter.js":
-/*!***********************************************!*\
-  !*** ./resources/js/graymatter/graymatter.js ***!
-  \***********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(/*! ./components/nav */ "./resources/js/graymatter/components/nav.js");
-
-__webpack_require__(/*! ./components/shift */ "./resources/js/graymatter/components/shift.js");
 
 /***/ }),
 
