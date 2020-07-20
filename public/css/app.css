@@ -274,12 +274,40 @@ h1.pv15 {
   text-align: center;
 }
 
+@media only screen and (min-width: 768px) {
+  .cell.align-center-d {
+    text-align: center;
+  }
+}
+
+.cell.align-center-m {
+  text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+  .cell.align-center-m {
+    text-align: initial;
+  }
+}
+
 .cell.align-right {
   text-align: right;
 }
 
-.cell.align-left {
-  text-align: left;
+@media only screen and (min-width: 768px) {
+  .cell.align-right-d {
+    text-align: right;
+  }
+}
+
+.cell.align-right-m {
+  text-align: right;
+}
+
+@media only screen and (min-width: 768px) {
+  .cell.align-right-m {
+    text-align: initial;
+  }
 }
 
 * {
@@ -359,6 +387,12 @@ h1 {
   padding: 0 10px;
   margin-bottom: 10px;
   width: 100%;
+}
+
+.cell form input[type=email].is-invalid,
+.cell form input[type=password].is-invalid,
+.cell form input[type=text].is-invalid {
+  border: 1px solid #b30000;
 }
 
 .cell form input[type=checkbox] {

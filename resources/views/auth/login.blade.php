@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
   <div class="centum">
-     <div class="cell x50 center">
+     <div class="cell x30 center">
         <h1 class="pv15">{{ __('Log in') }}</h1>
         @error('email')
           <div class="alert error">
@@ -27,12 +27,12 @@
           </div>
 
            <div class="centum">
-              <div class="cell p0">
+              <div class="cell p0 x20">
                  <button type="submit" class="btn btn-primary">
                  {{ __('Go') }}
                  </button>
                </div>
-               <div class="cell ph0">
+               <div class="cell ph0 x80 align-right-d">
                  @if (Route::has('password.request'))
                    <a href="{{ route('password.request') }}">
                    {{ __('Forgot your password?') }}

@@ -77,10 +77,29 @@ h1
   &.align-center {
     text-align: center;
   }
+  &.align-center-d {
+    @media only screen and (min-width: $break) {
+      text-align: center;
+    }
+  }
+  &.align-center-m {
+    text-align: center;
+    @media only screen and (min-width: $break) {
+      text-align: initial;
+    }
+  }
   &.align-right {
     text-align: right;
   }
-  &.align-left {
-    text-align: left;
+  &.align-right-d {
+    @media only screen and (min-width: $break) {
+      text-align: right;
+    }
+  }
+  &.align-right-m {
+    text-align: right;
+    @media only screen and (min-width: $break) {
+      text-align: initial;
+    }
   }
 }
