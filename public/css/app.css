@@ -13,8 +13,20 @@
 }
 
 @media only screen and (min-width: 768px) {
+  .centum .x95 {
+    max-width: 95%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
   .centum .x90 {
     max-width: 90%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x85 {
+    max-width: 85%;
   }
 }
 
@@ -37,8 +49,20 @@
 }
 
 @media only screen and (min-width: 768px) {
+  .centum .x65 {
+    max-width: 65%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
   .centum .x60 {
     max-width: 60%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x55 {
+    max-width: 55%;
   }
 }
 
@@ -49,8 +73,20 @@
 }
 
 @media only screen and (min-width: 768px) {
+  .centum .x45 {
+    max-width: 45%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
   .centum .x40 {
     max-width: 40%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x35 {
+    max-width: 35%;
   }
 }
 
@@ -367,6 +403,7 @@ p:last-child {
 h1 {
   font-size: 2rem;
   font-weight: 800;
+  line-height: 2rem;
   margin: 10px 0;
 }
 

@@ -10,9 +10,19 @@
     width: 100%;
     word-wrap: normal;
   }
+  .x95 {
+    @media only screen and (min-width: $break) {
+      max-width: 95%;
+    }
+  }
   .x90 {
     @media only screen and (min-width: $break) {
       max-width: 90%;
+    }
+  }
+  .x85 {
+    @media only screen and (min-width: $break) {
+      max-width: 85%;
     }
   }
   .x80 {
@@ -30,9 +40,19 @@
       max-width: 70%;
     }
   }
+  .x65 {
+    @media only screen and (min-width: $break) {
+      max-width: 65%;
+    }
+  }
   .x60 {
     @media only screen and (min-width: $break) {
       max-width: 60%;
+    }
+  }
+  .x55 {
+    @media only screen and (min-width: $break) {
+      max-width: 55%;
     }
   }
   .x50 {
@@ -40,9 +60,19 @@
       max-width: 50%;
     }
   }
+  .x45 {
+    @media only screen and (min-width: $break) {
+      max-width: 45%;
+    }
+  }
   .x40 {
     @media only screen and (min-width: $break) {
       max-width: 40%;
+    }
+  }
+  .x35 {
+    @media only screen and (min-width: $break) {
+      max-width: 35%;
     }
   }
   .x33 {
