@@ -133,26 +133,32 @@
 }
 
 .alert {
+  -webkit-animation: fade-in 0.4s;
+          animation: fade-in 0.4s;
   padding: 5px 10px;
-  border: 1px solid #999999;
   border-radius: 5px;
   font-weight: 900;
   margin: 10px 0;
 }
 
 .alert.error {
-  background-color: #b30000;
+  background-color: #800000;
   color: #f2f2f2;
 }
 
 .alert.success {
-  background-color: #00802b;
+  background-color: #004d1a;
   color: #fff;
 }
 
 .alert.notice {
-  background-color: #002080;
+  background-color: #00134d;
   color: #fff;
+}
+
+.alert .closer {
+  float: right;
+  cursor: pointer;
 }
 
 @-webkit-keyframes fade-in {
@@ -429,7 +435,7 @@ h1 {
 .cell form input[type=email].is-invalid,
 .cell form input[type=password].is-invalid,
 .cell form input[type=text].is-invalid {
-  border: 1px solid #b30000;
+  border: 1px solid #800000;
 }
 
 .cell form input[type=checkbox] {

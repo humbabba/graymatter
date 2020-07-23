@@ -30253,9 +30253,32 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(/*! ./components/alerts */ "./resources/js/centa/components/alerts.js");
+
 __webpack_require__(/*! ./components/nav */ "./resources/js/centa/components/nav.js");
 
 __webpack_require__(/*! ./components/shift */ "./resources/js/centa/components/shift.js");
+
+/***/ }),
+
+/***/ "./resources/js/centa/components/alerts.js":
+/*!*************************************************!*\
+  !*** ./resources/js/centa/components/alerts.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var alerts = $('.alert');
+alerts.each(function (index, el) {
+  var alert = $(el);
+  var closer = $('<span>');
+  closer.addClass('closer');
+  closer.html('<i class="fas fa-times"></i>');
+  alert.prepend(closer);
+  alert.on('click', function () {
+    alert.fadeOut(400);
+  });
+});
 
 /***/ }),
 

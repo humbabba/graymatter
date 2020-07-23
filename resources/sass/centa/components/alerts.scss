@@ -1,6 +1,6 @@
 .alert {
+  animation: fade-in 0.4s;
   padding: $padding-small $padding-base;
-  border: 1px solid $secondary;
   border-radius: $border-radius-base;
   font-weight: 900;
   margin: $margin-base 0;
@@ -15,5 +15,9 @@
   &.notice {
     background-color: $blue;
     color: $white;
+  }
+  .closer {
+    float: right;
+    cursor: pointer;
   }
 }
