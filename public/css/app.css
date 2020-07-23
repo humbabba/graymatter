@@ -155,7 +155,7 @@
   color: #fff;
 }
 
-@-webkit-keyframes centa-fade-in {
+@-webkit-keyframes fade-in {
   0% {
     opacity: 0;
   }
@@ -165,7 +165,7 @@
   }
 }
 
-@keyframes centa-fade-in {
+@keyframes fade-in {
   0% {
     opacity: 0;
   }
@@ -506,8 +506,8 @@ nav .nav-links-container {
 
 nav .nav-links-container.nav-mobile-show {
   display: block;
-  -webkit-animation: centa-fade-in 0.4s;
-          animation: centa-fade-in 0.4s;
+  -webkit-animation: fade-in 0.4s;
+          animation: fade-in 0.4s;
 }
 
 @media only screen and (min-width: 768px) {
@@ -604,8 +604,8 @@ nav .nav-links-container .nav-links ul .nav-links-dropdown ul.nav-links-dropdown
 
 nav .nav-links-container .nav-links ul .nav-links-dropdown ul.nav-links-dropdown-submenu.nav-links-show {
   display: block;
-  -webkit-animation: centa-fade-in 0.4s;
-          animation: centa-fade-in 0.4s;
+  -webkit-animation: fade-in 0.4s;
+          animation: fade-in 0.4s;
 }
 
 nav .nav-links-container .nav-links .fas.fa-caret-down {

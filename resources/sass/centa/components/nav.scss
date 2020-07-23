@@ -47,7 +47,7 @@ nav {
     }
     &.nav-mobile-show {
       display: block;
-      animation: centa-fade-in 0.4s;
+      animation: fade-in 0.4s;
       @media only screen and (min-width: $break) {
         display: none;
       }
@@ -128,7 +128,7 @@ nav {
             display: none;
             &.nav-links-show {
               display: block;
-              animation: centa-fade-in 0.4s;
+              animation: fade-in 0.4s;
             }
           }
         }
