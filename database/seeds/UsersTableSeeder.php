@@ -14,13 +14,14 @@ class UsersTableSeeder extends Seeder
     {
         /*
          * Add default user
-         *
          */
         if (User::where('email', '=', 'admin@admin.com')->first() === null) {
             $newUser = User::create([
-                'name'     => 'Admin',
-                'email'    => 'admin@admin.com',
+                'name'     => 'Default',
+                'email'    => 'default@example.com',
                 'password' => bcrypt('password'),
+                'email_verified_at' => date('Y-m-d H:i:s'),
+                'role' => 'admin',
             ]);
         }
     }

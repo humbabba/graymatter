@@ -21,6 +21,19 @@
             </ul>
           </li>
         @endguest
+        @admin
+          <li class="nav-links-dropdown">
+            <a>Admin <i class="fas fa-caret-down"></i></a>
+            <ul class="nav-links-dropdown-submenu">
+              <li>
+                <a href="/forecast">Users</a>
+              </li>
+              <li>
+                <a href="/radar">Settings</a>
+              </li>
+            </ul>
+          </li>
+        @endadmin
       </ul>
       <ul class="nav-links-secondary">
         @guest
