@@ -1,23 +1,22 @@
-//Spacers and padding
-.spacer-d { //Spacer desktop
-  flex-grow: 1;
-  display: none;
-  @media only screen and (min-width: $break) {
-    display: block;
-  }
-}
-.spacer-m { //Spacer mobile
-  flex-grow: 1;
-  display: block;
-  @media only screen and (min-width: $break) {
-    display: none;
-  }
-}
-
 .centum,
 .cell,
 h1
  {
+   //Spacers and padding
+   &.spacer-d { //Spacer desktop
+     flex-grow: 1;
+     display: none;
+     @media only screen and (min-width: $break) {
+       display: block;
+     }
+   }
+   &.spacer-m { //Spacer mobile
+     flex-grow: 1;
+     display: block;
+     @media only screen and (min-width: $break) {
+       display: none;
+     }
+   }
   &.p0 {
     padding: 0;
   }
@@ -29,6 +28,9 @@ h1
   }
   &.p15 {
     padding: 15px;
+  }
+  &.p20 {
+    padding: 20px;
   }
   &.ph0 {
     padding-left: 0;
@@ -46,6 +48,10 @@ h1
     padding-left: 15px;
     padding-right: 15px;
   }
+  &.ph20 {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
   &.pv0 {
     padding-top: 0;
     padding-bottom: 0;
@@ -61,6 +67,10 @@ h1
   &.pv15 {
     padding-top: 15px;
     padding-bottom: 15px;
+  }
+  &.pv20 {
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
 }
 

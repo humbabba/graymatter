@@ -13,21 +13,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Auth::routes(['verify' => true]);
+
+// Apply verified middleware to most routes
+Route::middleware('verified')->group(function() {
+
+  //User stuff
+  Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+
+  //Admin stuff
+  Route::get('/info', function () {
+      return view('info');
+  })->middleware('role:admin')->name('info');
+
+  Route::resource('users', 'UserController')->only([
+    'index', 'create', 'edit', 'destroy'
+  ])->middleware('role:admin');
+
+  //Access denied
+  Route::get('/not_authorized', function () {
+      return view('not_authorized');
+  })->name('not_authorized');
+
+});
+
+//Public routes
 Route::get('/', function () {
     return view('home');
 })->name('home');
-
-Auth::routes(['verify' => true]);
-
-//User stuff
-Route::get('/dashboard', 'DashboardController@index')->name('dashboard')->middleware('verified');
-
-//Admin stuff
-Route::get('/info', function () {
-    return view('info');
-})->middleware('verified','role:admin')->name('info');
-
-//Access denied
-Route::get('/not_authorized', function () {
-    return view('not_authorized');
-})->name('not_authorized');

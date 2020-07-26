@@ -1,0 +1,28 @@
+.centum,
+.cell,
+span {
+  &.header-d {
+    display: none;
+    @media only screen and (min-width: $break) {
+      display: block;
+      font-weight: 900;
+    }
+  }
+  &.header-m {
+    display: inline;
+    font-weight: 900;
+    @media only screen and (min-width: $break) {
+      display: none;
+    }
+  }
+  &.striped-even {
+    &:nth-child(even) {
+      background-color: $stripe;
+    }
+  }
+  &.striped-odd {
+    &:nth-child(odd) {
+      background-color: $stripe;
+    }
+  }
+}

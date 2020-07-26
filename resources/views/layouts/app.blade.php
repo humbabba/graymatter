@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name') }}</title>
+    <title>{{ config('app.name') }} - @yield('view_title')</title>
 
     <!-- Styles -->
     <link href="{{ asset('css/fontawesome/all.min.css') }}" rel="stylesheet">
@@ -16,7 +16,7 @@
 </head>
 <body>
     <div id="app">
-        <nav>
+        <nav class="main">
           @include('partials.nav')
         </nav>
 
@@ -31,6 +31,6 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}?v={{ getVersion() }}"></script>
-    
+
 </body>
 </html>

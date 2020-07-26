@@ -1,140 +1,179 @@
 nav {
-  background-color: $primary;
-  color: $fc-light;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-content: center;
-  font-size: $fs-big;
-  height: $nav-height;
-  line-height: $nav-height;
-  padding: 0px $padding-base;
-  white-space: nowrap;
-  z-index: 100;
-
-  a {
+  &.main {
+    background-color: $primary;
     color: $fc-light;
-    text-decoration: none;
-    &:hover {
-      color: $fc-light;
-    }
-  }
-
-  .brand {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-content: center;
-    font-size: $fs-bigger;
-  }
+    font-size: $fs-big;
+    height: $nav-height;
+    line-height: $nav-height;
+    padding: 0px $padding-base;
+    white-space: nowrap;
+    z-index: 100;
 
-  .nav-hamburger {
-    cursor: pointer;
-    font-size: $fs-biggest;
-    @media only screen and (min-width: $break) {
-      display: none;
+    a {
+      color: $fc-light;
+      text-decoration: none;
+      &:hover {
+        color: $fc-light;
+      }
     }
-  }
 
-  .nav-links-container {
-    display: none;
-    @media only screen and (min-width: $break) {
-      display: block;
-      padding-left: $padding-base;
-      width: 100%;
+    .brand {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: center;
+      font-size: $fs-bigger;
     }
-    &.nav-mobile-show {
-      display: block;
-      animation: fade-in 0.4s;
+
+    .nav-hamburger {
+      cursor: pointer;
+      font-size: $fs-biggest;
       @media only screen and (min-width: $break) {
         display: none;
       }
     }
-    .nav-links {
-      background-color: $primary;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      opacity: 0.9;
-      position: absolute;
-      top: $nav-height;
-      right: 0;
+
+    .nav-links-container {
+      display: none;
       @media only screen and (min-width: $break) {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        height: $nav-height;
-        opacity: 1;
-        position: static;
+        display: block;
+        padding-left: $padding-base;
+        width: 100%;
       }
-      ul {
-        line-height: $lh-bigger;
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
+      &.nav-mobile-show {
+        display: block;
+        animation: fade-in 0.4s;
         @media only screen and (min-width: $break) {
-          display: flex;
+          display: none;
+        }
+      }
+      .nav-links {
+        background-color: $primary;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        opacity: 0.9;
+        position: absolute;
+        top: $nav-height;
+        right: 0;
+        @media only screen and (min-width: $break) {
           flex-direction: row;
           flex-wrap: nowrap;
-          justify-content: flex-start;
+          justify-content: space-between;
+          height: $nav-height;
+          opacity: 1;
+          position: static;
         }
-        li {
-          a {
+        ul {
+          line-height: $lh-bigger;
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          @media only screen and (min-width: $break) {
             display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
             justify-content: flex-start;
-            align-items: center;
-            height: $nav-height;
-            width: 100%;
-            padding: $padding-base;
-            &:hover {
-              background-color: $secondary;
+          }
+          li {
+            a {
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              height: $nav-height;
+              width: 100%;
+              padding: $padding-base;
+              &:hover {
+                background-color: $secondary;
+              }
             }
           }
-        }
-        .nav-links-dropdown {
-          cursor: pointer;
-          z-index: 1000;
-          .nav-links-dropdown-submenu {
-            background-color: $secondary;
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            font-size: $fs-base;
-            @media only screen and (min-width: $break) {
-              display: flex;
-              flex-direction: column;
-              flex-wrap: nowrap;
-              justify-content: flex-start;
+          .nav-links-dropdown {
+            cursor: pointer;
+            z-index: 1000;
+            .nav-links-dropdown-submenu {
+              background-color: $secondary;
+              list-style-type: none;
+              margin: 0;
+              padding: 0;
+              font-size: $fs-base;
+              @media only screen and (min-width: $break) {
+                display: flex;
+                flex-direction: column;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+              }
+              li {
+                a {
+                  &:hover {
+                    background-color: $primary;
+                  }
+                }
+              }
             }
-            li {
-              a {
+            &.nav-links-dropdown-open {
+              a{
                 &:hover {
                   background-color: $primary;
                 }
               }
             }
-          }
-          &.nav-links-dropdown-open {
-            a{
-              &:hover {
-                background-color: $primary;
+            ul.nav-links-dropdown-submenu {
+              display: none;
+              &.nav-links-show {
+                display: block;
+                animation: fade-in 0.4s;
               }
             }
           }
-          ul.nav-links-dropdown-submenu {
-            display: none;
-            &.nav-links-show {
-              display: block;
-              animation: fade-in 0.4s;
+        }
+        .fas.fa-caret-down {
+          margin-left: $margin-small;
+        }
+      }
+    }
+  }
+
+  /*For pagination*/
+  ul {
+    &.pagination {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      li {
+        &.page-item {
+          background-color: $primary;
+          border-radius: $border-radius-base;
+          color: $fc-light;
+          padding: $padding-tiny $padding-base;
+          margin: 0 $margin-small;
+          &.active {
+            background-color: $white;
+            border: 1px solid $primary;
+            color: $fc-base;
+          }
+          &.disabled {
+            background-color: $secondary;
+            color: $fc-base;
+            cursor: not-allowed;
+          }
+          a {
+            &.page-link {
+              color: $fc-light;
+              text-decoration: none;
             }
           }
         }
-      }
-      .fas.fa-caret-down {
-        margin-left: $margin-small;
       }
     }
   }

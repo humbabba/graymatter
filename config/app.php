@@ -13,10 +13,13 @@ return [
     |
     | The version number here is used in the footer and for script versions in the code.
     |
+    | The admin email is where system notices will be sent.
+    |
     */
 
     'name' => env('APP_NAME', 'Graymatter'),
     'version' => '0.0.1',
+    'admin_email' => env('ADMIN_EMAIL','admin@example.com'),
 
     /*
     |--------------------------------------------------------------------------
