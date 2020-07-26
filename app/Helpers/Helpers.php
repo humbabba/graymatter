@@ -5,7 +5,7 @@
     {
       switch(config('app.env')) {
         case 'production':
-          return config('app.version');
+          return config('app.copyright.version');
           break;
         default:
           return time();
@@ -13,3 +13,15 @@
       }
     }
   }
+
+    if (!function_exists('getCopyrightYear')) {
+      function getCopyrightYear()
+      {
+        $currentYear = date('Y');
+        $copyrightYear = config('app.copyright.year');
+        if($copyrightYear < $currentYear) {
+          return $copyrightYear . ' - ' . $currentYear;
+        }
+        return $currentYear;
+      }
+    }

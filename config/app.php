@@ -13,8 +13,23 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Sublogical Endeavors'),
-    'version' => '0.0.1',
+    'name' => env('APP_NAME', 'Graymatter'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Copyright info
+    |--------------------------------------------------------------------------
+    |
+    | Values for the copyright notice in the app footer.
+    |
+    */
+
+    'copyright' => [
+      'version' => env('COPYRIGHT_VERSION', '1.0.0'),
+      'by' => env('COPYRIGHT_BY', 'Jane Doe'),
+      'link' => env('COPYRIGHT_LINK', 'https://www.example.com'),
+      'year' => env('COPYRIGHT_YEAR', '1996'),
+    ],
 
     /*
     |--------------------------------------------------------------------------

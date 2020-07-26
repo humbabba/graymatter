@@ -1,1 +1,1 @@
-v{{ config('app.version') }} - Copyright 2020 - <a href="https://humbabba.com" target="_new">Charles D. Gray</a>
+v{{ config('app.copyright.version') }} | Copyright {{ getCopyrightYear() }} | <a href="{{ config('app.copyright.link') }}" target="_new">{{ config('app.copyright.by') }}</a>
