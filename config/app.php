@@ -11,9 +11,12 @@ return [
     | framework needs to place the application's name in a notification or
     | any other location as required by the application or its packages.
     |
+    | The version number here is used in the footer and for script versions in the code.
+    |
     */
 
     'name' => env('APP_NAME', 'Graymatter'),
+    'version' => '0.0.1',
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +28,6 @@ return [
     */
 
     'copyright' => [
-      'version' => env('COPYRIGHT_VERSION', '1.0.0'),
       'by' => env('COPYRIGHT_BY', 'Jane Doe'),
       'link' => env('COPYRIGHT_LINK', 'https://www.example.com'),
       'year' => env('COPYRIGHT_YEAR', '1996'),
