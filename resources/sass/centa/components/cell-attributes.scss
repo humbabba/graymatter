@@ -81,7 +81,7 @@ h1
 
 /*Positioning*/
 .cell {
-  &.center {
+  &.center-h {
     margin: auto;
   }
   &.align-center {
@@ -111,5 +111,11 @@ h1
     @media only screen and (min-width: $break) {
       text-align: initial;
     }
+  }
+  span.center-v { //Vertically centers contents of a span within a cell
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
   }
 }

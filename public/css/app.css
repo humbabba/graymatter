@@ -5,11 +5,21 @@
   width: 100%;
 }
 
+.centum > .cell:last-child {
+  padding-bottom: 10px;
+}
+
 .centum .cell {
   display: block;
-  padding: 10px;
+  padding: 10px 10px 0 10px;
   width: 100%;
   word-wrap: normal;
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .cell {
+    padding-bottom: 10px;
+  }
 }
 
 @media only screen and (min-width: 768px) {
@@ -339,7 +349,7 @@ h1.pv20 {
 
 /*Positioning*/
 
-.cell.center {
+.cell.center-h {
   margin: auto;
 }
 
@@ -381,6 +391,13 @@ h1.pv20 {
   .cell.align-right-m {
     text-align: initial;
   }
+}
+
+.cell span.center-v {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
 * {
@@ -458,8 +475,7 @@ h1 {
   border: 1px solid #999999;
   border-radius: 5px;
   line-height: 1.6rem;
-  padding: 0 10px;
-  margin-bottom: 10px;
+  padding: 2px 10px;
   width: 100%;
 }
 
@@ -471,6 +487,10 @@ h1 {
 
 .cell form input[type=checkbox] {
   margin: 0 0 15px 0;
+}
+
+.cell form.input-spacing > input {
+  margin-bottom: 10px;
 }
 
 a {
@@ -666,7 +686,13 @@ nav ul.pagination li.page-item {
   background-color: #595959;
   border-radius: 5px;
   color: #f2f2f2;
-  padding: 2px 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  line-height: 1.6rem;
+  padding: 0 10px;
   margin: 0 5px;
 }
 
@@ -674,6 +700,7 @@ nav ul.pagination li.page-item.active {
   background-color: #fff;
   border: 1px solid #595959;
   color: #595959;
+  cursor: not-allowed;
 }
 
 nav ul.pagination li.page-item.disabled {

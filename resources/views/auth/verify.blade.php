@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="centum">
-     <div class="cell x30 center">
+     <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Verify your email address') }}</h1>
         @if (session('resent'))
           <div class="alert success">

@@ -7,6 +7,22 @@
     <div class="centum ph10">
       <h1>@yield('view_title')</h1>
     </div>
+
+    {{-- Begin search filters --}}
+    <div class="cell p0">
+      <form action="" method="post">
+        <div class="centum border-basic">
+          <div class="cell x25">
+            <input type="text" name="search" placeholder="Name, email, ID" />
+          </div>
+          <div class="cell x25">
+            <input type="submit" class="btn" value="Search" />
+          </div>
+        </div>
+      </form>
+    </div>
+    {{-- End search filters --}}
+
     {{-- Begin desktop header --}}
     <div class="centum">
       <div class="cell x25 header-d">
@@ -28,18 +44,18 @@
         <div class="centum striped-even">
           <div class="cell x25">
             <span class="header-m">Username:</span>
-            {{ $user->name }}
+            <span class="center-v">{{ $user->name }}</span>
             @if($user->email_verified_at)
               <i class="fas fa-check" title="Verified"></i>
             @endif
           </div>
           <div class="cell x25">
             <span class="header-m">Email:</span>
-            <a href="mailto:{{ $user->email }}">{{ $user->email }}</a>
+            <span class="center-v"><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></span>
           </div>
           <div class="cell x25">
             <span class="header-m">Role:</span>
-            {{ $user->getRole() }}
+            <span class="center-v">{{ $user->getRole() }}</span>
           </div>
           <div class="cell x25">
             <input type="submit" class="btn" value="Edit"/>

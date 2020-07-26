@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="centum">
-     <div class="cell x30 center">
+     <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Reset password') }}</h1>
         @error('email')
           <div class="alert error">
@@ -14,7 +14,7 @@
             <strong>{{ $message }}</strong>
           </div>
         @enderror
-        <form method="POST" action="{{ route('password.update') }}">
+        <form class="input-spacing" method="POST" action="{{ route('password.update') }}">
           @csrf
           <input type="hidden" name="token" value="{{ $token }}">
           <label for="email">{{ __('Email address') }}</label>

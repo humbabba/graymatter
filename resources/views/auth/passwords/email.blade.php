@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="centum">
-     <div class="cell x30 center">
+     <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Send password-reset link') }}</h1>
         @error('email')
           <div class="alert error">
@@ -14,7 +14,7 @@
               {{ session('status') }}
           </div>
         @endif
-        <form method="POST" action="{{ route('password.email') }}">
+        <form class="input-spacing" method="POST" action="{{ route('password.email') }}">
           @csrf
           <label for="email">{{ __('Email address') }}</label>
           <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>

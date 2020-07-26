@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="centum">
-     <div class="cell x30 center">
+     <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Confirm password') }}</h1>
         @error('password')
           <div class="alert error">
@@ -10,7 +10,7 @@
           </div>
         @enderror
         <p>{{ __('Please confirm your password before continuing.') }}</p>
-        <form method="POST" action="{{ route('password.confirm') }}">
+        <form class="input-spacing" method="POST" action="{{ route('password.confirm') }}">
           @csrf
           <label for="email">{{ __('Password') }}</label>
           <input id="password" type="password" class="@error('password') is-invalid @enderror" name="password" required autocomplete="current-password" autofocus>

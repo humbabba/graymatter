@@ -13,8 +13,7 @@
       border: 1px solid $secondary;
       border-radius: $border-radius-base;
       line-height: $lh-base;
-      padding: 0 $padding-base;
-      margin-bottom: $margin-base;
+      padding: $padding-tiny $padding-base;
       width: 100%;
       &.is-invalid {
         border: 1px solid $red;
@@ -24,6 +23,10 @@
     input[type="checkbox"] {
       margin: 0 0 15px 0;
     }
-
+    &.input-spacing {
+      & > input {
+        margin-bottom: $margin-base;
+      }
+    }
   }
 }

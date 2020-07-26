@@ -4,11 +4,19 @@
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
+  & > .cell {
+    &:last-child {
+      padding-bottom: $padding-base;
+    }
+  }
   .cell {
     display: block;
-    padding: 10px;
+    padding: $padding-base $padding-base 0 $padding-base;
     width: 100%;
     word-wrap: normal;
+    @media only screen and (min-width: $break) {
+      padding-bottom: $padding-base;
+    }
   }
   .x95 {
     @media only screen and (min-width: $break) {

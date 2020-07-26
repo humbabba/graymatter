@@ -155,12 +155,19 @@ nav {
           background-color: $primary;
           border-radius: $border-radius-base;
           color: $fc-light;
-          padding: $padding-tiny $padding-base;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          font-size: $fs-big;
+          line-height: $lh-base;
+          padding: 0 $padding-base;
           margin: 0 $margin-small;
           &.active {
             background-color: $white;
             border: 1px solid $primary;
             color: $fc-base;
+            cursor: not-allowed;
           }
           &.disabled {
             background-color: $secondary;
