@@ -25,7 +25,7 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard')->middle
 //Admin stuff
 Route::get('/info', function () {
     return view('info');
-})->middleware('role:admin')->name('info');
+})->middleware('verified','role:admin')->name('info');
 
 //Access denied
 Route::get('/not_authorized', function () {
