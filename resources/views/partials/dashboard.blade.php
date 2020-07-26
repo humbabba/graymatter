@@ -12,6 +12,7 @@
                   <div class="centum">
                     <div class="cell x60">
                       <p>Welcome.</p>
+                      <p><a href="{{ route('info') }}">Info</a></p>
                     </div>
                     <div class="cell x20 spacer-d">
                     </div>

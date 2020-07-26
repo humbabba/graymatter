@@ -15,8 +15,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
 Auth::routes(['verify' => true]);
 
+//User stuff
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard')->middleware('verified');
+
+//Admin stuff
+Route::get('/info', function () {
+    return view('info');
+})->middleware('role:admin')->name('info');
+
+//Access denied
+Route::get('/not_authorized', function () {
+    return view('not_authorized');
+})->name('not_authorized');

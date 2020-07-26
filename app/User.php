@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Roles\UserRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -43,8 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasRole($role)
     {
-        $userRole = $this->getRole();
-        $allowed = Roles::getAllowedRoles($role);
+        $allowed = UserRoles::getAllowedRoles($this->getRole());
         if(in_array($role,$allowed)) {
           return true;
         }

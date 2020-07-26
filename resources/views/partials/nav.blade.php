@@ -21,19 +21,19 @@
             </ul>
           </li>
         @endguest
-        @admin
+        @role('admin')
           <li class="nav-links-dropdown">
             <a>Admin <i class="fas fa-caret-down"></i></a>
             <ul class="nav-links-dropdown-submenu">
               <li>
-                <a href="/forecast">Users</a>
+                <a href="/users">Users</a>
               </li>
               <li>
                 <a href="/radar">Settings</a>
               </li>
             </ul>
           </li>
-        @endadmin
+        @endrole
       </ul>
       <ul class="nav-links-secondary">
         @guest
