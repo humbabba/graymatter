@@ -13,8 +13,7 @@
     input[type="text"] {
       border: 1px solid $secondary;
       border-radius: $border-radius-base;
-      height: 100%;
-      max-height: $lh-big;
+      height: $lh-big;
       padding: 0 $padding-base;
       width: 100%;
       &.is-invalid {
