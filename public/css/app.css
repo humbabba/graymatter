@@ -125,8 +125,20 @@
 }
 
 @media only screen and (min-width: 768px) {
+  .centum .x15 {
+    max-width: 15%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
   .centum .x10 {
     max-width: 10%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .centum .x5 {
+    max-width: 5%;
   }
 }
 
@@ -200,8 +212,9 @@ button,
   cursor: pointer;
   display: inline;
   font-weight: 900;
-  line-height: 1.6rem;
-  padding: 2px 10px;
+  height: 100%;
+  max-height: 1.8rem;
+  padding: 0 10px;
   text-transform: uppercase;
 }
 
@@ -471,16 +484,19 @@ h1 {
 
 .cell form input[type=email],
 .cell form input[type=password],
+.cell form input[type=search],
 .cell form input[type=text] {
   border: 1px solid #999999;
   border-radius: 5px;
-  line-height: 1.6rem;
-  padding: 2px 10px;
+  height: 100%;
+  max-height: 1.8rem;
+  padding: 0 10px;
   width: 100%;
 }
 
 .cell form input[type=email].is-invalid,
 .cell form input[type=password].is-invalid,
+.cell form input[type=search].is-invalid,
 .cell form input[type=text].is-invalid {
   border: 1px solid #800000;
 }
@@ -491,6 +507,19 @@ h1 {
 
 .cell form.input-spacing > input {
   margin-bottom: 10px;
+}
+
+.cell form select {
+  border: 1px solid #999999;
+  border-radius: 5px;
+  height: 100%;
+  max-height: 1.8rem;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.cell form select.is-invalid {
+  border: 1px solid #800000;
 }
 
 a {
@@ -692,26 +721,40 @@ nav ul.pagination li.page-item {
   align-items: center;
   font-size: 1.3rem;
   line-height: 1.6rem;
-  padding: 0 10px;
   margin: 0 5px;
+}
+
+nav ul.pagination li.page-item:hover {
+  background-color: #999999;
+}
+
+nav ul.pagination li.page-item:hover a {
+  color: #595959;
 }
 
 nav ul.pagination li.page-item.active {
   background-color: #fff;
   border: 1px solid #595959;
   color: #595959;
+  padding: 0 10px;
   cursor: not-allowed;
 }
 
 nav ul.pagination li.page-item.disabled {
   background-color: #999999;
   color: #595959;
+  padding: 0 10px;
   cursor: not-allowed;
 }
 
 nav ul.pagination li.page-item a.page-link {
   color: #f2f2f2;
+  padding: 0 10px;
   text-decoration: none;
+}
+
+nav ul.pagination li.page-item a.page-link:hover {
+  color: #595959;
 }
 
 .centum.header-d,
@@ -725,6 +768,7 @@ span.header-d {
   .cell.header-d,
   span.header-d {
     display: block;
+    font-size: 1.3rem;
     font-weight: 900;
   }
 }

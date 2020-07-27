@@ -103,9 +103,19 @@
       max-width: 20%;
     }
   }
+  .x15 {
+    @media only screen and (min-width: $break) {
+      max-width: 15%;
+    }
+  }
   .x10 {
     @media only screen and (min-width: $break) {
       max-width: 10%;
+    }
+  }
+  .x5 {
+    @media only screen and (min-width: $break) {
+      max-width: 5%;
     }
   }
 

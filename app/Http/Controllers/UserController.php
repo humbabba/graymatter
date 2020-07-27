@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Roles\UserRoles;
 
 class UserController extends Controller
 {
@@ -12,10 +13,31 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        //Deal with filter params
+        $search = $request->get('search');
+        $role = $request->get('role');
+
         $output = new \stdClass();
-        $output->users = User::paginate(2);
+
+        //Users
+        $output->users = User::where(function($query) use($search) {
+          $query->where('name','like','%' . $search . '%')
+            ->orWhere('email','like','%' . $search . '%')
+            ->orWhere('id','=',$search);
+        })
+          ->where(function($query) use($role) {
+            if($role) {
+              $query->where('role','=',$role);
+            }
+          })
+          ->paginate(2);
+
+        //Other output values
+        $output->roles = UserRoles::getRoleList();
+        $output->search = $search;
+
         return view('users.index',compact('output'));
     }
 

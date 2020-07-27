@@ -161,23 +161,34 @@ nav {
           align-items: center;
           font-size: $fs-big;
           line-height: $lh-base;
-          padding: 0 $padding-base;
           margin: 0 $margin-small;
+          &:hover {
+            background-color: $secondary;
+            a {
+              color: $primary;
+            }
+          }
           &.active {
             background-color: $white;
             border: 1px solid $primary;
             color: $fc-base;
+            padding: 0 $padding-base;
             cursor: not-allowed;
           }
           &.disabled {
             background-color: $secondary;
             color: $fc-base;
+            padding: 0 $padding-base;
             cursor: not-allowed;
           }
           a {
             &.page-link {
               color: $fc-light;
+              padding: 0 $padding-base;
               text-decoration: none;
+              &:hover {
+                color: $primary;
+              }
             }
           }
         }

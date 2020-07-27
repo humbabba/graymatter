@@ -5,6 +5,7 @@ span {
     display: none;
     @media only screen and (min-width: $break) {
       display: block;
+      font-size: $fs-big;
       font-weight: 900;
     }
   }
