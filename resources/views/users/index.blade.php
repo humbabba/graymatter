@@ -19,8 +19,9 @@
               <select name="role">
                   <option value="">Filter by role</option>
                 @foreach($output->roles as $index => $value)
-                  <option value="{{ $index }}">{{ $value }}</option>
+                  <option value="{{ $index }}"{{ ($output->role === $index)? ' selected':'' }}>{{ $value }}</option>
                 @endforeach
+                  <option value="">Clear filter</option>
               </select>
             </div>
           <div class="cell x60">

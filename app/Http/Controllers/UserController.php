@@ -37,6 +37,7 @@ class UserController extends Controller
         //Other output values
         $output->roles = UserRoles::getRoleList();
         $output->search = $search;
+        $output->role = $role;
 
         return view('users.index',compact('output'));
     }
