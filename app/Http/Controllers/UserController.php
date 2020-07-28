@@ -38,7 +38,12 @@ class UserController extends Controller
         $output->roles = UserRoles::getRoleList();
         $output->search = $search;
         $output->role = $role;
+        $output->msg = [];
 
+
+        if(0 === $output->users->total()) {
+          $output->msg[] = ['notice' => 'No users found. Try <a href="' . route('users.index') . '">clearing the filters</a>.'];
+        }
         return view('users.index',compact('output'));
     }
 

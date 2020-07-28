@@ -8,6 +8,10 @@
       <h1>@yield('view_title')</h1>
     </div>
 
+    {{-- Begin messages --}}
+    @include('partials.messages')
+    {{-- End messages --}}
+
     {{-- Begin search filters --}}
     <div class="cell p0">
       <form action="" method="get">
@@ -34,22 +38,24 @@
     {{-- End search filters --}}
 
     {{-- Begin desktop header --}}
-    <div class="centum">
-      <div class="cell x10 header-d">
-        ID
-      </div>
-      <div class="cell x25 header-d">
-        Username
-      </div>
-      <div class="cell x25 header-d">
-        Email
-      </div>
-      <div class="cell x15 header-d">
-        Role
-      </div>
-      <div class="cell x25 header-d">
-        Action
-      </div>
+    @if(0 < $output->users->total())
+      <div class="centum">
+        <div class="cell x10 header-d">
+          ID
+        </div>
+        <div class="cell x25 header-d">
+          Username
+        </div>
+        <div class="cell x25 header-d">
+          Email
+        </div>
+        <div class="cell x15 header-d">
+          Role
+        </div>
+        <div class="cell x25 header-d">
+          Action
+        </div>
+      @endif
       {{-- End desktop header --}}
 
       {{-- Begin rows --}}
@@ -68,7 +74,7 @@
           </div>
           <div class="cell x25">
             <span class="header-m">Email:</span>
-            <span class="center-v"><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></span>
+            <span class="center-v"><a href="mailto:{{ $user->email }}" target="_blank">{{ $user->email }}</a></span>
           </div>
           <div class="cell x15">
             <span class="header-m">Role:</span>

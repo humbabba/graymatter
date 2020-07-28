@@ -5,7 +5,7 @@
      <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Confirm password') }}</h1>
         @error('password')
-          <div class="alert error">
+          <div class="alert error" style="display: none">
             {{ $message }}
           </div>
         @enderror

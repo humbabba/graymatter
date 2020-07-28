@@ -30271,11 +30271,12 @@ __webpack_require__(/*! ./components/shift */ "./resources/js/centa/components/s
 var alerts = $('.alert');
 alerts.each(function (index, el) {
   var alert = $(el);
+  alert.fadeIn(400);
   var closer = $('<span>');
   closer.addClass('closer');
   closer.html('<i class="fas fa-times"></i>');
   alert.prepend(closer);
-  alert.on('click', function () {
+  closer.on('click', function () {
     alert.fadeOut(400);
   });
 });

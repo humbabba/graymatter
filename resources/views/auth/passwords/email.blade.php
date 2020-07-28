@@ -5,12 +5,12 @@
      <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Send password-reset link') }}</h1>
         @error('email')
-          <div class="alert error">
+          <div class="alert error" style="display: none">
             {{ $message }}
           </div>
         @enderror
         @if (session('status'))
-          <div class="alert success">
+          <div class="alert success" style="display: none">
               {{ session('status') }}
           </div>
         @endif

@@ -4,12 +4,12 @@
      <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Log in') }}</h1>
         @error('email')
-          <div class="alert error">
+          <div class="alert error" style="display: none">
             {{ $message }}
           </div>
         @enderror
         @error('password')
-          <div class="alert error">
+          <div class="alert error" style="display: none">
             <strong>{{ $message }}</strong>
           </div>
         @enderror

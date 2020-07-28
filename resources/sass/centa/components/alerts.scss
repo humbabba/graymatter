@@ -1,23 +1,27 @@
 .alert {
-  animation: fade-in 0.4s;
   padding: $padding-small $padding-base;
   border-radius: $border-radius-base;
   font-weight: 900;
   margin: $margin-base 0;
+  color: $fc-light;
   &.error {
     background-color: $red;
-    color: $fc-light;
   }
   &.success {
     background-color: $green;
-    color: $white;
   }
   &.notice {
     background-color: $blue;
-    color: $white;
   }
   .closer {
-    float: right;
     cursor: pointer;
+    float: right;
+    margin-left: $margin-base;
+  }
+  a {
+    color: $fc-light;
+    &:hover {
+      color: $fc-less-light;
+    }
   }
 }

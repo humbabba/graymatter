@@ -5,17 +5,17 @@
      <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Register') }}</h1>
         @error('name')
-          <div class="alert error">
+          <div class="alert error" style="display: none">
             {{ $message }}
           </div>
         @enderror
         @error('email')
-          <div class="alert error">
+          <div class="alert error" style="display: none">
             {{ $message }}
           </div>
         @enderror
         @error('password')
-          <div class="alert error">
+          <div class="alert error" style="display: none">
             <strong>{{ $message }}</strong>
           </div>
         @enderror

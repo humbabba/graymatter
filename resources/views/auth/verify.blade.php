@@ -5,7 +5,7 @@
      <div class="cell x30 center-h">
         <h1 class="pv15">{{ __('Verify your email address') }}</h1>
         @if (session('resent'))
-          <div class="alert success">
+          <div class="alert success" style="display: none">
             {{ __('A fresh verification link has been sent to your email address.') }}
           </div>
         @endif
