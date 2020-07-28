@@ -234,9 +234,11 @@
   border-radius: 5px;
   color: #e6e6e6;
   cursor: pointer;
-  display: inline;
+  display: inline-block;
+  font-family: "Mukta", sans-serif;
+  font-size: 0.9rem;
   font-weight: 900;
-  height: 1.8rem;
+  height: 1.6rem;
   padding: 0 10px;
   text-decoration: none;
   text-transform: uppercase;
@@ -512,7 +514,7 @@ h1 {
 .cell form input[type=text] {
   border: 1px solid #999999;
   border-radius: 5px;
-  height: 1.8rem;
+  height: 1.6rem;
   padding: 0 10px;
   width: 100%;
 }
