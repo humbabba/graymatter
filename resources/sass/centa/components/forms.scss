@@ -2,14 +2,15 @@
   form {
     label {
       display: block;
-      &.inline {
-        display: inline;
+      &.small {
+        font-size: $fs-small;
       }
     }
 
     input[type="email"],
     input[type="password"],
     input[type="search"],
+    input[type="date"],
     input[type="text"] {
       border: 1px solid $secondary;
       border-radius: $border-radius-base;

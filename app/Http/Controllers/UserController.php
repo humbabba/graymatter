@@ -18,6 +18,8 @@ class UserController extends Controller
         //Deal with filter params
         $search = $request->get('search');
         $role = $request->get('role');
+        $from = $request->get('from');
+        $to = $request->get('to');
 
         $output = new \stdClass();
 
@@ -32,12 +34,24 @@ class UserController extends Controller
               $query->where('role','=',$role);
             }
           })
+          ->where(function($query) use($from) {
+            if($from) {
+              $query->where('last_login','>=',$from . ' 00:00:00');
+            }
+          })
+          ->where(function($query) use($to) {
+            if($to) {
+              $query->where('last_login','<=',$to . ' 23:59:59');
+            }
+          })
           ->paginate(2);
 
         //Other output values
         $output->roles = UserRoles::getRoleList();
         $output->search = $search;
         $output->role = $role;
+        $output->from = $from;
+        $output->to = $to;
         $output->msg = [];
 
 

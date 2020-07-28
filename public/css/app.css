@@ -228,7 +228,6 @@
   }
 }
 
-button,
 .btn {
   background-color: #595959;
   border: 1px solid #999999;
@@ -239,10 +238,10 @@ button,
   font-weight: 900;
   height: 1.8rem;
   padding: 0 10px;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
-button:hover,
 .btn:hover {
   background-color: #999999;
   color: #595959;
@@ -502,13 +501,14 @@ h1 {
   display: block;
 }
 
-.cell form label.inline {
-  display: inline;
+.cell form label.small {
+  font-size: 0.8rem;
 }
 
 .cell form input[type=email],
 .cell form input[type=password],
 .cell form input[type=search],
+.cell form input[type=date],
 .cell form input[type=text] {
   border: 1px solid #999999;
   border-radius: 5px;
@@ -520,6 +520,7 @@ h1 {
 .cell form input[type=email].is-invalid,
 .cell form input[type=password].is-invalid,
 .cell form input[type=search].is-invalid,
+.cell form input[type=date].is-invalid,
 .cell form input[type=text].is-invalid {
   border: 1px solid #800000;
 }
