@@ -28,6 +28,7 @@ $teal: #4dc0b5;
 $cyan: #6cb2eb;
 $black: #000;
 $white: #fff;
+$modal-background-color: rgba(0,0,0,0.3);
 
 //Pallete
 $primary: #595959;
@@ -48,6 +49,7 @@ $padding-small: 5px;
 $padding-tiny: 2px;
 $margin-base: 10px;
 $margin-small: 5px;
+$margin-tiny: 2px;
 $border-radius-base: 5px;
 $main-height: calc(100vh - 104px); //This 100vh minus the sum of $nav-height and $footer-height plus 2x $body-margin
 

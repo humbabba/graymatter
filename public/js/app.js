@@ -30255,6 +30255,8 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 
 __webpack_require__(/*! ./components/alerts */ "./resources/js/centa/components/alerts.js");
 
+__webpack_require__(/*! ./components/modal */ "./resources/js/centa/components/modal.js");
+
 __webpack_require__(/*! ./components/nav */ "./resources/js/centa/components/nav.js");
 
 __webpack_require__(/*! ./components/shift */ "./resources/js/centa/components/shift.js");
@@ -30280,6 +30282,52 @@ alerts.each(function (index, el) {
     alert.fadeOut(400);
   });
 });
+
+/***/ }),
+
+/***/ "./resources/js/centa/components/modal.js":
+/*!************************************************!*\
+  !*** ./resources/js/centa/components/modal.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var modal = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
+
+var modalTriggers = $('[class*="modal+"]');
+var modalFunction = 'default';
+checkForModalTriggers();
+
+function checkForModalTriggers() {
+  //Confirm elements are Centa modal triggers, then process
+  if (modalTriggers.length) {
+    modalTriggers.each(function (index, element) {
+      var el = $(element);
+      var classes = el.prop('class').split(/\s+/);
+      $(classes).each(function (index, elClass) {
+        if (elClass.startsWith('modal+')) {
+          var elModalClass = elClass.split('+');
+
+          if (2 === elModalClass.length) {
+            modalFunction = elModalClass[1];
+            console.log(modalFunction);
+            addModalTriggerClickHandlers();
+          }
+        }
+      });
+    });
+  }
+}
+
+function addModalTriggerClickHandlers() {
+  $(this).on('click', function () {
+    showModal();
+  });
+}
+
+function showModal() {
+  modal.fadeIn(400);
+}
 
 /***/ }),
 

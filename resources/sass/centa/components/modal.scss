@@ -1,0 +1,33 @@
+.modal-background {
+  background-color: $modal-background-color;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 10000;
+  &>* {
+    position: inline;
+  }
+  .modal-container {
+    background-color: $white;
+    .modal-title {
+      background-color: $primary;
+      color: $fc-light;
+      padding: $padding-base;
+      .modal-closer {
+        cursor: pointer;
+        float: right;
+        margin-left: $margin-base;
+      }
+    }
+    .modal-content {
+      padding: $padding-base;
+    }
+  }
+}

@@ -249,6 +249,14 @@
   color: #595959;
 }
 
+.btn-wrap {
+  margin-bottom: -5px;
+}
+
+.btn-wrap > .btn {
+  margin-bottom: 5px;
+}
+
 .centum.spacer-d,
 .cell.spacer-d,
 h1.spacer-d {
@@ -282,101 +290,101 @@ h1.spacer-m {
 .centum.p0,
 .cell.p0,
 h1.p0 {
-  padding: 0;
+  padding: 0 !important;
 }
 
 .centum.p5,
 .cell.p5,
 h1.p5 {
-  padding: 5px;
+  padding: 5px !important;
 }
 
 .centum.p10,
 .cell.p10,
 h1.p10 {
-  padding: 10px;
+  padding: 10px !important;
 }
 
 .centum.p15,
 .cell.p15,
 h1.p15 {
-  padding: 15px;
+  padding: 15px !important;
 }
 
 .centum.p20,
 .cell.p20,
 h1.p20 {
-  padding: 20px;
+  padding: 20px !important;
 }
 
 .centum.ph0,
 .cell.ph0,
 h1.ph0 {
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .centum.ph5,
 .cell.ph5,
 h1.ph5 {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 }
 
 .centum.ph10,
 .cell.ph10,
 h1.ph10 {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
 }
 
 .centum.ph15,
 .cell.ph15,
 h1.ph15 {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
 }
 
 .centum.ph20,
 .cell.ph20,
 h1.ph20 {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
 }
 
 .centum.pv0,
 .cell.pv0,
 h1.pv0 {
-  padding-top: 0;
-  padding-bottom: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .centum.pv5,
 .cell.pv5,
 h1.pv5 {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
 }
 
 .centum.pv10,
 .cell.pv10,
 h1.pv10 {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
 }
 
 .centum.pv15,
 .cell.pv15,
 h1.pv15 {
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
 }
 
 .centum.pv20,
 .cell.pv20,
 h1.pv20 {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 20px !important;
+  padding-bottom: 20px !important;
 }
 
 /*Borders*/
@@ -557,6 +565,45 @@ a {
 a:hover {
   color: #999999;
   text-decoration: none;
+}
+
+.modal-background {
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 10000;
+}
+
+.modal-background > * {
+  position: inline;
+}
+
+.modal-background .modal-container {
+  background-color: #fff;
+}
+
+.modal-background .modal-container .modal-title {
+  background-color: #595959;
+  color: #e6e6e6;
+  padding: 10px;
+}
+
+.modal-background .modal-container .modal-title .modal-closer {
+  cursor: pointer;
+  float: right;
+  margin-left: 10px;
+}
+
+.modal-background .modal-container .modal-content {
+  padding: 10px;
 }
 
 nav {

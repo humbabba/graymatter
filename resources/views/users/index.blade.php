@@ -44,7 +44,7 @@
               </div>
             </div>
           </div>
-          <div class="cell x20">
+          <div class="cell x20 btn-wrap">
             <input type="submit" class="btn" value="Search" />
             <a class="btn" href="{{ route('users.index') }}">Clear</a>
           </div>
@@ -104,9 +104,10 @@
             <span class="header-m">Last login:</span>
             <span class="center-v">{{ $user->last_login }}</span>
           </div>
-          <div class="cell x20">
-            <input type="submit" class="btn" value="Edit"/>
-            <input type="submit" class="btn" value="Delete"/>
+          <div class="cell x20 btn-wrap">
+            <div class="btn">Edit</div>
+            <div class="btn">Delete</div>
+            <div class="btn modal+default">Suspend</div>
           </div>
         </div>
       @endforeach

@@ -1,0 +1,8 @@
+{
+  "default": {
+    "title":"Are you sure?",
+    "content": "Please confirm that you wish to do this.",
+    "confirm": "modalClose",
+    "cancel": "modalClose"
+  }
+}
