@@ -2,7 +2,7 @@ let modalBackground = $('.modal-background').first(); //Only get first in case m
 let modalTriggers = $('[class*="modal+"]');
 let modalConfigs = null; //This is overwritten in configureModal if valid modal configs are found
 let modalContainer = modalBackground.find('.modal-container');
-let modalTitle = modalBackground.find('.modal-title');
+let modalTitleText = modalBackground.find('.modal-title-text');
 let modalCloser = modalBackground.find('.modal-closer');
 let modalContent = modalBackground.find('.modal-content');
 let modalCancel = modalBackground.find('.modal-cancel');
@@ -47,7 +47,7 @@ function addModalClickHandlers() {
 //Show or hide
 showModal = () => modalBackground.addClass('fade-in').css('display','');
 
-hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400);
+hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() { modalCancel.css('display','inline-block'); }); //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
 
 //Configure this specific instance
 configureModal = (defines) => {
@@ -84,9 +84,14 @@ configureModal = (defines) => {
 renderModal = (configs,params) => {
   if(configs) {
 
+    console.log('configs');
+    console.log(configs);
+
     //Make sure all configs are present
-    let neededValues = ['title','content','paramDisplay','confirm','confirmText','cancel','cancelText'];
+    let neededValues = ['title','content','paramDisplay','confirmFunction','confirmText','cancelText'];
     for(let x of neededValues) {
+      console.log(x);
+      console.log(configs[x]);
       if('undefined' === typeof configs[x]) {
         console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
         return;
@@ -94,10 +99,14 @@ renderModal = (configs,params) => {
     }
 
     //Set modal values
-    modalTitle.html(configs.title);
+    modalTitleText.html(configs.title);
     modalContent.html(configs.content);
     modalConfirm.html(configs.confirmText);
-    modalCancel.html(configs.cancelText);
+    if(configs.cancelText) {
+      modalCancel.html(configs.cancelText);
+    } else {
+      modalCancel.css('display','none'); //Hide cancel button; its display is reset to inline-block by hideModal
+    }
 
     //Now let's see if any changes to the modal content to display parameters are called for
     let paramDisplay = configs.paramDisplay;
@@ -107,12 +116,9 @@ renderModal = (configs,params) => {
       });
     }
 
-    //Set click handlers
+    //Set click handler
     modalConfirm.on('click',function() {
-      window[configs.confirm](params);
-    });
-    modalCancel.on('click',function() {
-      window[configs.cancel]();
+      window[configs.confirmFunction].apply(null,params);
     });
 
     //Finally, display it

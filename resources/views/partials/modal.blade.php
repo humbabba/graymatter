@@ -4,7 +4,7 @@
       <div class="modal-closer">
         <i class="fas fa-times"></i>
       </div>
-      I am a model
+      <div class="modal-title-text">I am a model</div>
     </div>
     <div class="modal-content">
       <p>And here is my content.</p>

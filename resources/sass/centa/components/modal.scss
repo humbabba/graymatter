@@ -13,8 +13,10 @@
   z-index: 10000;
   .modal-container {
     background-color: $white;
-    width: 95vw;
-    max-width: $modal-width;
+    max-width: 95vw;
+    @media only screen and (min-width: $break) {
+      max-width: $modal-max-width;
+    }
     .modal-title {
       background-color: $primary;
       color: $fc-light;

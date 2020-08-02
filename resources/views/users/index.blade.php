@@ -106,8 +106,12 @@
           </div>
           <div class="cell x20 btn-wrap">
             <div class="btn">Edit</div>
-            <div class="btn">Delete</div>
             <div class="btn modal+suspendUser({{ $user->id }},{{ rawurlencode($user->name) }})">Suspend</div>
+            <form action="{{ route('users.destroy', $user->id) }}" method="post">
+              @method('DELETE')
+              @csrf
+              <input type="submit" class="btn modal+deleteUser({{ $user->id }},{{ rawurlencode($user->name) }})" value="Delete" />
+            </form>
           </div>
         </div>
       @endforeach

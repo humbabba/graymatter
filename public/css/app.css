@@ -619,8 +619,13 @@ a:hover {
 
 .modal-background .modal-container {
   background-color: #fff;
-  width: 95vw;
-  max-width: 500px;
+  max-width: 95vw;
+}
+
+@media only screen and (min-width: 768px) {
+  .modal-background .modal-container {
+    max-width: 500px;
+  }
 }
 
 .modal-background .modal-container .modal-title {

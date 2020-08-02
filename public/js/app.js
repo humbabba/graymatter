@@ -30301,7 +30301,7 @@ var modalTriggers = $('[class*="modal+"]');
 var modalConfigs = null; //This is overwritten in configureModal if valid modal configs are found
 
 var modalContainer = modalBackground.find('.modal-container');
-var modalTitle = modalBackground.find('.modal-title');
+var modalTitleText = modalBackground.find('.modal-title-text');
 var modalCloser = modalBackground.find('.modal-closer');
 var modalContent = modalBackground.find('.modal-content');
 var modalCancel = modalBackground.find('.modal-cancel');
@@ -30350,8 +30350,11 @@ showModal = function showModal() {
 };
 
 hideModal = function hideModal() {
-  return modalBackground.removeClass('fade-in').fadeOut(400);
-}; //Configure this specific instance
+  return modalBackground.removeClass('fade-in').fadeOut(400, function () {
+    modalCancel.css('display', 'inline-block');
+  });
+}; //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
+//Configure this specific instance
 
 
 configureModal = function configureModal(defines) {
@@ -30384,11 +30387,15 @@ configureModal = function configureModal(defines) {
 
 renderModal = function renderModal(configs, params) {
   if (configs) {
-    //Make sure all configs are present
-    var neededValues = ['title', 'content', 'paramDisplay', 'confirm', 'confirmText', 'cancel', 'cancelText'];
+    console.log('configs');
+    console.log(configs); //Make sure all configs are present
+
+    var neededValues = ['title', 'content', 'paramDisplay', 'confirmFunction', 'confirmText', 'cancelText'];
 
     for (var _i = 0, _neededValues = neededValues; _i < _neededValues.length; _i++) {
       var x = _neededValues[_i];
+      console.log(x);
+      console.log(configs[x]);
 
       if ('undefined' === typeof configs[x]) {
         console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
@@ -30397,10 +30404,16 @@ renderModal = function renderModal(configs, params) {
     } //Set modal values
 
 
-    modalTitle.html(configs.title);
+    modalTitleText.html(configs.title);
     modalContent.html(configs.content);
     modalConfirm.html(configs.confirmText);
-    modalCancel.html(configs.cancelText); //Now let's see if any changes to the modal content to display parameters are called for
+
+    if (configs.cancelText) {
+      modalCancel.html(configs.cancelText);
+    } else {
+      modalCancel.css('display', 'none'); //Hide cancel button; its display is reset to inline-block by hideModal
+    } //Now let's see if any changes to the modal content to display parameters are called for
+
 
     var paramDisplay = configs.paramDisplay;
 
@@ -30408,14 +30421,11 @@ renderModal = function renderModal(configs, params) {
       paramDisplay.forEach(function (item, index) {
         $('.' + item).html(params[index]);
       });
-    } //Set click handlers
+    } //Set click handler
 
 
     modalConfirm.on('click', function () {
-      window[configs.confirm](params);
-    });
-    modalCancel.on('click', function () {
-      window[configs.cancel]();
+      window[configs.confirmFunction].apply(null, params);
     }); //Finally, display it
 
     showModal();
@@ -30613,12 +30623,13 @@ function cellShift(el, degree) {
 /***/ (function(module, exports) {
 
 //App-specific JS goes here
-window.suspendUser = function (params) {
-  console.log('id');
-  console.log(params[0]);
-  console.log('name');
-  console.log(params[1]);
-  console.log('Suspending user with ID: ' + params[0] + ' (' + params[1] + ') soon!');
+window.suspendUser = function (id, name) {
+  console.log('Suspending user with ID: ' + id + ' (' + name + ') soon!');
+  hideModal();
+};
+
+window.deleteUser = function (id, name) {
+  console.log('Deleting user with ID: ' + id + ' (' + name + ') soon!');
   hideModal();
 };
 

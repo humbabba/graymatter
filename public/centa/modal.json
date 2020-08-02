@@ -3,9 +3,16 @@
     "title":"Suspend this user?",
     "content": "<p>Suspend user <span class='username'></span> (ID: <span class='userId'></span>) for:</p><p><input type='number' class='short-field' step=1 min=0 value=30 /></p><p>days.</p>",
     "paramDisplay": ["userId","username"],
-    "confirm": "suspendUser",
+    "confirmFunction": "suspendUser",
     "confirmText": "Suspend",
-    "cancel": "hideModal",
-    "cancelText": "Never mind"
+    "cancelText": "Cancel"
+  },
+  "deleteUser": {
+    "title":"Delete this user?",
+    "content": "<p>Do you really want to delete user <span class='username'></span> (ID: <span class='userId'></span>)?</p>",
+    "paramDisplay": ["userId","username"],
+    "confirmFunction": "deleteUser",
+    "confirmText": "Delete user",
+    "cancelText": "Cancel"
   }
 }
