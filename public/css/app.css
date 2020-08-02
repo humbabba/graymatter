@@ -525,6 +525,10 @@ h1 {
   font-size: 0.8rem;
 }
 
+.cell form label.inline {
+  display: inline;
+}
+
 .cell form input[type=email],
 .cell form input[type=password],
 .cell form input[type=search],
