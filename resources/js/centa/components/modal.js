@@ -23,9 +23,8 @@ function checkForModalTriggers() {
             let elModalClass = elClass.split('+');
             let modalFunctionDefinesArr = elModalClass.splice(1); //Get an array of everything after first +, assuming there will be more than one due to URL encoding in the view
             let modalFunctionDefines = modalFunctionDefinesArr.join('+'); //Rejoin items with URL encode +
-            el.on('click',function() {
-              console.log('modalFunctionDefines');
-              console.log(modalFunctionDefines);
+            el.on('click',function(e) {
+              e.preventDefault();
               configureModal(modalFunctionDefines);
             });
           }
@@ -51,13 +50,9 @@ hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() 
 
 //Configure this specific instance
 configureModal = (defines) => {
-  console.log('defines');
-  console.log(defines);
   let params = '';
   let parts = '';
   let configName = defines.replace(/\(.*\)/,'');
-  console.log('configName');
-  console.log(configName);
 
   params = defines.match(/\((.*)\)/)[1].split(',');
 
@@ -65,9 +60,6 @@ configureModal = (defines) => {
   params.forEach(function(item,index) {
     this[index] = decodeURIComponent(item).replace('+',' ');
   },params);
-
-  console.log('params');
-  console.log(params);
 
   //Fetch the configs for the modal
   $.getJSON(window.modalConfigsPath,configName,function(data) {
@@ -84,14 +76,9 @@ configureModal = (defines) => {
 renderModal = (configs,params) => {
   if(configs) {
 
-    console.log('configs');
-    console.log(configs);
-
     //Make sure all configs are present
     let neededValues = ['title','content','paramDisplay','confirmFunction','confirmText','cancelText'];
     for(let x of neededValues) {
-      console.log(x);
-      console.log(configs[x]);
       if('undefined' === typeof configs[x]) {
         console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
         return;
@@ -117,7 +104,7 @@ renderModal = (configs,params) => {
     }
 
     //Set click handler
-    modalConfirm.on('click',function() {
+    modalConfirm.on('click',function(e) {
       window[configs.confirmFunction].apply(null,params);
     });
 

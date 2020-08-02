@@ -107,10 +107,10 @@
           <div class="cell x20 btn-wrap">
             <div class="btn">Edit</div>
             <div class="btn modal+suspendUser({{ $user->id }},{{ rawurlencode($user->name) }})">Suspend</div>
-            <form class="inline" action="{{ route('users.destroy', $user->id) }}" method="post">
+            <form class="inline" action="{{ route('users.destroy', $user->id) }}" method="post" id="deleteUser{{ $user->id }}">
               @method('DELETE')
               @csrf
-              <input type="submit" class="btn modal+deleteUser({{ $user->id }},{{ rawurlencode($user->name) }})" value="Delete" />
+              <input type="submit" class="btn modal+deleteUser({{ $user->id }},{{ rawurlencode($user->name) }},deleteUser{{ $user->id }})" value="Delete" />
             </form>
           </div>
         </div>

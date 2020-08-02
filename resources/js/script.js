@@ -4,7 +4,8 @@ window.suspendUser = (id,name) => {
   hideModal();
 }
 
-window.deleteUser = (id,name) => {
+window.deleteUser = (id,name,formId) => {
   console.log('Deleting user with ID: ' + id + ' (' + name + ') soon!');
   hideModal();
+  $('#' + formId).submit();
 }

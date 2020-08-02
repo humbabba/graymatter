@@ -126,8 +126,9 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if($user) {
+          $userName = $user->name;
           $user->delete();
-          return redirect(route('users.index'))->with('status','Deleted');
+          return redirect(route('users.index'))->with('success','Successfully deleted user "' . $userName . '" (ID: ' . $id .').');
         }
     }
 }

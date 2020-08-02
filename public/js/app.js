@@ -30323,9 +30323,8 @@ function checkForModalTriggers() {
 
           var modalFunctionDefines = modalFunctionDefinesArr.join('+'); //Rejoin items with URL encode +
 
-          el.on('click', function () {
-            console.log('modalFunctionDefines');
-            console.log(modalFunctionDefines);
+          el.on('click', function (e) {
+            e.preventDefault();
             configureModal(modalFunctionDefines);
           });
         }
@@ -30358,20 +30357,14 @@ hideModal = function hideModal() {
 
 
 configureModal = function configureModal(defines) {
-  console.log('defines');
-  console.log(defines);
   var params = '';
   var parts = '';
   var configName = defines.replace(/\(.*\)/, '');
-  console.log('configName');
-  console.log(configName);
   params = defines.match(/\((.*)\)/)[1].split(','); //Remove URL encoding
 
   params.forEach(function (item, index) {
     this[index] = decodeURIComponent(item).replace('+', ' ');
-  }, params);
-  console.log('params');
-  console.log(params); //Fetch the configs for the modal
+  }, params); //Fetch the configs for the modal
 
   $.getJSON(window.modalConfigsPath, configName, function (data) {
     var remoteConfigs = data[configName];
@@ -30387,15 +30380,11 @@ configureModal = function configureModal(defines) {
 
 renderModal = function renderModal(configs, params) {
   if (configs) {
-    console.log('configs');
-    console.log(configs); //Make sure all configs are present
-
+    //Make sure all configs are present
     var neededValues = ['title', 'content', 'paramDisplay', 'confirmFunction', 'confirmText', 'cancelText'];
 
     for (var _i = 0, _neededValues = neededValues; _i < _neededValues.length; _i++) {
       var x = _neededValues[_i];
-      console.log(x);
-      console.log(configs[x]);
 
       if ('undefined' === typeof configs[x]) {
         console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
@@ -30424,7 +30413,7 @@ renderModal = function renderModal(configs, params) {
     } //Set click handler
 
 
-    modalConfirm.on('click', function () {
+    modalConfirm.on('click', function (e) {
       window[configs.confirmFunction].apply(null, params);
     }); //Finally, display it
 
@@ -30628,9 +30617,10 @@ window.suspendUser = function (id, name) {
   hideModal();
 };
 
-window.deleteUser = function (id, name) {
+window.deleteUser = function (id, name, formId) {
   console.log('Deleting user with ID: ' + id + ' (' + name + ') soon!');
   hideModal();
+  $('#' + formId).submit();
 };
 
 /***/ }),

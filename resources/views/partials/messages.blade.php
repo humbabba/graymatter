@@ -9,3 +9,24 @@
     @endforeach
   @endforeach
 @endif
+@if(session('success'))
+  <div class="centum">
+    <div class="cell alert success" style="display: none">
+        {!! session('success') !!}
+    </div>
+  </div>
+@endif
+@if(session('error'))
+  <div class="centum">
+    <div class="cell alert error" style="display: none">
+        {!! session('error') !!}
+    </div>
+  </div>
+@endif
+@if(session('notice'))
+  <div class="centum">
+    <div class="cell alert notice" style="display: none">
+        {!! session('notice') !!}
+    </div>
+  </div>
+@endif
