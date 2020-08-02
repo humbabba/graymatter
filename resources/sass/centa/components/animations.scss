@@ -1,3 +1,11 @@
+.fade-in {
+  animation: fade-in 0.4s;
+}
+
+.fade-out {
+  animation: fade-out 0.4s;
+}
+
 @keyframes fade-in {
   0% {
     opacity: 0;

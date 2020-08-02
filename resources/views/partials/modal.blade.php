@@ -11,11 +11,11 @@
       <p>And here is my content.</p>
       <p>And here is my content.</p>
       <p>And here is my content.</p>
-      <div class="centum">
-        <div class="cell btn-wrap pv0 align-center">
-          <div class="btn modal-confirm">OK</div>
-          <div class="btn modal-cancel">Cancel</div>
-        </div>
+    </div>
+    <div class="centum">
+      <div class="cell btn-wrap align-center">
+        <div class="btn modal-confirm">OK</div>
+        <div class="btn modal-cancel">Cancel</div>
       </div>
     </div>
   </div>

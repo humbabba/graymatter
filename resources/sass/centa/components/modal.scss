@@ -11,11 +11,10 @@
   left: 0;
   width: 100vw;
   z-index: 10000;
-  &>* {
-    position: inline;
-  }
   .modal-container {
     background-color: $white;
+    width: 95vw;
+    max-width: $modal-width;
     .modal-title {
       background-color: $primary;
       color: $fc-light;

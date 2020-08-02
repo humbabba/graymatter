@@ -188,6 +188,16 @@
   color: #b3b3b3;
 }
 
+.fade-in {
+  -webkit-animation: fade-in 0.4s;
+          animation: fade-in 0.4s;
+}
+
+.fade-out {
+  -webkit-animation: fade-out 0.4s;
+          animation: fade-out 0.4s;
+}
+
 @-webkit-keyframes fade-in {
   0% {
     opacity: 0;
@@ -582,12 +592,10 @@ a:hover {
   z-index: 10000;
 }
 
-.modal-background > * {
-  position: inline;
-}
-
 .modal-background .modal-container {
   background-color: #fff;
+  width: 95vw;
+  max-width: 500px;
 }
 
 .modal-background .modal-container .modal-title {

@@ -30253,6 +30253,9 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+//Define path to modal configs
+window.modalConfigsPath = '/centa/modal.json'; //Included components
+
 __webpack_require__(/*! ./components/alerts */ "./resources/js/centa/components/alerts.js");
 
 __webpack_require__(/*! ./components/modal */ "./resources/js/centa/components/modal.js");
@@ -30292,14 +30295,27 @@ alerts.each(function (index, el) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var modal = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
+var modalBackground = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
 
 var modalTriggers = $('[class*="modal+"]');
-var modalFunction = 'default';
+var modalDefaultConfigs = {
+  "title": "Are you sure?",
+  "content": "Please confirm that you wish to do this.",
+  "confirm": "modalClose",
+  "cancel": "modalClose"
+};
+var modalContainer = modalBackground.find('.modal-container');
+var modalTitle = modalBackground.find('.modal-title');
+var modalCloser = modalBackground.find('.modal-closer');
+var modalContent = modalBackground.find('.modal-content');
+var modalCancel = modalBackground.find('.modal-cancel');
+var modalConfirm = modalBackground.find('.modal-confirm'); //Init
+
 checkForModalTriggers();
+addModalClickHandlers();
 
 function checkForModalTriggers() {
-  //Confirm elements are Centa modal triggers, then process
+  //Confirm elements are Centa modalBackground triggers, then process
   if (modalTriggers.length) {
     modalTriggers.each(function (index, element) {
       var el = $(element);
@@ -30309,25 +30325,70 @@ function checkForModalTriggers() {
           var elModalClass = elClass.split('+');
 
           if (2 === elModalClass.length) {
-            modalFunction = elModalClass[1];
-            console.log(modalFunction);
-            addModalTriggerClickHandlers();
+            var modalFunctionDefines = elModalClass.splice(1, 1)[0];
+            el.on('click', function () {
+              console.log('modalFunctionDefines');
+              console.log(modalFunctionDefines);
+              configureModal(modalFunctionDefines);
+              showModal();
+            });
           }
         }
       });
     });
   }
-}
+} //Click handlers
 
-function addModalTriggerClickHandlers() {
-  $(this).on('click', function () {
-    showModal();
+
+function addModalClickHandlers() {
+  modalContainer.on('click', function (e) {
+    e.stopPropagation();
   });
-}
+  modalBackground.add(modalCloser).add(modalCancel).on('click', function () {
+    hideModal();
+  });
+} //Show or hide
 
-function showModal() {
-  modal.fadeIn(400);
-}
+
+showModal = function showModal() {
+  return modalBackground.addClass('fade-in').css('display', '');
+};
+
+hideModal = function hideModal() {
+  return modalBackground.removeClass('fade-in').fadeOut(400);
+}; //Configure this specific instance
+
+
+configureModal = function configureModal(defines) {
+  var params = '';
+  var parts = defines.split('.');
+  var configName = parts[0];
+  console.log('configName');
+  console.log(configName);
+
+  if (1 < parts.length) {
+    var paramsArr = parts.splice(1, 1);
+    params = paramsArr.join(',');
+  } //Fetch the configs for the modal
+
+
+  $.getJSON(window.modalConfigsPath, configName, function (data) {
+    var configs = data[configName];
+    console.log('configs');
+    console.log(configs);
+
+    if ('undefined' === typeof configs) {
+      console.log('nossur');
+      configs = modalDefaultConfigs; //Use the default if we cannot find any matching configs
+
+      console.log('configs');
+      console.log(configs);
+    }
+
+    modalTitle.html(configs.title);
+    modalContent.html(configs.content);
+  });
+};
 
 /***/ }),
 
@@ -30518,6 +30579,9 @@ function cellShift(el, degree) {
 /***/ (function(module, exports) {
 
 //App-specific JS goes here
+window.suspendUser = function (id) {
+  return 'Suspending user with ID: ' + id;
+};
 
 /***/ }),
 

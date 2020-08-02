@@ -1,0 +1,8 @@
+{
+  "suspendUser": {
+    "title":"Suspend this user for reals?",
+    "content": "Truly suspend user?",
+    "confirm": "modalClose",
+    "cancel": "modalClose"
+  }
+}

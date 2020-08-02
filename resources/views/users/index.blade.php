@@ -107,7 +107,7 @@
           <div class="cell x20 btn-wrap">
             <div class="btn">Edit</div>
             <div class="btn">Delete</div>
-            <div class="btn modal+default">Suspend</div>
+            <div class="btn modal+suspendUser.{{ $user->id }}">Suspend</div>
           </div>
         </div>
       @endforeach
