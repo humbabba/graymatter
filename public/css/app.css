@@ -517,23 +517,33 @@ h1 {
   margin: 10px 0;
 }
 
-.cell form label {
+.modal-content label,
+.cell label {
   display: block;
 }
 
-.cell form label.small {
+.modal-content label.small,
+.cell label.small {
   font-size: 0.8rem;
 }
 
-.cell form label.inline {
+.modal-content label.inline,
+.cell label.inline {
   display: inline;
 }
 
-.cell form input[type=email],
-.cell form input[type=password],
-.cell form input[type=search],
-.cell form input[type=date],
-.cell form input[type=text] {
+.modal-content input[type=email],
+.modal-content input[type=number],
+.modal-content input[type=password],
+.modal-content input[type=search],
+.modal-content input[type=date],
+.modal-content input[type=text],
+.cell input[type=email],
+.cell input[type=number],
+.cell input[type=password],
+.cell input[type=search],
+.cell input[type=date],
+.cell input[type=text] {
   border: 1px solid #999999;
   border-radius: 5px;
   height: 1.6rem;
@@ -541,23 +551,33 @@ h1 {
   width: 100%;
 }
 
-.cell form input[type=email].is-invalid,
-.cell form input[type=password].is-invalid,
-.cell form input[type=search].is-invalid,
-.cell form input[type=date].is-invalid,
-.cell form input[type=text].is-invalid {
+.modal-content input[type=email].is-invalid,
+.modal-content input[type=number].is-invalid,
+.modal-content input[type=password].is-invalid,
+.modal-content input[type=search].is-invalid,
+.modal-content input[type=date].is-invalid,
+.modal-content input[type=text].is-invalid,
+.cell input[type=email].is-invalid,
+.cell input[type=number].is-invalid,
+.cell input[type=password].is-invalid,
+.cell input[type=search].is-invalid,
+.cell input[type=date].is-invalid,
+.cell input[type=text].is-invalid {
   border: 1px solid #800000;
 }
 
-.cell form input[type=checkbox] {
+.modal-content input[type=checkbox],
+.cell input[type=checkbox] {
   margin: 0 0 15px 0;
 }
 
-.cell form.input-spacing > input {
+.modal-content.input-spacing > input,
+.cell.input-spacing > input {
   margin-bottom: 10px;
 }
 
-.cell form select {
+.modal-content select,
+.cell select {
   border: 1px solid #999999;
   border-radius: 5px;
   height: 100%;
@@ -566,7 +586,8 @@ h1 {
   width: 100%;
 }
 
-.cell form select.is-invalid {
+.modal-content select.is-invalid,
+.cell select.is-invalid {
   border: 1px solid #800000;
 }
 
@@ -840,6 +861,10 @@ nav ul.pagination li.page-item a.page-link {
 
 nav ul.pagination li.page-item a.page-link:hover {
   color: #595959;
+}
+
+.short-field {
+  max-width: 100px;
 }
 
 .centum.header-d,

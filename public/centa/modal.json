@@ -1,8 +1,11 @@
 {
   "suspendUser": {
-    "title":"Suspend this user for reals?",
-    "content": "Truly suspend user?",
-    "confirm": "modalClose",
-    "cancel": "modalClose"
+    "title":"Suspend this user?",
+    "content": "<p>Suspend user <span class='username'></span> (ID: <span class='userId'></span>) for:</p><p><input type='number' class='short-field' step=1 min=0 value=30 /></p><p>days.</p>",
+    "paramDisplay": ["userId","username"],
+    "confirm": "suspendUser",
+    "confirmText": "Suspend",
+    "cancel": "hideModal",
+    "cancelText": "Never mind"
   }
 }

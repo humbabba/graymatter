@@ -30298,12 +30298,8 @@ alerts.each(function (index, el) {
 var modalBackground = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
 
 var modalTriggers = $('[class*="modal+"]');
-var modalDefaultConfigs = {
-  "title": "Are you sure?",
-  "content": "Please confirm that you wish to do this.",
-  "confirm": "modalClose",
-  "cancel": "modalClose"
-};
+var modalConfigs = null; //This is overwritten in configureModal if valid modal configs are found
+
 var modalContainer = modalBackground.find('.modal-container');
 var modalTitle = modalBackground.find('.modal-title');
 var modalCloser = modalBackground.find('.modal-closer');
@@ -30323,16 +30319,15 @@ function checkForModalTriggers() {
       $(classes).each(function (index, elClass) {
         if (elClass.startsWith('modal+')) {
           var elModalClass = elClass.split('+');
+          var modalFunctionDefinesArr = elModalClass.splice(1); //Get an array of everything after first +, assuming there will be more than one due to URL encoding in the view
 
-          if (2 === elModalClass.length) {
-            var modalFunctionDefines = elModalClass.splice(1, 1)[0];
-            el.on('click', function () {
-              console.log('modalFunctionDefines');
-              console.log(modalFunctionDefines);
-              configureModal(modalFunctionDefines);
-              showModal();
-            });
-          }
+          var modalFunctionDefines = modalFunctionDefinesArr.join('+'); //Rejoin items with URL encode +
+
+          el.on('click', function () {
+            console.log('modalFunctionDefines');
+            console.log(modalFunctionDefines);
+            configureModal(modalFunctionDefines);
+          });
         }
       });
     });
@@ -30360,34 +30355,73 @@ hideModal = function hideModal() {
 
 
 configureModal = function configureModal(defines) {
+  console.log('defines');
+  console.log(defines);
   var params = '';
-  var parts = defines.split('.');
-  var configName = parts[0];
+  var parts = '';
+  var configName = defines.replace(/\(.*\)/, '');
   console.log('configName');
   console.log(configName);
+  params = defines.match(/\((.*)\)/)[1].split(','); //Remove URL encoding
 
-  if (1 < parts.length) {
-    var paramsArr = parts.splice(1, 1);
-    params = paramsArr.join(',');
-  } //Fetch the configs for the modal
-
+  params.forEach(function (item, index) {
+    this[index] = decodeURIComponent(item).replace('+', ' ');
+  }, params);
+  console.log('params');
+  console.log(params); //Fetch the configs for the modal
 
   $.getJSON(window.modalConfigsPath, configName, function (data) {
-    var configs = data[configName];
-    console.log('configs');
-    console.log(configs);
+    var remoteConfigs = data[configName];
 
-    if ('undefined' === typeof configs) {
-      console.log('nossur');
-      configs = modalDefaultConfigs; //Use the default if we cannot find any matching configs
-
-      console.log('configs');
-      console.log(configs);
+    if ('undefined' !== typeof remoteConfigs) {
+      //Don't overwrite modalConfigs till we find good remoteConfigs
+      modalConfigs = remoteConfigs;
     }
+  }).always(function () {
+    renderModal(modalConfigs, params);
+  });
+};
+
+renderModal = function renderModal(configs, params) {
+  if (configs) {
+    //Make sure all configs are present
+    var neededValues = ['title', 'content', 'paramDisplay', 'confirm', 'confirmText', 'cancel', 'cancelText'];
+
+    for (var _i = 0, _neededValues = neededValues; _i < _neededValues.length; _i++) {
+      var x = _neededValues[_i];
+
+      if ('undefined' === typeof configs[x]) {
+        console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
+        return;
+      }
+    } //Set modal values
+
 
     modalTitle.html(configs.title);
     modalContent.html(configs.content);
-  });
+    modalConfirm.html(configs.confirmText);
+    modalCancel.html(configs.cancelText); //Now let's see if any changes to the modal content to display parameters are called for
+
+    var paramDisplay = configs.paramDisplay;
+
+    if (paramDisplay.length && params.length) {
+      paramDisplay.forEach(function (item, index) {
+        $('.' + item).html(params[index]);
+      });
+    } //Set click handlers
+
+
+    modalConfirm.on('click', function () {
+      window[configs.confirm](params);
+    });
+    modalCancel.on('click', function () {
+      window[configs.cancel]();
+    }); //Finally, display it
+
+    showModal();
+  } else {
+    console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
+  }
 };
 
 /***/ }),
@@ -30579,8 +30613,13 @@ function cellShift(el, degree) {
 /***/ (function(module, exports) {
 
 //App-specific JS goes here
-window.suspendUser = function (id) {
-  return 'Suspending user with ID: ' + id;
+window.suspendUser = function (params) {
+  console.log('id');
+  console.log(params[0]);
+  console.log('name');
+  console.log(params[1]);
+  console.log('Suspending user with ID: ' + params[0] + ' (' + params[1] + ') soon!');
+  hideModal();
 };
 
 /***/ }),

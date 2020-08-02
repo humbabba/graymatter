@@ -1,51 +1,50 @@
+.modal-content,
 .cell {
-  form {
-    label {
-      display: block;
-      &.small {
-        font-size: $fs-small;
-      }
-      &.inline {
-        display: inline;
-      }
+  label {
+    display: block;
+    &.small {
+      font-size: $fs-small;
     }
-
-    input[type="email"],
-    input[type="password"],
-    input[type="search"],
-    input[type="date"],
-    input[type="text"] {
-      border: 1px solid $secondary;
-      border-radius: $border-radius-base;
-      height: $lh-base;
-      padding: 0 $padding-base;
-      width: 100%;
-      &.is-invalid {
-        border: 1px solid $red;
-      }
+    &.inline {
+      display: inline;
     }
+  }
 
-    input[type="checkbox"] {
-      margin: 0 0 15px 0;
+  input[type="email"],
+  input[type="number"],
+  input[type="password"],
+  input[type="search"],
+  input[type="date"],
+  input[type="text"] {
+    border: 1px solid $secondary;
+    border-radius: $border-radius-base;
+    height: $lh-base;
+    padding: 0 $padding-base;
+    width: 100%;
+    &.is-invalid {
+      border: 1px solid $red;
     }
+  }
 
-    &.input-spacing {
-      & > input {
-        margin-bottom: $margin-base;
-      }
+  input[type="checkbox"] {
+    margin: 0 0 15px 0;
+  }
+
+  &.input-spacing {
+    & > input {
+      margin-bottom: $margin-base;
     }
+  }
 
-    select {
-      border: 1px solid $secondary;
-      border-radius: $border-radius-base;
-      height: 100%;
-      max-height: $lh-big;
-      padding: 0 $padding-base;
-      width: 100%;
-      &.is-invalid {
-        border: 1px solid $red;
-      }
+  select {
+    border: 1px solid $secondary;
+    border-radius: $border-radius-base;
+    height: 100%;
+    max-height: $lh-big;
+    padding: 0 $padding-base;
+    width: 100%;
+    &.is-invalid {
+      border: 1px solid $red;
     }
-
   }
 }
