@@ -1,0 +1,16 @@
+.sorters {
+  display: inline-flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  font-size: $fs-big;
+  position: relative;
+  top: $sorter-top;
+  i {
+    cursor: pointer;
+    line-height: $lh-smaller;
+    &:hover {
+      color: $secondary;
+    }
+  }
+}

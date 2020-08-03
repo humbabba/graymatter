@@ -30264,6 +30264,8 @@ __webpack_require__(/*! ./components/nav */ "./resources/js/centa/components/nav
 
 __webpack_require__(/*! ./components/shift */ "./resources/js/centa/components/shift.js");
 
+__webpack_require__(/*! ./components/sorters */ "./resources/js/centa/components/sorters.js");
+
 /***/ }),
 
 /***/ "./resources/js/centa/components/alerts.js":
@@ -30610,6 +30612,53 @@ function cellShift(el, degree) {
     }
   }
 }
+
+/***/ }),
+
+/***/ "./resources/js/centa/components/sorters.js":
+/*!**************************************************!*\
+  !*** ./resources/js/centa/components/sorters.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+//Defines
+var sorterSpans = $('span.sorters');
+var upIcon = 'fa-caret-up';
+var downIcon = 'fa-caret-down';
+
+if (sorterSpans.length) {
+  sorterSpans.each(function (index, el) {
+    var sorterSpan = $(el);
+    var sortKey = sorterSpan.data('key'); //Create icons
+
+    var sorterAsc = $('<i class="fas">').addClass(upIcon);
+    var sorterDesc = $('<i class="fas">').addClass(downIcon); //Add click handlers to icons
+
+    sorterAsc.add(sorterDesc).on('click', function () {
+      addSortParams($(this), sortKey);
+    }); //Add icons to span
+
+    sorterSpan.append(sorterAsc).append(sorterDesc);
+  });
+}
+
+addSortParams = function addSortParams(el, key) {
+  var direction = '';
+
+  if (el.hasClass(upIcon)) {
+    direction = 'asc';
+  }
+
+  if (el.hasClass(downIcon)) {
+    direction = 'desc';
+  }
+
+  var urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('orderBy', key);
+  urlParams.set('direction', direction);
+  window.location.search = urlParams;
+};
 
 /***/ }),
 

@@ -896,6 +896,25 @@ nav ul.pagination li.page-item a.page-link:hover {
   display: inline;
 }
 
+.sorters {
+  display: inline-flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  font-size: 1.3rem;
+  position: relative;
+  top: -5px;
+}
+
+.sorters i {
+  cursor: pointer;
+  line-height: 0.8rem;
+}
+
+.sorters i:hover {
+  color: #999999;
+}
+
 .centum.header-d,
 .cell.header-d,
 span.header-d {

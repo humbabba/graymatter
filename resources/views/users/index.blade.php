@@ -58,7 +58,7 @@
     @if(0 < $output->users->total())
       <div class="centum">
         <div class="cell x10 header-d">
-          ID
+          ID <span class="sorters" data-key="id"></span> 
         </div>
         <div class="cell x20 header-d">
           Username
@@ -109,7 +109,7 @@
             <span class="center-v">{{ $user->last_login }}</span>
           </div>
           <div class="cell x20 btn-wrap">
-            <div class="btn">Edit</div>
+            <a class="btn" href="{{ route('users.edit', $user->id) }}">Edit</a>
             <form class="inline" action="{{ route('users.suspend', $user->id) }}" method="get" id="suspendUser{{ $user->id }}">
               @csrf
               <input type="hidden" name="suspendedDays" value="7" />
