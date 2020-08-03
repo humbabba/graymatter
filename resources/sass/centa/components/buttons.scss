@@ -17,6 +17,22 @@
     background-color: $secondary;
     color: $fc-base;
   }
+  &.secondary {
+    border: 1px solid $blue;
+    background-color: $blue;
+    &:hover {
+      color: $white;
+      background-color: $blue-light;
+    }
+  }
+  &.danger {
+    border: 1px solid $red;
+    background-color: $red;
+    &:hover {
+      color: $white;
+      background-color: $red-light;
+    }
+  }
 }
 
 .btn-wrap { //This class goes on a container for multiple buttons

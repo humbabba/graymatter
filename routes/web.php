@@ -16,24 +16,32 @@ use Illuminate\Support\Facades\Route;
 Auth::routes(['verify' => true]);
 
 // Apply verified middleware to most routes
-Route::middleware('verified')->group(function() {
+Route::middleware(['verified','suspended'])->group(function() {
 
   //User stuff
   Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 
   //Admin stuff
-  Route::get('/info', function () {
-      return view('info');
-  })->middleware('role:admin')->name('info');
+  Route::middleware('role:admin')->group(function() {
+    Route::get('/info', function () {
+        return view('info');
+    })->name('info');
 
-  Route::resource('users', 'UserController')->only([
-    'index', 'create', 'edit', 'destroy'
-  ])->middleware('role:admin');
+    Route::get('users/{id}/suspend', 'UserController@suspend')->name('users.suspend');
+
+    Route::resource('users', 'UserController')->only([
+      'index', 'edit', 'update', 'destroy'
+    ]);
+  });
 
   //Access denied
   Route::get('/not_authorized', function () {
       return view('not_authorized');
   })->name('not_authorized');
+
+  Route::get('/suspended', function () {
+      return view('suspended');
+  })->name('suspended')->withoutMiddleware('suspended');
 
 });
 

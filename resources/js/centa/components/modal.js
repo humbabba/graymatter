@@ -77,7 +77,7 @@ renderModal = (configs,params) => {
   if(configs) {
 
     //Make sure all configs are present
-    let neededValues = ['title','content','paramDisplay','confirmFunction','confirmText','cancelText'];
+    let neededValues = ['title','content','paramDisplay','paramInput','confirmFunction','confirmText','cancelText'];
     for(let x of neededValues) {
       if('undefined' === typeof configs[x]) {
         console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
@@ -100,6 +100,14 @@ renderModal = (configs,params) => {
     if(paramDisplay.length && params.length) {
       paramDisplay.forEach(function(item,index) {
         $('.' + item).html(params[index]);
+      });
+    }
+
+    //Check for special inputs in the modal content
+    let paramInput = configs.paramInput;
+    if(paramInput.length) {
+      paramInput.forEach(function(item,index) {
+        params.push(modalContent.find('.' + item));
       });
     }
 

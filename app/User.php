@@ -17,7 +17,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role'
+        'name', 'email', 'password', 'role', 'last_login', 'suspended_till'
     ];
 
     /**
@@ -67,5 +67,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getRole()
     {
         return $this->getAttribute('role');
+    }
+
+    /**
+    * @return boolean
+    */
+    public function isSuspended()
+    {
+      $date = date('Y-m-d H:i:s');
+      return $this->suspended_till > $date;
+    }
+
+    public function nullSuspended()
+    {
+      $this->suspended_till = null;
+      $this->save();
     }
 }

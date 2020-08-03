@@ -30381,7 +30381,7 @@ configureModal = function configureModal(defines) {
 renderModal = function renderModal(configs, params) {
   if (configs) {
     //Make sure all configs are present
-    var neededValues = ['title', 'content', 'paramDisplay', 'confirmFunction', 'confirmText', 'cancelText'];
+    var neededValues = ['title', 'content', 'paramDisplay', 'paramInput', 'confirmFunction', 'confirmText', 'cancelText'];
 
     for (var _i = 0, _neededValues = neededValues; _i < _neededValues.length; _i++) {
       var x = _neededValues[_i];
@@ -30409,6 +30409,15 @@ renderModal = function renderModal(configs, params) {
     if (paramDisplay.length && params.length) {
       paramDisplay.forEach(function (item, index) {
         $('.' + item).html(params[index]);
+      });
+    } //Check for special inputs in the modal content
+
+
+    var paramInput = configs.paramInput;
+
+    if (paramInput.length) {
+      paramInput.forEach(function (item, index) {
+        params.push(modalContent.find('.' + item));
       });
     } //Set click handler
 
@@ -30612,13 +30621,27 @@ function cellShift(el, degree) {
 /***/ (function(module, exports) {
 
 //App-specific JS goes here
-window.suspendUser = function (id, name) {
-  console.log('Suspending user with ID: ' + id + ' (' + name + ') soon!');
+window.suspendUser = function (id, name, formId, paramInput) {
+  console.log('id');
+  console.log(id);
+  console.log('name');
+  console.log(name);
+  console.log('formId');
+  console.log(formId);
+  var form = $('#' + formId);
+  console.log('form');
+  console.log(form);
+  var suspendedDaysInput = form.find('input[name="suspendedDays"]');
+  console.log('suspendedDaysInput');
+  console.log(suspendedDaysInput);
+  console.log('paramInput');
+  console.log(paramInput);
+  suspendedDaysInput.val(paramInput.val());
   hideModal();
+  form.submit();
 };
 
 window.deleteUser = function (id, name, formId) {
-  console.log('Deleting user with ID: ' + id + ' (' + name + ') soon!');
   hideModal();
   $('#' + formId).submit();
 };

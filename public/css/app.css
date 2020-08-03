@@ -259,6 +259,26 @@
   color: #595959;
 }
 
+.btn.secondary {
+  border: 1px solid #002080;
+  background-color: #002080;
+}
+
+.btn.secondary:hover {
+  color: #fff;
+  background-color: #0033cc;
+}
+
+.btn.danger {
+  border: 1px solid #800000;
+  background-color: #800000;
+}
+
+.btn.danger:hover {
+  color: #fff;
+  background-color: #cc0000;
+}
+
 .btn-wrap {
   margin-bottom: -5px;
 }
@@ -525,6 +545,11 @@ h1 {
 .modal-content label.small,
 .cell label.small {
   font-size: 0.8rem;
+}
+
+.modal-content label.inline,
+.cell label.inline {
+  display: inline;
 }
 
 .modal-content input[type=email],

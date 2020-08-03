@@ -1,8 +1,9 @@
 {
   "suspendUser": {
     "title":"Suspend this user?",
-    "content": "<p>Suspend user <span class='username'></span> (ID: <span class='userId'></span>) for:</p><p><input type='number' class='short-field' step=1 min=0 value=30 /></p><p>days.</p>",
+    "content": "<p>Suspend user <span class='username'></span> (ID: <span class='userId'></span>) for:</p><p><input type='number' class='short-field suspendedDays' step=1 min=0 value=7 /></p><p>days.</p>",
     "paramDisplay": ["userId","username"],
+    "paramInput": ["suspendedDays"],
     "confirmFunction": "suspendUser",
     "confirmText": "Suspend",
     "cancelText": "Cancel"
@@ -11,6 +12,7 @@
     "title":"Delete this user?",
     "content": "<p>Do you really want to delete user <span class='username'></span> (ID: <span class='userId'></span>)?</p>",
     "paramDisplay": ["userId","username"],
+    "paramInput": [],
     "confirmFunction": "deleteUser",
     "confirmText": "Delete user",
     "cancelText": "Cancel"

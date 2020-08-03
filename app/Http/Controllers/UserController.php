@@ -131,4 +131,24 @@ class UserController extends Controller
           return redirect(route('users.index'))->with('success','Successfully deleted user "' . $userName . '" (ID: ' . $id .').');
         }
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @param  int  $days
+     * @return \Illuminate\Http\Response
+     */
+    public function suspend(Request $request, $id)
+    {
+      $user = User::find($id);
+      if($user) {
+        $days = $request->get('suspendedDays');
+        $userName = $user->name;
+        $user->suspended_till = date('Y-m-d H:i:s',strtotime('+' . $days . ' days'));
+        $user->save();
+        return redirect(route('users.index'))->with('success','User "' . $userName . '" suspended for ' . $days . ' days.');
+      }
+    }
 }
