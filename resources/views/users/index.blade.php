@@ -88,8 +88,12 @@
           <div class="cell x20">
             <span class="header-m">Username:</span>
             <span class="center-v">{{ $user->name }}</span>
-            @if($user->email_verified_at)
-              <i class="fas fa-check" title="Verified"></i>
+            @if($user->isSuspended())
+              <i class="fas fa-ban" title="Suspended"></i>
+            @else
+              @if($user->email_verified_at)
+                <i class="fas fa-check" title="Verified"></i>
+              @endif
             @endif
           </div>
           <div class="cell x20">

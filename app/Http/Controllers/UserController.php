@@ -44,7 +44,7 @@ class UserController extends Controller
               $query->where('last_login','<=',$to . ' 23:59:59');
             }
           })
-          ->paginate(2);
+          ->paginate(10);
 
         //Other output values
         $output->roles = UserRoles::getRoleList();
