@@ -1,12 +1,5 @@
 @extends('layouts.app')
 
-@php
-  if(isset($_GET['user']) && !empty($_GET['user'])) {
-    $userId = $_GET['user'];
-    $user = \App\User::find($userId);
-  }
-@endphp
-
 @section('content')
   <div class="centum">
       <div class="cell align-center">

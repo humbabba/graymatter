@@ -39,9 +39,7 @@ Route::middleware(['verified','suspended'])->group(function() {
       return view('not_authorized');
   })->name('not_authorized');
 
-  Route::get('/suspended', function () {
-      return view('suspended');
-  })->name('suspended')->withoutMiddleware('suspended');
+  Route::get('/suspended', 'SuspendedController@index')->name('suspended')->withoutMiddleware('suspended');
 
 });
 

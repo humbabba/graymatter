@@ -19,11 +19,10 @@ class CheckUserSuspended
         $now = date('Y-m-d H:i:s');
 
         if ($user->isSuspended()) {
-            return redirect(route('suspended',compact('user')));
+            return redirect(route('suspended'));
         } else {
           $user->nullSuspended();
         }
-
         return $next($request);
     }
 }
