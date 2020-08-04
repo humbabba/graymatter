@@ -21,7 +21,7 @@
     border: 1px solid $blue;
     background-color: $blue;
     &:hover {
-      color: $white;
+      color: $fc-base;
       background-color: $blue-light;
     }
   }
@@ -29,7 +29,7 @@
     border: 1px solid $red;
     background-color: $red;
     &:hover {
-      color: $white;
+      color: $fc-base;
       background-color: $red-light;
     }
   }

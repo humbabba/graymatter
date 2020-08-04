@@ -265,8 +265,8 @@
 }
 
 .btn.secondary:hover {
-  color: #fff;
-  background-color: #0033cc;
+  color: #595959;
+  background-color: #3366ff;
 }
 
 .btn.danger {
@@ -275,8 +275,8 @@
 }
 
 .btn.danger:hover {
-  color: #fff;
-  background-color: #cc0000;
+  color: #595959;
+  background-color: #ff4d4d;
 }
 
 .btn-wrap {

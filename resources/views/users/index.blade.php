@@ -58,19 +58,19 @@
     @if(0 < $output->users->total())
       <div class="centum">
         <div class="cell x10 header-d">
-          ID <span class="sorters" data-key="id"></span> 
+          ID <span class="sorters" data-key="id"></span>
         </div>
         <div class="cell x20 header-d">
-          Username
+          Username <span class="sorters" data-key="name"></span>
         </div>
         <div class="cell x20 header-d">
-          Email
+          Email <span class="sorters" data-key="email"></span>
         </div>
         <div class="cell x10 header-d">
-          Role
+          Role <span class="sorters" data-key="role"></span>
         </div>
         <div class="cell x20 header-d">
-          Last login
+          Last login <span class="sorters" data-key="last_login"></span> 
         </div>
         <div class="cell x20 header-d">
           Action

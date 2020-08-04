@@ -20,6 +20,8 @@ class UserController extends Controller
         $role = $request->get('role');
         $from = $request->get('from');
         $to = $request->get('to');
+        $orderBy = $request->get('orderBy') ?? 'id';
+        $direction = $request->get('direction') ?? 'asc';
 
         $output = new \stdClass();
 
@@ -44,6 +46,7 @@ class UserController extends Controller
               $query->where('last_login','<=',$to . ' 23:59:59');
             }
           })
+          ->orderBy($orderBy,$direction)
           ->paginate(10);
 
         //Other output values
