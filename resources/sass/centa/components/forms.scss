@@ -47,4 +47,15 @@
       border: 1px solid $red;
     }
   }
+
+  textarea {
+    border: 1px solid $secondary;
+    border-radius: $border-radius-base;
+    height: $textarea-height;
+    padding: $padding-base;
+    width: 100%;
+    &.is-invalid {
+      border: 1px solid $red;
+    }
+  }
 }

@@ -70,7 +70,7 @@
           Role <span class="sorters" data-key="role"></span>
         </div>
         <div class="cell x20 header-d">
-          Last login <span class="sorters" data-key="last_login"></span> 
+          Last login <span class="sorters" data-key="last_login"></span>
         </div>
         <div class="cell x20 header-d">
           Action
@@ -89,7 +89,7 @@
             <span class="header-m">Username:</span>
             <span class="center-v">{{ $user->name }}</span>
             @if($user->isSuspended())
-              <i class="fas fa-ban" title="Suspended till {{ $user->suspended_till }} UTC"></i>
+              <i class="fas fa-ban" title="Suspended till {{ $user->suspended_till }} {{ config('app.timezone') }}"></i>
             @else
               @if($user->email_verified_at)
                 <i class="fas fa-check" title="Verified"></i>

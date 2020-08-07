@@ -148,8 +148,10 @@ class UserController extends Controller
       $user = User::find($id);
       if($user) {
         $days = $request->get('suspendedDays');
+        $message = $request->get('suspendedMessage');
         $userName = $user->name;
         $user->suspended_till = date('Y-m-d H:i:s',strtotime('+' . $days . ' days'));
+        $user->suspended_message = $message;
         $user->save();
         return redirect(route('users.index'))->with('success','User "' . $userName . '" suspended for ' . $days . ' days.');
       }

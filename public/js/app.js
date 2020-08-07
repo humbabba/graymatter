@@ -30671,23 +30671,14 @@ addSortParams = function addSortParams(el, key) {
 
 //App-specific JS goes here
 window.suspendUser = function (id, name, formId, paramInput) {
-  console.log('id');
-  console.log(id);
-  console.log('name');
-  console.log(name);
-  console.log('formId');
-  console.log(formId);
   var form = $('#' + formId);
-  console.log('form');
-  console.log(form);
   var suspendedDaysInput = form.find('input[name="suspendedDays"]');
   console.log('suspendedDaysInput');
   console.log(suspendedDaysInput);
   console.log('paramInput');
   console.log(paramInput);
-  suspendedDaysInput.val(paramInput.val());
-  hideModal();
-  form.submit();
+  suspendedDaysInput.val(paramInput.val()); // hideModal();
+  // form.submit();
 };
 
 window.deleteUser = function (id, name, formId) {

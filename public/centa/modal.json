@@ -1,9 +1,9 @@
 {
   "suspendUser": {
     "title":"Suspend this user?",
-    "content": "<p>Suspend user <span class='username'></span> (ID: <span class='userId'></span>) for:</p><p><input type='number' class='short-field suspendedDays' step=1 min=0 value=7 /></p><p>days.</p>",
+    "content": "<p>Suspend user <span class='username'></span> (ID: <span class='userId'></span>) for:</p><p><input type='number' class='short-field suspendedDays' step=1 min=0 value=7 /></p><p>days.</p><p>Suspension message for user:</p><textarea class='suspendedMessage'></textarea>",
     "paramDisplay": ["userId","username"],
-    "paramInput": ["suspendedDays"],
+    "paramInput": ["suspendedDays","suspendedMessage"],
     "confirmFunction": "suspendUser",
     "confirmText": "Suspend",
     "cancelText": "Cancel"

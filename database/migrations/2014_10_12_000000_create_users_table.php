@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('role')->nullable();
             $table->timestamp('last_login')->nullable();
             $table->timestamp('suspended_till')->nullable();
+            $table->longText('suspended_message')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
