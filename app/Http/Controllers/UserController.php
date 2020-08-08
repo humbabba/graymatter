@@ -148,12 +148,23 @@ class UserController extends Controller
       $user = User::find($id);
       if($user) {
         $days = $request->get('suspendedDays');
+        if(!is_numeric($days)) {
+          return redirect(route('users.index'))->with('error','No suspension duration input found.');
+        }
         $message = $request->get('suspendedMessage');
         $userName = $user->name;
         $user->suspended_till = date('Y-m-d H:i:s',strtotime('+' . $days . ' days'));
         $user->suspended_message = $message;
         $user->save();
-        return redirect(route('users.index'))->with('success','User "' . $userName . '" suspended for ' . $days . ' days.');
+        if('0' === $days) {
+          return redirect(route('users.index'))->with('success','User "' . $userName . '" restored.');
+        }
+        $daysText = 'days';
+        if('1' === $days) {
+          $daysText = 'day';
+        }
+        return redirect(route('users.index'))->with('success','User "' . $userName . '" suspended for ' . $days . ' ' . $daysText . '.');
       }
+      return redirect(route('users.index'))->with('error','No user found with ID ' . $id . '.');
     }
 }
