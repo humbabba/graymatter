@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes(['verify' => true]);
+Auth::routes(['verify' => true,'register' => config('users.new.register')]);
 
 // Apply verified middleware to most routes
 Route::middleware(['verified','suspended'])->group(function() {
@@ -29,9 +29,7 @@ Route::middleware(['verified','suspended'])->group(function() {
 
     Route::get('users/{id}/suspend', 'UserController@suspend')->name('users.suspend');
 
-    Route::resource('users', 'UserController')->only([
-      'index', 'edit', 'update', 'destroy'
-    ]);
+    Route::resource('users', 'UserController');
   });
 
   //Access denied

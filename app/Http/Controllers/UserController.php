@@ -71,7 +71,12 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        //Check if user creation is allowed
+        abort_if(!config('users.new.create'),404);
+
+        $output = new \stdClass();
+        $output->roles = UserRoles::getRoleList();
+        return view('users.create',compact('output'));
     }
 
     /**

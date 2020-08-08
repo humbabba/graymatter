@@ -1,3 +1,4 @@
+form,
 .modal-content,
 .cell {
   label {
@@ -27,13 +28,7 @@
   }
 
   input[type="checkbox"] {
-    margin: 0 0 15px 0;
-  }
-
-  &.input-spacing {
-    & > input {
-      margin-bottom: $margin-base;
-    }
+    margin: 0 0 $margin-big 0;
   }
 
   select {
@@ -56,6 +51,15 @@
     width: 100%;
     &.is-invalid {
       border: 1px solid $red;
+    }
+  }
+}
+
+.input-spacing {
+  input {
+    margin-bottom: $margin-base;
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 }

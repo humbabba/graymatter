@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="centum ph10">
-    <div class="centum ph10">
+    <div class="cell pv0">
       <h1>@yield('view_title')</h1>
     </div>
 
@@ -22,9 +22,9 @@
           <div class="cell x20">
             <select name="role">
                 <option value="">Filter by role</option>
-              @foreach($output->roles as $index => $value)
-                <option value="{{ $index }}"{{ ($output->role === $index)? ' selected':'' }}>{{ $value }}</option>
-              @endforeach
+                @foreach($output->roles as $index => $value)
+                  <option value="{{ $index }}"{{ ($output->role === $index)? ' selected':'' }}>{{ $value }}</option>
+                @endforeach
                 <option value="">Clear filter</option>
             </select>
           </div>
@@ -51,8 +51,15 @@
         </div>
       </form>
     </div>
-    <div class="cell spacer-d"></div>
     {{-- End search filters --}}
+
+    @if(config('users.new.create'))
+      <div class="cell">
+        <a class="btn" href="{{ route('users.create') }}">Create user</a>
+      </div>
+    @else
+      <div class="cell spacer-d"></div>
+    @endif
 
     {{-- Begin desktop header --}}
     @if(0 < $output->users->total())

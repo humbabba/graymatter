@@ -537,21 +537,30 @@ h1 {
   margin: 10px 0;
 }
 
+form label,
 .modal-content label,
 .cell label {
   display: block;
 }
 
+form label.small,
 .modal-content label.small,
 .cell label.small {
   font-size: 0.8rem;
 }
 
+form label.inline,
 .modal-content label.inline,
 .cell label.inline {
   display: inline;
 }
 
+form input[type=email],
+form input[type=number],
+form input[type=password],
+form input[type=search],
+form input[type=date],
+form input[type=text],
 .modal-content input[type=email],
 .modal-content input[type=number],
 .modal-content input[type=password],
@@ -571,6 +580,12 @@ h1 {
   width: 100%;
 }
 
+form input[type=email].is-invalid,
+form input[type=number].is-invalid,
+form input[type=password].is-invalid,
+form input[type=search].is-invalid,
+form input[type=date].is-invalid,
+form input[type=text].is-invalid,
 .modal-content input[type=email].is-invalid,
 .modal-content input[type=number].is-invalid,
 .modal-content input[type=password].is-invalid,
@@ -586,16 +601,13 @@ h1 {
   border: 1px solid #800000;
 }
 
+form input[type=checkbox],
 .modal-content input[type=checkbox],
 .cell input[type=checkbox] {
   margin: 0 0 15px 0;
 }
 
-.modal-content.input-spacing > input,
-.cell.input-spacing > input {
-  margin-bottom: 10px;
-}
-
+form select,
 .modal-content select,
 .cell select {
   border: 1px solid #999999;
@@ -606,11 +618,13 @@ h1 {
   width: 100%;
 }
 
+form select.is-invalid,
 .modal-content select.is-invalid,
 .cell select.is-invalid {
   border: 1px solid #800000;
 }
 
+form textarea,
 .modal-content textarea,
 .cell textarea {
   border: 1px solid #999999;
@@ -620,9 +634,18 @@ h1 {
   width: 100%;
 }
 
+form textarea.is-invalid,
 .modal-content textarea.is-invalid,
 .cell textarea.is-invalid {
   border: 1px solid #800000;
+}
+
+.input-spacing input {
+  margin-bottom: 10px;
+}
+
+.input-spacing input:last-child {
+  margin-bottom: 0;
 }
 
 a {
