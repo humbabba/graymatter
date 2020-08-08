@@ -112,7 +112,8 @@
             <a class="btn" href="{{ route('users.edit', $user->id) }}">Edit</a>
             <form class="inline" action="{{ route('users.suspend', $user->id) }}" method="get" id="suspendUser{{ $user->id }}">
               @csrf
-              <input type="hidden" name="suspendedDays" value="7" />
+              <input type="hidden" name="suspendedDays" value="1" />
+              <input type="hidden" name="suspendedMessage" value="" />
               <input type="submit" class="btn secondary modal+suspendUser({{ $user->id }},{{ rawurlencode($user->name) }},suspendUser{{ $user->id }})" value="Suspend" />
             </form>
             <form class="inline" action="{{ route('users.destroy', $user->id) }}" method="post" id="deleteUser{{ $user->id }}">

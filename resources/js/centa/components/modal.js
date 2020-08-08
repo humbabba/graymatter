@@ -8,6 +8,8 @@ let modalContent = modalBackground.find('.modal-content');
 let modalCancel = modalBackground.find('.modal-cancel');
 let modalConfirm = modalBackground.find('.modal-confirm');
 
+$.ajaxSetup({ cache: false });
+
 //Init
 checkForModalTriggers();
 addModalClickHandlers();
@@ -51,7 +53,6 @@ hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() 
 //Configure this specific instance
 configureModal = (defines) => {
   let params = '';
-  let parts = '';
   let configName = defines.replace(/\(.*\)/,'');
 
   params = defines.match(/\((.*)\)/)[1].split(',');
@@ -75,7 +76,6 @@ configureModal = (defines) => {
 
 renderModal = (configs,params) => {
   if(configs) {
-
     //Make sure all configs are present
     let neededValues = ['title','content','paramDisplay','paramInput','confirmFunction','confirmText','cancelText'];
     for(let x of neededValues) {
@@ -106,13 +106,19 @@ renderModal = (configs,params) => {
     //Check for special inputs in the modal content
     let paramInput = configs.paramInput;
     if(paramInput.length) {
+      //Add each paramInput to an array
+      let paramInputArray = [];
       paramInput.forEach(function(item,index) {
-        params.push(modalContent.find('.' + item));
+        paramInputArray.push(modalContent.find('*[name="' + item + '"]'));
       });
+      //Add said array to params for passing to confirm function
+      params.push(paramInputArray);
     }
 
     //Set click handler
     modalConfirm.on('click',function(e) {
+      console.log('params:');
+      console.log(params);
       window[configs.confirmFunction].apply(null,params);
     });
 

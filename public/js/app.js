@@ -30307,7 +30307,10 @@ var modalTitleText = modalBackground.find('.modal-title-text');
 var modalCloser = modalBackground.find('.modal-closer');
 var modalContent = modalBackground.find('.modal-content');
 var modalCancel = modalBackground.find('.modal-cancel');
-var modalConfirm = modalBackground.find('.modal-confirm'); //Init
+var modalConfirm = modalBackground.find('.modal-confirm');
+$.ajaxSetup({
+  cache: false
+}); //Init
 
 checkForModalTriggers();
 addModalClickHandlers();
@@ -30360,7 +30363,6 @@ hideModal = function hideModal() {
 
 configureModal = function configureModal(defines) {
   var params = '';
-  var parts = '';
   var configName = defines.replace(/\(.*\)/, '');
   params = defines.match(/\((.*)\)/)[1].split(','); //Remove URL encoding
 
@@ -30418,13 +30420,19 @@ renderModal = function renderModal(configs, params) {
     var paramInput = configs.paramInput;
 
     if (paramInput.length) {
+      //Add each paramInput to an array
+      var paramInputArray = [];
       paramInput.forEach(function (item, index) {
-        params.push(modalContent.find('.' + item));
-      });
+        paramInputArray.push(modalContent.find('*[name="' + item + '"]'));
+      }); //Add said array to params for passing to confirm function
+
+      params.push(paramInputArray);
     } //Set click handler
 
 
     modalConfirm.on('click', function (e) {
+      console.log('params:');
+      console.log(params);
       window[configs.confirmFunction].apply(null, params);
     }); //Finally, display it
 
@@ -30671,14 +30679,16 @@ addSortParams = function addSortParams(el, key) {
 
 //App-specific JS goes here
 window.suspendUser = function (id, name, formId, paramInput) {
-  var form = $('#' + formId);
-  var suspendedDaysInput = form.find('input[name="suspendedDays"]');
-  console.log('suspendedDaysInput');
-  console.log(suspendedDaysInput);
   console.log('paramInput');
   console.log(paramInput);
-  suspendedDaysInput.val(paramInput.val()); // hideModal();
-  // form.submit();
+  var form = $('#' + formId); //Match the modal inputs to the hidden form fields with the same names, set their values based on modal input
+
+  paramInput.forEach(function (item, index) {
+    var hiddenFormField = form.find('[name="' + item.prop('name') + '"]');
+    hiddenFormField.val(item.val());
+  });
+  hideModal();
+  form.submit();
 };
 
 window.deleteUser = function (id, name, formId) {
