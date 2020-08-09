@@ -34,7 +34,7 @@ form,
   select {
     border: 1px solid $secondary;
     border-radius: $border-radius-base;
-    height: 100%;
+    height: $lh-base;
     max-height: $lh-big;
     padding: 0 $padding-base;
     width: 100%;

@@ -72,6 +72,67 @@ h1
     padding-top: 20px !important;
     padding-bottom: 20px !important;
   }
+
+  //Max desktop widths
+  @media only screen and (min-width: $break) {
+    &.x-max100 {
+      max-width: 100px;
+    }
+    &.x-max150 {
+      max-width: 150px;
+    }
+    &.x-max200 {
+      max-width: 200px;
+    }
+    &.x-max250 {
+      max-width: 250px;
+    }
+    &.x-max300 {
+      max-width: 300px;
+    }
+    &.x-max350 {
+      max-width: 350px;
+    }
+    &.x-max400 {
+      max-width: 400px;
+    }
+    &.x-max450 {
+      max-width: 450px;
+    }
+    &.x-max500 {
+      max-width: 500px;
+    }
+    &.x-max550 {
+      max-width: 550px;
+    }
+    &.x-max600 {
+      max-width: 600px;
+    }
+    &.x-max650 {
+      max-width: 650px;
+    }
+    &.x-max700 {
+      max-width: 700px;
+    }
+    &.x-max750 {
+      max-width: 750px;
+    }
+    &.x-max800 {
+      max-width: 800px;
+    }
+    &.x-max850 {
+      max-width: 850px;
+    }
+    &.x-max900 {
+      max-width: 900px;
+    }
+    &.x-max950 {
+      max-width: 950px;
+    }
+    &.x-max1000 {
+      max-width: 1000px;
+    }
+  }
 }
 
 /*Borders*/

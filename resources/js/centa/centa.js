@@ -7,3 +7,4 @@ require('./components/modal');
 require('./components/nav');
 require('./components/shift');
 require('./components/sorters');
+require('./components/texteditor');
