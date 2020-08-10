@@ -36,7 +36,7 @@
           </div>
           <div class="cell pv0">
             <label>Bio</label>
-            <textarea></textarea>
+            <intput type="text" name="bio" class="text-editor" />
           </div>
         </div>
       </div>

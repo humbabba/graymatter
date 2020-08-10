@@ -30682,10 +30682,18 @@ addSortParams = function addSortParams(el, key) {
 initTextEdtitors = function initTextEdtitors() {
   var textEditors = $('.text-editor');
   console.log('Found ' + textEditors.length + ' text editors.');
+
+  if (0 < textEditors.length) {
+    textEditors.each(function (index, el) {
+      makeTextEditor($(el), false);
+    });
+  }
 };
 
 function makeTextEditor(el, callback) {
-  //Div to hold editor-input combo
+  console.log('el');
+  console.log(el); //Div to hold editor-input combo
+
   var editor = $('<div>'); //Toolbar div and tools
 
   var toolbar = $('<div>');
@@ -30784,11 +30792,12 @@ function makeTextEditor(el, callback) {
       return true;
     }
 
-    var tool = $('<i class="pointer toolbar-button">');
+    var tool = $('<i class="toolbar-button">');
     tool.addClass(item["class"]);
     tool.on('mousedown', function (e) {
       e.preventDefault();
       var input = null;
+      var copyDiv, codeDiv;
 
       switch (item.tool) {
         case 'createLink':
@@ -30819,8 +30828,8 @@ function makeTextEditor(el, callback) {
           break;
 
         case 'clearFormat':
-          var copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
-          var codeDiv = $(this).parent().parent().find('.code-editor').first();
+          copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
+          codeDiv = $(this).parent().parent().find('.code-editor').first();
           var numberOfLinks = copyDiv.find('a').length;
           var targetInput = copyDiv.next('.richText');
           var x = 0;
@@ -30845,8 +30854,8 @@ function makeTextEditor(el, callback) {
           break;
 
         case 'toggleCode':
-          var copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
-          var codeDiv = $(this).parent().parent().find('.code-editor').first();
+          copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
+          codeDiv = $(this).parent().parent().find('.code-editor').first();
           var buttonsToToggle = $(this).parent().parent().find('.toolbar-button').not('.fa-code');
           var spacersToToggle = $(this).parent().parent().find('.spacer');
           buttonsToToggle.toggle();

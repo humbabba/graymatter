@@ -3,15 +3,22 @@
 initTextEdtitors = () => {
   let textEditors = $('.text-editor');
   console.log('Found ' + textEditors.length + ' text editors.');
+  if(0 < textEditors.length) {
+    textEditors.each(function(index,el) {
+      makeTextEditor($(el),false);
+    });
+  }
 }
 
 function makeTextEditor(el,callback) {
+  console.log('el');
+  console.log(el);
     //Div to hold editor-input combo
-    var editor = $('<div>');
+    let editor = $('<div>');
 
     //Toolbar div and tools
-    var toolbar = $('<div>');
-    var toolsArray = [
+    let toolbar = $('<div>');
+    let toolsArray = [
         {class:'fas fa-bold',tool: 'bold'},
         {class:'fas fa-italic',tool: 'italic'},
         {class:'fas fa-underline',tool: 'underline'},
@@ -44,15 +51,16 @@ function makeTextEditor(el,callback) {
     ];
     $(toolsArray).each(function(index,item) {
         if('spacer' === item.class) {
-            var spacer = $('<span class="spacer">');
+            let spacer = $('<span class="spacer">');
             toolbar.append(spacer);
             return true;
         }
-        var tool = $('<i class="pointer toolbar-button">');
+        let tool = $('<i class="toolbar-button">');
         tool.addClass(item.class);
         tool.on('mousedown',function(e) {
             e.preventDefault();
-            var input = null;
+            let input = null;
+            let copyDiv,codeDiv;
             switch(item.tool) {
                 case 'createLink':
                     input = prompt('Enter URL:');
@@ -73,11 +81,11 @@ function makeTextEditor(el,callback) {
                     }
                     break;
                 case 'clearFormat':
-                    var copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
-                    var codeDiv = $(this).parent().parent().find('.code-editor').first();
-                    var numberOfLinks = copyDiv.find('a').length;
-                    var targetInput = copyDiv.next('.richText');
-                    var x = 0;
+                    copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
+                    codeDiv = $(this).parent().parent().find('.code-editor').first();
+                    let numberOfLinks = copyDiv.find('a').length;
+                    let targetInput = copyDiv.next('.richText');
+                    let x = 0;
                     while(copyDiv.find('*').length > numberOfLinks) {
                         copyDiv.children().each(function(index,el) {
                             stripTags(el);
@@ -93,10 +101,10 @@ function makeTextEditor(el,callback) {
                     showUnsavedFlag();
                     break;
                 case 'toggleCode':
-                    var copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
-                    var codeDiv = $(this).parent().parent().find('.code-editor').first();
-                    var buttonsToToggle = $(this).parent().parent().find('.toolbar-button').not('.fa-code');
-                    var spacersToToggle = $(this).parent().parent().find('.spacer');
+                    copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
+                    codeDiv = $(this).parent().parent().find('.code-editor').first();
+                    let buttonsToToggle = $(this).parent().parent().find('.toolbar-button').not('.fa-code');
+                    let spacersToToggle = $(this).parent().parent().find('.spacer');
                     buttonsToToggle.toggle();
                     spacersToToggle.toggle();
                     copyDiv.toggle();
@@ -111,10 +119,10 @@ function makeTextEditor(el,callback) {
     });
 
     //Make edit elements
-    var codeEditArea = $('<textarea style="display:none">');
+    let codeEditArea = $('<textarea style="display:none">');
     codeEditArea.addClass('form-control');
     codeEditArea.addClass('code-editor');
-    var editArea = $('<div contenteditable="true">');
+    let editArea = $('<div contenteditable="true">');
     editArea.addClass('form-control');
     editArea.addClass('fancy-text-div');
     editor.append(toolbar);
