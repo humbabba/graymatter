@@ -36,7 +36,7 @@
           </div>
           <div class="cell pv0">
             <label>Bio</label>
-            <intput type="text" name="bio" class="text-editor" />
+            <input type="hidden" name="bio" class="richText" value="" />
           </div>
         </div>
       </div>

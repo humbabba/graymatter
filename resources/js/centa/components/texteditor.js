@@ -1,13 +1,19 @@
 
 
 initTextEdtitors = () => {
-  let textEditors = $('.text-editor');
-  console.log('Found ' + textEditors.length + ' text editors.');
-  if(0 < textEditors.length) {
-    textEditors.each(function(index,el) {
-      makeTextEditor($(el),false);
-    });
-  }
+  //Turn fancyText hidden fields into rich-text editors on load
+  $('input[type="hidden"]').each(function(index,item) {
+    console.log('Found hidden input');
+    console.log(item);
+      if($(item).hasClass('richText')) {
+        console.log('Found richText');
+          var newElement = $(item).clone();
+          var fancyEditor = makeTextEditor(newElement, function () {
+              showUnsavedFlag(documentForm);
+          });
+          $(item).replaceWith(fancyEditor);
+      }
+  });
 }
 
 function makeTextEditor(el,callback) {
