@@ -19,6 +19,8 @@ form,
   input[type="text"] {
     border: 1px solid $secondary;
     border-radius: $border-radius-base;
+    font-size: $fs-form;
+    line-height: $lh-small;
     height: $lh-base;
     padding: 0 $padding-base;
     width: 100%;
@@ -48,6 +50,8 @@ form,
     border-radius: $border-radius-base;
     height: $textarea-height;
     padding: $padding-base;
+    resize: vertical;
+    overflow: auto;
     width: 100%;
     &.is-invalid {
       border: 1px solid $red;

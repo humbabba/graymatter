@@ -1,6 +1,7 @@
 // Typography
 $ff-base: 'Mukta', sans-serif;
 $fs-small: 0.8rem;
+$fs-form: 0.83rem;
 $fs-button: 0.9rem;
 $fs-base: 1rem;
 $fs-big: 1.3rem;
@@ -59,6 +60,6 @@ $main-height: calc(100vh - 104px); //This 100vh minus the sum of $nav-height and
 $modal-max-width: 500px;
 $short-field: 100px; //The max width of fileds for very short inputs, such as 2- or 3-digit numbers
 $sorter-top: -5px; //Used to align the sorter icon vertically
-$textarea-height: 50px;
+$textarea-height: 100px;
 
 $transition: 0.4s;

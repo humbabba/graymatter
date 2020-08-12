@@ -1,0 +1,30 @@
+.toolbar {
+  .toolbar-button {
+    background-color: $primary;
+    border-radius: $border-radius-base;
+    color: $fc-light;
+    cursor: pointer;
+    font-size: $fs-small;
+    margin-right: $margin-tiny;
+    padding: $padding-small;
+  }
+  .spacer {
+    margin: $margin-small;
+  }
+  margin-bottom: $margin-base;
+}
+.fancy-text-div {
+    border: 1px solid $secondary;
+    border-radius: $border-radius-base;
+    color: $black;
+    font-size: $fs-form;
+    line-height: $lh-small;
+    height: $textarea-height;
+    padding: $padding-base;
+    resize: vertical;
+    overflow: auto;
+    width: 100%;
+    &.is-invalid {
+      border: 1px solid $red;
+    }
+}

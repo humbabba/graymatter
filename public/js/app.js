@@ -30266,7 +30266,7 @@ __webpack_require__(/*! ./components/shift */ "./resources/js/centa/components/s
 
 __webpack_require__(/*! ./components/sorters */ "./resources/js/centa/components/sorters.js");
 
-__webpack_require__(/*! ./components/texteditor */ "./resources/js/centa/components/texteditor.js");
+__webpack_require__(/*! ./components/text-editor */ "./resources/js/centa/components/text-editor.js");
 
 /***/ }),
 
@@ -30672,10 +30672,10 @@ addSortParams = function addSortParams(el, key) {
 
 /***/ }),
 
-/***/ "./resources/js/centa/components/texteditor.js":
-/*!*****************************************************!*\
-  !*** ./resources/js/centa/components/texteditor.js ***!
-  \*****************************************************/
+/***/ "./resources/js/centa/components/text-editor.js":
+/*!******************************************************!*\
+  !*** ./resources/js/centa/components/text-editor.js ***!
+  \******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -30685,8 +30685,8 @@ initTextEdtitors = function initTextEdtitors() {
     console.log('Found hidden input');
     console.log(item);
 
-    if ($(item).hasClass('richText')) {
-      console.log('Found richText');
+    if ($(item).hasClass('text-editor')) {
+      console.log('Found text-editor');
       var newElement = $(item).clone();
       var fancyEditor = makeTextEditor(newElement, function () {
         showUnsavedFlag(documentForm);
@@ -30702,7 +30702,7 @@ function makeTextEditor(el, callback) {
 
   var editor = $('<div>'); //Toolbar div and tools
 
-  var toolbar = $('<div>');
+  var toolbar = $('<div class="toolbar">');
   var toolsArray = [{
     "class": 'fas fa-bold',
     tool: 'bold'
@@ -30837,7 +30837,7 @@ function makeTextEditor(el, callback) {
           copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
           codeDiv = $(this).parent().parent().find('.code-editor').first();
           var numberOfLinks = copyDiv.find('a').length;
-          var targetInput = copyDiv.next('.richText');
+          var targetInput = copyDiv.next('.text-editor');
           var x = 0;
 
           while (copyDiv.find('*').length > numberOfLinks) {
@@ -30879,10 +30879,8 @@ function makeTextEditor(el, callback) {
   }); //Make edit elements
 
   var codeEditArea = $('<textarea style="display:none">');
-  codeEditArea.addClass('form-control');
   codeEditArea.addClass('code-editor');
   var editArea = $('<div contenteditable="true">');
-  editArea.addClass('form-control');
   editArea.addClass('fancy-text-div');
   editor.append(toolbar);
   editor.append(codeEditArea);

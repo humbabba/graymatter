@@ -5,8 +5,8 @@ initTextEdtitors = () => {
   $('input[type="hidden"]').each(function(index,item) {
     console.log('Found hidden input');
     console.log(item);
-      if($(item).hasClass('richText')) {
-        console.log('Found richText');
+      if($(item).hasClass('text-editor')) {
+        console.log('Found text-editor');
           var newElement = $(item).clone();
           var fancyEditor = makeTextEditor(newElement, function () {
               showUnsavedFlag(documentForm);
@@ -23,7 +23,7 @@ function makeTextEditor(el,callback) {
     let editor = $('<div>');
 
     //Toolbar div and tools
-    let toolbar = $('<div>');
+    let toolbar = $('<div class="toolbar">');
     let toolsArray = [
         {class:'fas fa-bold',tool: 'bold'},
         {class:'fas fa-italic',tool: 'italic'},
@@ -90,7 +90,7 @@ function makeTextEditor(el,callback) {
                     copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
                     codeDiv = $(this).parent().parent().find('.code-editor').first();
                     let numberOfLinks = copyDiv.find('a').length;
-                    let targetInput = copyDiv.next('.richText');
+                    let targetInput = copyDiv.next('.text-editor');
                     let x = 0;
                     while(copyDiv.find('*').length > numberOfLinks) {
                         copyDiv.children().each(function(index,el) {
@@ -126,10 +126,8 @@ function makeTextEditor(el,callback) {
 
     //Make edit elements
     let codeEditArea = $('<textarea style="display:none">');
-    codeEditArea.addClass('form-control');
     codeEditArea.addClass('code-editor');
     let editArea = $('<div contenteditable="true">');
-    editArea.addClass('form-control');
     editArea.addClass('fancy-text-div');
     editor.append(toolbar);
     editor.append(codeEditArea);

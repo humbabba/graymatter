@@ -691,6 +691,8 @@ form input[type=text],
 .cell input[type=text] {
   border: 1px solid #999999;
   border-radius: 5px;
+  font-size: 0.83rem;
+  line-height: 1rem;
   height: 1.6rem;
   padding: 0 10px;
   width: 100%;
@@ -745,8 +747,10 @@ form textarea,
 .cell textarea {
   border: 1px solid #999999;
   border-radius: 5px;
-  height: 50px;
+  height: 100px;
   padding: 10px;
+  resize: vertical;
+  overflow: auto;
   width: 100%;
 }
 
@@ -1132,6 +1136,41 @@ span.striped-odd:nth-child(odd) {
 .giant {
   font-size: 6rem;
   line-height: 6.2rem;
+}
+
+.toolbar {
+  margin-bottom: 10px;
+}
+
+.toolbar .toolbar-button {
+  background-color: #595959;
+  border-radius: 5px;
+  color: #e6e6e6;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-right: 2px;
+  padding: 5px;
+}
+
+.toolbar .spacer {
+  margin: 5px;
+}
+
+.fancy-text-div {
+  border: 1px solid #999999;
+  border-radius: 5px;
+  color: #000;
+  font-size: 0.83rem;
+  line-height: 1rem;
+  height: 100px;
+  padding: 10px;
+  resize: vertical;
+  overflow: auto;
+  width: 100%;
+}
+
+.fancy-text-div.is-invalid {
+  border: 1px solid #800000;
 }
 
 /*Project-specific styles go here*/
