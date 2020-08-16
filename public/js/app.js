@@ -30254,7 +30254,13 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /***/ (function(module, exports, __webpack_require__) {
 
 //Define path to modal configs
-window.modalConfigsPath = '/centa/modal.json'; //Included components
+window.modalConfigsPath = '/centa/modal.json'; //Define the default callback for changes in text-editor
+//Set to false for no callback
+
+window.textEditorDefaultCallback = function () {
+  showUnsavedFlag(documentForm);
+}; //Included components
+
 
 __webpack_require__(/*! ./components/alerts */ "./resources/js/centa/components/alerts.js");
 
@@ -30681,8 +30687,9 @@ addSortParams = function addSortParams(el, key) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-initTextEdtitors = function initTextEdtitors(callback) {
-  //Turn fancyText hidden fields into rich-text editors on load
+initTextEdtitors = function initTextEdtitors() {
+  var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function (index, item) {
     if ($(item).hasClass('text-editor')) {
       //Bail if it's already a text-editor
@@ -30695,24 +30702,73 @@ initTextEdtitors = function initTextEdtitors(callback) {
       var newElement = $(item).clone();
       var fancyEditor = makeTextEditor(newElement, callback);
       var toolbar = fancyEditor.find('.toolbar');
+      insertMoreTools(toolbar);
       $(item).replaceWith(fancyEditor);
       processToolbarForWidth(toolbar);
     }
   });
 };
 
-processToolbarForWidth = function processToolbarForWidth(toolbar) {
+insertMoreTools = function insertMoreTools(toolbar) {
+  var moreToolsContainer = $('<span class="more-tools-container">');
+  moreToolsContainer.on('click', function () {
+    $(this).next('.more-tools-holder').fadeToggle();
+  });
+  var moreToolsButton = $('<i class="toolbar-button fas fa-ellipsis-h" title="Show/hide tools">');
+  var moreToolsHolder = $('<div class="more-tools-holder">');
+  moreToolsContainer.append(moreToolsButton);
+  moreToolsContainer.insertAfter(toolbar);
+  moreToolsHolder.insertAfter(moreToolsContainer);
+};
+
+processToolbarForWidth = function (_processToolbarForWidth) {
+  function processToolbarForWidth(_x) {
+    return _processToolbarForWidth.apply(this, arguments);
+  }
+
+  processToolbarForWidth.toString = function () {
+    return _processToolbarForWidth.toString();
+  };
+
+  return processToolbarForWidth;
+}(function (toolbar) {
+  var moreToolsHolder = toolbar.parent().find('.more-tools-holder');
   var toolbarWidth = toolbar.outerWidth();
   var childrenWidth = 0;
   toolbar.children().each(function (index, item) {
-    var childWidth = $(item).outerWidth(true);
-    childrenWidth += childWidth;
+    var moreToolsContainer = toolbar.next('.more-tools-container');
+    var moreToolsContainerWidth = moreToolsContainer.outerWidth(true);
+    var child = $(item);
+    childrenWidth += child.outerWidth(true);
 
-    if (childrenWidth > toolbar.outerWidth() + 1) {
-      $(item).remove();
+    if ('none' === moreToolsContainer.css('display')) {
+      if (childrenWidth > toolbar.outerWidth()) {
+        moreToolsHolder.append(child);
+        moreToolsContainer.show();
+        processToolbarForWidth(toolbar);
+      }
+    } else {
+      if (childrenWidth > toolbar.outerWidth() - moreToolsContainerWidth) {
+        moreToolsHolder.append(child);
+      }
     }
   });
-};
+}); //Handle window resize events viz. text-editors
+//This will make sure the toolbars display correctly
+
+
+$(window).resize(function () {
+  //Find them all
+  var textEditors = $('.textEditorMasterDiv');
+  textEditors.each(function (index, el) {
+    //Find the hidden input at the core of each
+    var hiddenInput = $(el).find('input[type="hidden"]').first(); //Reset hidden input in DOM instead of text-editor
+
+    $(el).replaceWith(hiddenInput);
+  }); //Reinitialize all text editors
+
+  initTextEdtitors(textEditorDefaultCallback);
+});
 
 makeTextEditor = function makeTextEditor(el) {
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -30722,91 +30778,112 @@ makeTextEditor = function makeTextEditor(el) {
   var toolbar = $('<div class="toolbar">');
   var toolsArray = [{
     "class": 'fas fa-bold',
-    tool: 'bold'
+    tool: 'bold',
+    title: 'Bold'
   }, {
     "class": 'fas fa-italic',
-    tool: 'italic'
+    tool: 'italic',
+    title: 'Italic'
   }, {
     "class": 'fas fa-underline',
-    tool: 'underline'
+    tool: 'underline',
+    title: 'Underline'
   }, {
     "class": 'fas fa-strikethrough',
-    tool: 'strikeThrough'
+    tool: 'strikeThrough',
+    title: 'Strikethrough'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-minus',
-    tool: 'insertHorizontalRule'
+    tool: 'insertHorizontalRule',
+    title: 'Horizontal rule'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-link',
-    tool: 'createLink'
+    tool: 'createLink',
+    title: 'Link'
   }, {
     "class": 'fas fa-unlink',
-    tool: 'unlink'
+    tool: 'unlink',
+    title: 'Unlink'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-indent',
-    tool: 'indent'
+    tool: 'indent',
+    title: 'Indent'
   }, {
     "class": 'fas fa-outdent',
-    tool: 'outdent'
+    tool: 'outdent',
+    title: 'Outdent'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-list-ol',
-    tool: 'insertOrderedList'
+    tool: 'insertOrderedList',
+    title: 'Ordered list'
   }, {
     "class": 'fas fa-list-ul',
-    tool: 'insertUnorderedList'
+    tool: 'insertUnorderedList',
+    title: 'Unordered list'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-text-height',
-    tool: 'fontSize'
+    tool: 'fontSize',
+    title: 'Font size'
   }, {
     "class": 'fas fa-palette',
-    tool: 'foreColor'
+    tool: 'foreColor',
+    title: 'Font color'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-align-center',
-    tool: 'justifyCenter'
+    tool: 'justifyCenter',
+    title: 'Center'
   }, {
     "class": 'fas fa-align-justify',
-    tool: 'justifyFull'
+    tool: 'justifyFull',
+    title: 'Justify'
   }, {
     "class": 'fas fa-align-left',
-    tool: 'justifyLeft'
+    tool: 'justifyLeft',
+    title: 'Aling left'
   }, {
     "class": 'fas fa-align-right',
-    tool: 'justifyRight'
+    tool: 'justifyRight',
+    title: 'Align right'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-subscript',
-    tool: 'subscript'
+    tool: 'subscript',
+    title: 'Subscript'
   }, {
     "class": 'fas fa-superscript',
-    tool: 'superscript'
+    tool: 'superscript',
+    title: 'Superscript'
   }, {
     "class": 'spacer',
     tool: 'none'
   }, {
     "class": 'fas fa-minus-circle',
-    tool: 'clearFormat'
+    tool: 'clearFormat',
+    title: 'Clear all formatting'
   }, {
     "class": 'fas fa-code',
-    tool: 'toggleCode'
+    tool: 'toggleCode',
+    title: 'Toggle code view'
   }];
   $(toolsArray).each(function (index, item) {
     if ('spacer' === item["class"]) {
@@ -30817,6 +30894,7 @@ makeTextEditor = function makeTextEditor(el) {
 
     var tool = $('<i class="toolbar-button">');
     tool.addClass(item["class"]);
+    tool.prop('title', item.title);
     tool.on('mousedown', function (e) {
       e.preventDefault();
       var input = null;
@@ -30893,11 +30971,7 @@ makeTextEditor = function makeTextEditor(el) {
       }
     });
     toolbar.append(tool);
-  });
-  var moreToolsContainer = $('<div class="more-tools-container">');
-  var moreTools = $('<i class="toolbar-button fas fa-ellipsis-h">');
-  moreToolsContainer.append(moreTools);
-  toolbar.append(moreToolsContainer); //Make edit elements
+  }); //Make edit elements
 
   var codeEditArea = $('<textarea style="display:none">');
   codeEditArea.addClass('code-editor');
@@ -30984,12 +31058,10 @@ function stripTags(el) {
   } else {
     $(el).replaceWith($(el).contents());
   }
-} //Init on load, then whenever called; include showUnsavedFlag as callback
+} //Init on load; include showUnsavedFlag as callback
 
 
-initTextEdtitors(function () {
-  showUnsavedFlag(documentForm);
-});
+initTextEdtitors(textEditorDefaultCallback);
 
 /***/ }),
 

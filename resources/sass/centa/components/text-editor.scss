@@ -1,3 +1,5 @@
+.more-tools-container,
+.more-tools-holder,
 .toolbar {
   display: inline-block;
   .toolbar-button {
@@ -11,6 +13,9 @@
   }
   .spacer {
     margin: $margin-small;
+    &:first-child {
+      display: none;
+    }
   }
   margin-bottom: $margin-base;
 }
@@ -28,4 +33,11 @@
     &.is-invalid {
       border: 1px solid $red;
     }
+}
+.more-tools-holder {
+  display: none;
+  max-width: 100%;
+}
+.more-tools-container {
+  display: none;
 }

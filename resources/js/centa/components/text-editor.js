@@ -1,7 +1,5 @@
-
-
-initTextEdtitors = (callback) => {
-  //Turn fancyText hidden fields into rich-text editors on load
+initTextEdtitors = (callback = false) => {
+  //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function(index,item) {
       if($(item).hasClass('text-editor')) {
 
@@ -14,23 +12,66 @@ initTextEdtitors = (callback) => {
         let newElement = $(item).clone();
         let fancyEditor = makeTextEditor(newElement,callback);
         let toolbar = fancyEditor.find('.toolbar');
+
+        insertMoreTools(toolbar);
+
         $(item).replaceWith(fancyEditor);
         processToolbarForWidth(toolbar);
       }
   });
 }
 
+insertMoreTools = toolbar => {
+  let moreToolsContainer = $('<span class="more-tools-container">');
+  moreToolsContainer.on('click',function() {
+    $(this).next('.more-tools-holder').fadeToggle();
+  });
+  let moreToolsButton = $('<i class="toolbar-button fas fa-ellipsis-h" title="Show/hide tools">');
+  let moreToolsHolder = $('<div class="more-tools-holder">')
+  moreToolsContainer.append(moreToolsButton);
+  moreToolsContainer.insertAfter(toolbar);
+  moreToolsHolder.insertAfter(moreToolsContainer);
+}
+
 processToolbarForWidth = toolbar => {
+  let moreToolsHolder = toolbar.parent().find('.more-tools-holder');
   let toolbarWidth = toolbar.outerWidth();
   let childrenWidth = 0;
   toolbar.children().each(function(index,item) {
-    let childWidth = $(item).outerWidth(true);
-    childrenWidth += childWidth;
-    if(childrenWidth > (toolbar.outerWidth()) + 1) {
-      $(item).remove();
+    let moreToolsContainer = toolbar.next('.more-tools-container');
+    let moreToolsContainerWidth = moreToolsContainer.outerWidth(true);
+    let child = $(item);
+    childrenWidth += child.outerWidth(true);
+    if('none' === moreToolsContainer.css('display')) {
+      if(childrenWidth > toolbar.outerWidth()) {
+        moreToolsHolder.append(child);
+        moreToolsContainer.show();
+        processToolbarForWidth(toolbar);
+      }
+    } else {
+      if(childrenWidth > (toolbar.outerWidth() - moreToolsContainerWidth)) {
+        moreToolsHolder.append(child);
+      }
     }
   });
 }
+
+//Handle window resize events viz. text-editors
+//This will make sure the toolbars display correctly
+$(window).resize(function() {
+  //Find them all
+  let textEditors = $('.textEditorMasterDiv');
+
+  textEditors.each(function(index,el) {
+    //Find the hidden input at the core of each
+    let hiddenInput = $(el).find('input[type="hidden"]').first();
+    //Reset hidden input in DOM instead of text-editor
+    $(el).replaceWith(hiddenInput);
+  });
+
+  //Reinitialize all text editors
+  initTextEdtitors(textEditorDefaultCallback);
+});
 
 makeTextEditor = (el,callback = false) => {
     //Div to hold editor-input combo
@@ -39,35 +80,35 @@ makeTextEditor = (el,callback = false) => {
     //Toolbar div and tools
     let toolbar = $('<div class="toolbar">');
     let toolsArray = [
-        {class:'fas fa-bold',tool: 'bold'},
-        {class:'fas fa-italic',tool: 'italic'},
-        {class:'fas fa-underline',tool: 'underline'},
-        {class:'fas fa-strikethrough',tool: 'strikeThrough'},
+        {class:'fas fa-bold',tool: 'bold',title: 'Bold'},
+        {class:'fas fa-italic',tool: 'italic',title: 'Italic'},
+        {class:'fas fa-underline',tool: 'underline',title: 'Underline'},
+        {class:'fas fa-strikethrough',tool: 'strikeThrough',title: 'Strikethrough'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-minus',tool: 'insertHorizontalRule'},
+        {class:'fas fa-minus',tool: 'insertHorizontalRule',title: 'Horizontal rule'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-link',tool: 'createLink'},
-        {class:'fas fa-unlink',tool: 'unlink'},
+        {class:'fas fa-link',tool: 'createLink',title: 'Link'},
+        {class:'fas fa-unlink',tool: 'unlink',title: 'Unlink'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-indent',tool: 'indent'},
-        {class:'fas fa-outdent',tool: 'outdent'},
+        {class:'fas fa-indent',tool: 'indent',title: 'Indent'},
+        {class:'fas fa-outdent',tool: 'outdent',title: 'Outdent'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-list-ol',tool: 'insertOrderedList'},
-        {class:'fas fa-list-ul',tool: 'insertUnorderedList'},
+        {class:'fas fa-list-ol',tool: 'insertOrderedList',title: 'Ordered list'},
+        {class:'fas fa-list-ul',tool: 'insertUnorderedList',title: 'Unordered list'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-text-height',tool: 'fontSize'},
-        {class:'fas fa-palette',tool: 'foreColor'},
+        {class:'fas fa-text-height',tool: 'fontSize',title: 'Font size'},
+        {class:'fas fa-palette',tool: 'foreColor',title: 'Font color'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-align-center',tool: 'justifyCenter'},
-        {class:'fas fa-align-justify',tool: 'justifyFull'},
-        {class:'fas fa-align-left',tool: 'justifyLeft'},
-        {class:'fas fa-align-right',tool: 'justifyRight'},
+        {class:'fas fa-align-center',tool: 'justifyCenter',title: 'Center'},
+        {class:'fas fa-align-justify',tool: 'justifyFull',title: 'Justify'},
+        {class:'fas fa-align-left',tool: 'justifyLeft',title: 'Aling left'},
+        {class:'fas fa-align-right',tool: 'justifyRight',title: 'Align right'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-subscript',tool: 'subscript'},
-        {class:'fas fa-superscript',tool: 'superscript'},
+        {class:'fas fa-subscript',tool: 'subscript',title: 'Subscript'},
+        {class:'fas fa-superscript',tool: 'superscript',title: 'Superscript'},
         {class:'spacer',tool: 'none'},
-        {class:'fas fa-minus-circle',tool: 'clearFormat'},
-        {class:'fas fa-code',tool: 'toggleCode'},
+        {class:'fas fa-minus-circle',tool: 'clearFormat',title: 'Clear all formatting'},
+        {class:'fas fa-code',tool: 'toggleCode',title: 'Toggle code view'},
     ];
     $(toolsArray).each(function(index,item) {
         if('spacer' === item.class) {
@@ -77,6 +118,7 @@ makeTextEditor = (el,callback = false) => {
         }
         let tool = $('<i class="toolbar-button">');
         tool.addClass(item.class);
+        tool.prop('title',item.title);
         tool.on('mousedown',function(e) {
             e.preventDefault();
             let input = null;
@@ -137,11 +179,6 @@ makeTextEditor = (el,callback = false) => {
         });
         toolbar.append(tool);
     });
-
-    let moreToolsContainer = $('<div class="more-tools-container">');
-    let moreTools = $('<i class="toolbar-button fas fa-ellipsis-h">');
-    moreToolsContainer.append(moreTools);
-    toolbar.append(moreToolsContainer);
 
     //Make edit elements
     let codeEditArea = $('<textarea style="display:none">');
@@ -222,7 +259,5 @@ function stripTags(el) {
     }
 }
 
-//Init on load, then whenever called; include showUnsavedFlag as callback
-initTextEdtitors(function () {
-    showUnsavedFlag(documentForm);
-});
+//Init on load; include showUnsavedFlag as callback
+initTextEdtitors(textEditorDefaultCallback);

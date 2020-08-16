@@ -1138,11 +1138,15 @@ span.striped-odd:nth-child(odd) {
   line-height: 6.2rem;
 }
 
+.more-tools-container,
+.more-tools-holder,
 .toolbar {
   display: inline-block;
   margin-bottom: 10px;
 }
 
+.more-tools-container .toolbar-button,
+.more-tools-holder .toolbar-button,
 .toolbar .toolbar-button {
   background-color: #595959;
   border-radius: 5px;
@@ -1153,8 +1157,16 @@ span.striped-odd:nth-child(odd) {
   padding: 5px;
 }
 
+.more-tools-container .spacer,
+.more-tools-holder .spacer,
 .toolbar .spacer {
   margin: 5px;
+}
+
+.more-tools-container .spacer:first-child,
+.more-tools-holder .spacer:first-child,
+.toolbar .spacer:first-child {
+  display: none;
 }
 
 .fancy-text-div {
@@ -1172,6 +1184,15 @@ span.striped-odd:nth-child(odd) {
 
 .fancy-text-div.is-invalid {
   border: 1px solid #800000;
+}
+
+.more-tools-holder {
+  display: none;
+  max-width: 100%;
+}
+
+.more-tools-container {
+  display: none;
 }
 
 /*Project-specific styles go here*/
