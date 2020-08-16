@@ -6,6 +6,8 @@ window.suspendUser = (id,name,formId,paramInput) => {
   //Match the modal inputs to the hidden form fields with the same names, set their values based on modal input
   paramInput.forEach(function(item,index) {
     let hiddenFormField = form.find('[name="' + item.prop('name') + '"]');
+    console.log('hiddenFormField');
+    console.log(hiddenFormField);
     hiddenFormField.val(item.val());
   });
   hideModal();

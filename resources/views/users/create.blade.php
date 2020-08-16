@@ -18,13 +18,13 @@
         <div class="centum">
           <div class="cell x50">
             <label>Username</label>
-            <input type="text" />
+            <input type="text" name="name" value="{{ old('name') }}"/>
             <label>Email</label>
-            <input type="email" />
+            <input type="email" name="email" value="{{ old('email') }}"/>
             <label>Role</label>
-            <select name="role">
+            <select name="role" name="role">
               @foreach($output->roles as $index => $value)
-                <option value="{{ $index }}">{{ $value }}</option>
+                <option value="{{ $index }}"{{ (old('role','user') === $index)? ' selected':'' }}>{{ $value }}</option>
               @endforeach
             </select>
           </div>

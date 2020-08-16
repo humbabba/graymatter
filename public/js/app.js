@@ -30416,8 +30416,10 @@ renderModal = function renderModal(configs, params) {
       paramDisplay.forEach(function (item, index) {
         $('.' + item).html(params[index]);
       });
-    } //Check for special inputs in the modal content
+    } //Init text editors in case there's one in the modal
 
+
+    initTextEdtitors(); //Check for special inputs in the modal content
 
     var paramInput = configs.paramInput;
 
@@ -30682,24 +30684,33 @@ addSortParams = function addSortParams(el, key) {
 initTextEdtitors = function initTextEdtitors() {
   //Turn fancyText hidden fields into rich-text editors on load
   $('input[type="hidden"]').each(function (index, item) {
-    console.log('Found hidden input');
-    console.log(item);
-
     if ($(item).hasClass('text-editor')) {
-      console.log('Found text-editor');
       var newElement = $(item).clone();
       var fancyEditor = makeTextEditor(newElement, function () {
         showUnsavedFlag(documentForm);
       });
+      var toolbar = fancyEditor.find('.toolbar');
       $(item).replaceWith(fancyEditor);
+      processToolbarForWidth(toolbar);
     }
   });
 };
 
-function makeTextEditor(el, callback) {
-  console.log('el');
-  console.log(el); //Div to hold editor-input combo
+processToolbarForWidth = function processToolbarForWidth(toolbar) {
+  var toolbarWidth = toolbar.outerWidth();
+  var childrenWidth = 0;
+  toolbar.children().each(function (index, item) {
+    var childWidth = $(item).outerWidth(true);
+    childrenWidth += childWidth;
 
+    if (childrenWidth > toolbar.outerWidth() - 25) {
+      $(item).remove();
+    }
+  });
+};
+
+makeTextEditor = function makeTextEditor(el, callback) {
+  //Div to hold editor-input combo
   var editor = $('<div>'); //Toolbar div and tools
 
   var toolbar = $('<div class="toolbar">');
@@ -30790,6 +30801,9 @@ function makeTextEditor(el, callback) {
   }, {
     "class": 'fas fa-code',
     tool: 'toggleCode'
+  }, {
+    "class": 'fas fa-ellipsis-h',
+    tool: 'moreTool'
   }];
   $(toolsArray).each(function (index, item) {
     if ('spacer' === item["class"]) {
@@ -30943,7 +30957,7 @@ function makeTextEditor(el, callback) {
 
   editor.append(el);
   return editor;
-}
+};
 
 function stripTags(el) {
   if ('A' === el.tagName) {
@@ -30985,6 +30999,8 @@ window.suspendUser = function (id, name, formId, paramInput) {
 
   paramInput.forEach(function (item, index) {
     var hiddenFormField = form.find('[name="' + item.prop('name') + '"]');
+    console.log('hiddenFormField');
+    console.log(hiddenFormField);
     hiddenFormField.val(item.val());
   });
   hideModal();

@@ -1139,6 +1139,7 @@ span.striped-odd:nth-child(odd) {
 }
 
 .toolbar {
+  display: inline-block;
   margin-bottom: 10px;
 }
 

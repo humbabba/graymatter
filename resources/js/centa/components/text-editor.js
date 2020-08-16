@@ -3,22 +3,31 @@
 initTextEdtitors = () => {
   //Turn fancyText hidden fields into rich-text editors on load
   $('input[type="hidden"]').each(function(index,item) {
-    console.log('Found hidden input');
-    console.log(item);
       if($(item).hasClass('text-editor')) {
-        console.log('Found text-editor');
-          var newElement = $(item).clone();
-          var fancyEditor = makeTextEditor(newElement, function () {
+          let newElement = $(item).clone();
+          let fancyEditor = makeTextEditor(newElement, function () {
               showUnsavedFlag(documentForm);
           });
+          let toolbar = fancyEditor.find('.toolbar');
           $(item).replaceWith(fancyEditor);
+          processToolbarForWidth(toolbar);
       }
   });
 }
 
-function makeTextEditor(el,callback) {
-  console.log('el');
-  console.log(el);
+processToolbarForWidth = toolbar => {
+  let toolbarWidth = toolbar.outerWidth();
+  let childrenWidth = 0;
+  toolbar.children().each(function(index,item) {
+    let childWidth = $(item).outerWidth(true);
+    childrenWidth += childWidth;
+    if(childrenWidth > (toolbar.outerWidth() - 25)) {
+      $(item).remove();
+    }
+  });
+}
+
+makeTextEditor = (el,callback) => {
     //Div to hold editor-input combo
     let editor = $('<div>');
 
@@ -54,6 +63,7 @@ function makeTextEditor(el,callback) {
         {class:'spacer',tool: 'none'},
         {class:'fas fa-minus-circle',tool: 'clearFormat'},
         {class:'fas fa-code',tool: 'toggleCode'},
+        {class:'fas fa-ellipsis-h',tool: 'moreTool'},
     ];
     $(toolsArray).each(function(index,item) {
         if('spacer' === item.class) {

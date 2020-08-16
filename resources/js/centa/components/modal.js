@@ -103,6 +103,9 @@ renderModal = (configs,params) => {
       });
     }
 
+    //Init text editors in case there's one in the modal
+    initTextEdtitors();
+
     //Check for special inputs in the modal content
     let paramInput = configs.paramInput;
     if(paramInput.length) {
