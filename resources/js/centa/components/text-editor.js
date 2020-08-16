@@ -1,16 +1,21 @@
 
 
-initTextEdtitors = () => {
+initTextEdtitors = (callback) => {
   //Turn fancyText hidden fields into rich-text editors on load
   $('input[type="hidden"]').each(function(index,item) {
       if($(item).hasClass('text-editor')) {
-          let newElement = $(item).clone();
-          let fancyEditor = makeTextEditor(newElement, function () {
-              showUnsavedFlag(documentForm);
-          });
-          let toolbar = fancyEditor.find('.toolbar');
-          $(item).replaceWith(fancyEditor);
-          processToolbarForWidth(toolbar);
+
+        //Bail if it's already a text-editor
+        let itemParent = $(item).parent();
+        if(itemParent.hasClass('textEditorMasterDiv')) {
+          return;
+        }
+
+        let newElement = $(item).clone();
+        let fancyEditor = makeTextEditor(newElement,callback);
+        let toolbar = fancyEditor.find('.toolbar');
+        $(item).replaceWith(fancyEditor);
+        processToolbarForWidth(toolbar);
       }
   });
 }
@@ -21,15 +26,15 @@ processToolbarForWidth = toolbar => {
   toolbar.children().each(function(index,item) {
     let childWidth = $(item).outerWidth(true);
     childrenWidth += childWidth;
-    if(childrenWidth > (toolbar.outerWidth() - 25)) {
+    if(childrenWidth > (toolbar.outerWidth()) + 1) {
       $(item).remove();
     }
   });
 }
 
-makeTextEditor = (el,callback) => {
+makeTextEditor = (el,callback = false) => {
     //Div to hold editor-input combo
-    let editor = $('<div>');
+    let editor = $('<div class="textEditorMasterDiv">');
 
     //Toolbar div and tools
     let toolbar = $('<div class="toolbar">');
@@ -63,7 +68,6 @@ makeTextEditor = (el,callback) => {
         {class:'spacer',tool: 'none'},
         {class:'fas fa-minus-circle',tool: 'clearFormat'},
         {class:'fas fa-code',tool: 'toggleCode'},
-        {class:'fas fa-ellipsis-h',tool: 'moreTool'},
     ];
     $(toolsArray).each(function(index,item) {
         if('spacer' === item.class) {
@@ -133,6 +137,11 @@ makeTextEditor = (el,callback) => {
         });
         toolbar.append(tool);
     });
+
+    let moreToolsContainer = $('<div class="more-tools-container">');
+    let moreTools = $('<i class="toolbar-button fas fa-ellipsis-h">');
+    moreToolsContainer.append(moreTools);
+    toolbar.append(moreToolsContainer);
 
     //Make edit elements
     let codeEditArea = $('<textarea style="display:none">');
@@ -213,5 +222,7 @@ function stripTags(el) {
     }
 }
 
-//Init on load, then whenever called
-initTextEdtitors();
+//Init on load, then whenever called; include showUnsavedFlag as callback
+initTextEdtitors(function () {
+    showUnsavedFlag(documentForm);
+});

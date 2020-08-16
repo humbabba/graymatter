@@ -30681,14 +30681,19 @@ addSortParams = function addSortParams(el, key) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-initTextEdtitors = function initTextEdtitors() {
+initTextEdtitors = function initTextEdtitors(callback) {
   //Turn fancyText hidden fields into rich-text editors on load
   $('input[type="hidden"]').each(function (index, item) {
     if ($(item).hasClass('text-editor')) {
+      //Bail if it's already a text-editor
+      var itemParent = $(item).parent();
+
+      if (itemParent.hasClass('textEditorMasterDiv')) {
+        return;
+      }
+
       var newElement = $(item).clone();
-      var fancyEditor = makeTextEditor(newElement, function () {
-        showUnsavedFlag(documentForm);
-      });
+      var fancyEditor = makeTextEditor(newElement, callback);
       var toolbar = fancyEditor.find('.toolbar');
       $(item).replaceWith(fancyEditor);
       processToolbarForWidth(toolbar);
@@ -30703,15 +30708,16 @@ processToolbarForWidth = function processToolbarForWidth(toolbar) {
     var childWidth = $(item).outerWidth(true);
     childrenWidth += childWidth;
 
-    if (childrenWidth > toolbar.outerWidth() - 25) {
+    if (childrenWidth > toolbar.outerWidth() + 1) {
       $(item).remove();
     }
   });
 };
 
-makeTextEditor = function makeTextEditor(el, callback) {
+makeTextEditor = function makeTextEditor(el) {
+  var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   //Div to hold editor-input combo
-  var editor = $('<div>'); //Toolbar div and tools
+  var editor = $('<div class="textEditorMasterDiv">'); //Toolbar div and tools
 
   var toolbar = $('<div class="toolbar">');
   var toolsArray = [{
@@ -30801,9 +30807,6 @@ makeTextEditor = function makeTextEditor(el, callback) {
   }, {
     "class": 'fas fa-code',
     tool: 'toggleCode'
-  }, {
-    "class": 'fas fa-ellipsis-h',
-    tool: 'moreTool'
   }];
   $(toolsArray).each(function (index, item) {
     if ('spacer' === item["class"]) {
@@ -30890,7 +30893,11 @@ makeTextEditor = function makeTextEditor(el, callback) {
       }
     });
     toolbar.append(tool);
-  }); //Make edit elements
+  });
+  var moreToolsContainer = $('<div class="more-tools-container">');
+  var moreTools = $('<i class="toolbar-button fas fa-ellipsis-h">');
+  moreToolsContainer.append(moreTools);
+  toolbar.append(moreToolsContainer); //Make edit elements
 
   var codeEditArea = $('<textarea style="display:none">');
   codeEditArea.addClass('code-editor');
@@ -30977,10 +30984,12 @@ function stripTags(el) {
   } else {
     $(el).replaceWith($(el).contents());
   }
-} //Init on load, then whenever called
+} //Init on load, then whenever called; include showUnsavedFlag as callback
 
 
-initTextEdtitors();
+initTextEdtitors(function () {
+  showUnsavedFlag(documentForm);
+});
 
 /***/ }),
 
