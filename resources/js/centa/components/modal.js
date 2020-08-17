@@ -103,9 +103,6 @@ renderModal = (configs,params) => {
       });
     }
 
-    //Init text editors in case there's one in the modal
-    initTextEdtitors();
-
     //Check for special inputs in the modal content
     let paramInput = configs.paramInput;
     if(paramInput.length) {
@@ -127,6 +124,10 @@ renderModal = (configs,params) => {
 
     //Finally, display it
     showModal();
+
+    //Init text editors in case there's one in the modal
+    initTextEdtitors();
+
   } else {
     console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
   }

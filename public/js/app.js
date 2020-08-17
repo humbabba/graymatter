@@ -30422,10 +30422,8 @@ renderModal = function renderModal(configs, params) {
       paramDisplay.forEach(function (item, index) {
         $('.' + item).html(params[index]);
       });
-    } //Init text editors in case there's one in the modal
+    } //Check for special inputs in the modal content
 
-
-    initTextEdtitors(); //Check for special inputs in the modal content
 
     var paramInput = configs.paramInput;
 
@@ -30446,7 +30444,9 @@ renderModal = function renderModal(configs, params) {
       window[configs.confirmFunction].apply(null, params);
     }); //Finally, display it
 
-    showModal();
+    showModal(); //Init text editors in case there's one in the modal
+
+    initTextEdtitors();
   } else {
     console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
   }
