@@ -1157,16 +1157,10 @@ span.striped-odd:nth-child(odd) {
   padding: 5px;
 }
 
-.more-tools-container .spacer,
-.more-tools-holder .spacer,
-.toolbar .spacer {
-  margin: 5px;
-}
-
-.more-tools-container .spacer:first-child,
-.more-tools-holder .spacer:first-child,
-.toolbar .spacer:first-child {
-  display: none;
+.more-tools-container .toolbar-spacer,
+.more-tools-holder .toolbar-spacer,
+.toolbar .toolbar-spacer {
+  margin-right: 10px;
 }
 
 .fancy-text-div {

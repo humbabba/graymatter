@@ -2,6 +2,7 @@
 .more-tools-holder,
 .toolbar {
   display: inline-block;
+  margin-bottom: $margin-base;
   .toolbar-button {
     background-color: $primary;
     border-radius: $border-radius-base;
@@ -11,13 +12,9 @@
     margin-right: $margin-tiny;
     padding: $padding-small;
   }
-  .spacer {
-    margin: $margin-small;
-    &:first-child {
-      display: none;
-    }
+  .toolbar-spacer {
+    margin-right: $margin-base;
   }
-  margin-bottom: $margin-base;
 }
 .fancy-text-div {
     border: 1px solid $secondary;

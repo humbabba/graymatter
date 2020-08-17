@@ -30687,6 +30687,92 @@ addSortParams = function addSortParams(el, key) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+var toolsArray = [{
+  "class": 'fas fa-bold',
+  tool: 'bold',
+  title: 'Bold'
+}, {
+  "class": 'fas fa-italic',
+  tool: 'italic',
+  title: 'Italic'
+}, {
+  "class": 'fas fa-underline',
+  tool: 'underline',
+  title: 'Underline'
+}, {
+  "class": 'fas fa-strikethrough toolbar-spacer',
+  tool: 'strikeThrough',
+  title: 'Strikethrough'
+}, {
+  "class": 'fas fa-minus toolbar-spacer',
+  tool: 'insertHorizontalRule',
+  title: 'Horizontal rule'
+}, {
+  "class": 'fas fa-link',
+  tool: 'createLink',
+  title: 'Link'
+}, {
+  "class": 'fas fa-unlink toolbar-spacer',
+  tool: 'unlink',
+  title: 'Unlink'
+}, {
+  "class": 'fas fa-indent',
+  tool: 'indent',
+  title: 'Indent'
+}, {
+  "class": 'fas fa-outdent toolbar-spacer',
+  tool: 'outdent',
+  title: 'Outdent'
+}, {
+  "class": 'fas fa-list-ol',
+  tool: 'insertOrderedList',
+  title: 'Ordered list'
+}, {
+  "class": 'fas fa-list-ul toolbar-spacer',
+  tool: 'insertUnorderedList',
+  title: 'Unordered list'
+}, {
+  "class": 'fas fa-text-height',
+  tool: 'fontSize',
+  title: 'Font size'
+}, {
+  "class": 'fas fa-palette toolbar-spacer',
+  tool: 'foreColor',
+  title: 'Font color'
+}, {
+  "class": 'fas fa-align-center',
+  tool: 'justifyCenter',
+  title: 'Center'
+}, {
+  "class": 'fas fa-align-justify',
+  tool: 'justifyFull',
+  title: 'Justify'
+}, {
+  "class": 'fas fa-align-left',
+  tool: 'justifyLeft',
+  title: 'Aling left'
+}, {
+  "class": 'fas fa-align-right toolbar-spacer',
+  tool: 'justifyRight',
+  title: 'Align right'
+}, {
+  "class": 'fas fa-subscript',
+  tool: 'subscript',
+  title: 'Subscript'
+}, {
+  "class": 'fas fa-superscript toolbar-spacer',
+  tool: 'superscript',
+  title: 'Superscript'
+}, {
+  "class": 'fas fa-minus-circle',
+  tool: 'clearFormat',
+  title: 'Clear all formatting'
+}, {
+  "class": 'fas fa-code',
+  tool: 'toggleCode',
+  title: 'Toggle code view'
+}];
+
 initTextEdtitors = function initTextEdtitors() {
   var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   //Turn hidden inputs with 'text-editor' class into rich-text editors
@@ -30744,12 +30830,16 @@ processToolbarForWidth = function (_processToolbarForWidth) {
     if ('none' === moreToolsContainer.css('display')) {
       if (childrenWidth > toolbar.outerWidth()) {
         moreToolsHolder.append(child);
+        console.log('Moving first (' + index + ')');
+        console.log(child);
         moreToolsContainer.show();
         processToolbarForWidth(toolbar);
       }
     } else {
       if (childrenWidth > toolbar.outerWidth() - moreToolsContainerWidth) {
         moreToolsHolder.append(child);
+        console.log('Moving (' + index + ')');
+        console.log(child);
       }
     }
   });
@@ -30776,122 +30866,7 @@ makeTextEditor = function makeTextEditor(el) {
   var editor = $('<div class="textEditorMasterDiv">'); //Toolbar div and tools
 
   var toolbar = $('<div class="toolbar">');
-  var toolsArray = [{
-    "class": 'fas fa-bold',
-    tool: 'bold',
-    title: 'Bold'
-  }, {
-    "class": 'fas fa-italic',
-    tool: 'italic',
-    title: 'Italic'
-  }, {
-    "class": 'fas fa-underline',
-    tool: 'underline',
-    title: 'Underline'
-  }, {
-    "class": 'fas fa-strikethrough',
-    tool: 'strikeThrough',
-    title: 'Strikethrough'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-minus',
-    tool: 'insertHorizontalRule',
-    title: 'Horizontal rule'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-link',
-    tool: 'createLink',
-    title: 'Link'
-  }, {
-    "class": 'fas fa-unlink',
-    tool: 'unlink',
-    title: 'Unlink'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-indent',
-    tool: 'indent',
-    title: 'Indent'
-  }, {
-    "class": 'fas fa-outdent',
-    tool: 'outdent',
-    title: 'Outdent'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-list-ol',
-    tool: 'insertOrderedList',
-    title: 'Ordered list'
-  }, {
-    "class": 'fas fa-list-ul',
-    tool: 'insertUnorderedList',
-    title: 'Unordered list'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-text-height',
-    tool: 'fontSize',
-    title: 'Font size'
-  }, {
-    "class": 'fas fa-palette',
-    tool: 'foreColor',
-    title: 'Font color'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-align-center',
-    tool: 'justifyCenter',
-    title: 'Center'
-  }, {
-    "class": 'fas fa-align-justify',
-    tool: 'justifyFull',
-    title: 'Justify'
-  }, {
-    "class": 'fas fa-align-left',
-    tool: 'justifyLeft',
-    title: 'Aling left'
-  }, {
-    "class": 'fas fa-align-right',
-    tool: 'justifyRight',
-    title: 'Align right'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-subscript',
-    tool: 'subscript',
-    title: 'Subscript'
-  }, {
-    "class": 'fas fa-superscript',
-    tool: 'superscript',
-    title: 'Superscript'
-  }, {
-    "class": 'spacer',
-    tool: 'none'
-  }, {
-    "class": 'fas fa-minus-circle',
-    tool: 'clearFormat',
-    title: 'Clear all formatting'
-  }, {
-    "class": 'fas fa-code',
-    tool: 'toggleCode',
-    title: 'Toggle code view'
-  }];
   $(toolsArray).each(function (index, item) {
-    if ('spacer' === item["class"]) {
-      var spacer = $('<span class="spacer">');
-      toolbar.append(spacer);
-      return true;
-    }
-
     var tool = $('<i class="toolbar-button">');
     tool.addClass(item["class"]);
     tool.prop('title', item.title);
