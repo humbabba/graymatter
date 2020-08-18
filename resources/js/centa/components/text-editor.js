@@ -58,29 +58,27 @@ insertMoreTools = toolbar => {
   moreToolsHolder.insertAfter(moreToolsContainer);
 }
 
+//Depending on container width, hide tools that don't fit and display button to toggle them
 processToolbarForWidth = toolbar => {
   let moreToolsHolder = toolbar.parent().find('.more-tools-holder');
   let toolbarWidth = toolbar.outerWidth();
   let childrenWidth = 0;
-  toolbar.children().each(function(index,item) {
-    let moreToolsContainer = toolbar.next('.more-tools-container');
-    let moreToolsContainerWidth = moreToolsContainer.outerWidth(true);
+  let children = toolbar.children();
+  let childrenIndexMax = children.length - 1;
+  let moreToolsContainer = toolbar.next('.more-tools-container');
+  let widthModifier = moreToolsContainer.outerWidth(true);
+  children.each(function(index,item) {
     let child = $(item);
     childrenWidth += child.outerWidth(true);
-    if('none' === moreToolsContainer.css('display')) {
-      if(childrenWidth > toolbar.outerWidth()) {
-        moreToolsHolder.append(child);
-        console.log('Moving first (' + index + ')');
-        console.log(child);
-        moreToolsContainer.show();
-        processToolbarForWidth(toolbar);
-      }
-    } else {
-      if(childrenWidth > (toolbar.outerWidth() - moreToolsContainerWidth)) {
-        moreToolsHolder.append(child);
-        console.log('Moving (' + index + ')');
-        console.log(child);
-      }
+
+    //We leave room for the moreToolsContainer, unless we're on the last tool.
+    //If it fits, we don't need the "more" button
+    if(index === childrenIndexMax) {
+      widthModifier = 0;
+    }
+    if(childrenWidth > (toolbar.outerWidth() - widthModifier)) {
+      moreToolsHolder.append(child);
+      moreToolsContainer.show();
     }
   });
 }

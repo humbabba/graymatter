@@ -30805,45 +30805,32 @@ insertMoreTools = function insertMoreTools(toolbar) {
   moreToolsContainer.append(moreToolsButton);
   moreToolsContainer.insertAfter(toolbar);
   moreToolsHolder.insertAfter(moreToolsContainer);
-};
+}; //Depending on container width, hide tools that don't fit and display button to toggle them
 
-processToolbarForWidth = function (_processToolbarForWidth) {
-  function processToolbarForWidth(_x) {
-    return _processToolbarForWidth.apply(this, arguments);
-  }
 
-  processToolbarForWidth.toString = function () {
-    return _processToolbarForWidth.toString();
-  };
-
-  return processToolbarForWidth;
-}(function (toolbar) {
+processToolbarForWidth = function processToolbarForWidth(toolbar) {
   var moreToolsHolder = toolbar.parent().find('.more-tools-holder');
   var toolbarWidth = toolbar.outerWidth();
   var childrenWidth = 0;
-  toolbar.children().each(function (index, item) {
-    var moreToolsContainer = toolbar.next('.more-tools-container');
-    var moreToolsContainerWidth = moreToolsContainer.outerWidth(true);
+  var children = toolbar.children();
+  var childrenIndexMax = children.length - 1;
+  var moreToolsContainer = toolbar.next('.more-tools-container');
+  var widthModifier = moreToolsContainer.outerWidth(true);
+  children.each(function (index, item) {
     var child = $(item);
-    childrenWidth += child.outerWidth(true);
+    childrenWidth += child.outerWidth(true); //We leave room for the moreToolsContainer, unless we're on the last tool.
+    //If it fits, we don't need the "more" button
 
-    if ('none' === moreToolsContainer.css('display')) {
-      if (childrenWidth > toolbar.outerWidth()) {
-        moreToolsHolder.append(child);
-        console.log('Moving first (' + index + ')');
-        console.log(child);
-        moreToolsContainer.show();
-        processToolbarForWidth(toolbar);
-      }
-    } else {
-      if (childrenWidth > toolbar.outerWidth() - moreToolsContainerWidth) {
-        moreToolsHolder.append(child);
-        console.log('Moving (' + index + ')');
-        console.log(child);
-      }
+    if (index === childrenIndexMax) {
+      widthModifier = 0;
+    }
+
+    if (childrenWidth > toolbar.outerWidth() - widthModifier) {
+      moreToolsHolder.append(child);
+      moreToolsContainer.show();
     }
   });
-}); //Handle window resize events viz. text-editors
+}; //Handle window resize events viz. text-editors
 //This will make sure the toolbars display correctly
 
 
