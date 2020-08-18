@@ -30258,7 +30258,7 @@ window.modalConfigsPath = '/centa/modal.json'; //Define the default callback for
 //Set to false for no callback
 
 window.textEditorDefaultCallback = function () {
-  showUnsavedFlag(documentForm);
+  return showUnsavedFlag(documentForm);
 }; //Included components
 
 
@@ -30687,6 +30687,7 @@ addSortParams = function addSortParams(el, key) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+//Define rich-text-editing tools.
 var toolsArray = [{
   "class": 'fas fa-bold',
   tool: 'bold',
@@ -30703,6 +30704,10 @@ var toolsArray = [{
   "class": 'fas fa-strikethrough toolbar-spacer',
   tool: 'strikeThrough',
   title: 'Strikethrough'
+}, {
+  "class": 'fas fa-image toolbar-spacer',
+  tool: 'insertHorizontalRule',
+  title: 'Insert image'
 }, {
   "class": 'fas fa-minus toolbar-spacer',
   tool: 'insertHorizontalRule',
@@ -30771,7 +30776,7 @@ var toolsArray = [{
   "class": 'fas fa-code',
   tool: 'toggleCode',
   title: 'Toggle code view'
-}];
+}]; //Find all hidden inputs with text-editor class and replace them with rich-text editors.
 
 initTextEdtitors = function initTextEdtitors() {
   var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -30793,7 +30798,9 @@ initTextEdtitors = function initTextEdtitors() {
       processToolbarForWidth(toolbar);
     }
   });
-};
+}; //Build the container that will hold buttons that don't fit.
+//It's hidden till revealed (if necessary) in processToolbarForWidth.
+
 
 insertMoreTools = function insertMoreTools(toolbar) {
   var moreToolsContainer = $('<span class="more-tools-container">');
@@ -30805,7 +30812,7 @@ insertMoreTools = function insertMoreTools(toolbar) {
   moreToolsContainer.append(moreToolsButton);
   moreToolsContainer.insertAfter(toolbar);
   moreToolsHolder.insertAfter(moreToolsContainer);
-}; //Depending on container width, hide tools that don't fit and display button to toggle them
+}; //Depending on container width, hide tools that don't fit and display button to toggle them.
 
 
 processToolbarForWidth = function processToolbarForWidth(toolbar) {
@@ -30830,8 +30837,8 @@ processToolbarForWidth = function processToolbarForWidth(toolbar) {
       moreToolsContainer.show();
     }
   });
-}; //Handle window resize events viz. text-editors
-//This will make sure the toolbars display correctly
+}; //Handle window resize events viz. text-editors.
+//This will make sure the toolbars display correctly.
 
 
 $(window).resize(function () {
@@ -30845,7 +30852,8 @@ $(window).resize(function () {
   }); //Reinitialize all text editors
 
   initTextEdtitors(textEditorDefaultCallback);
-});
+}); //Build rich-text editors to replace hidden inputs with.
+//Loops through tools defined above and assigns click events.
 
 makeTextEditor = function makeTextEditor(el) {
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -30955,7 +30963,7 @@ makeTextEditor = function makeTextEditor(el) {
   codeEditArea.on('input', function () {
     el.val($(this).val());
     editArea.html($(this).val());
-  });
+  }); //Only check for changes in codeEditArea if we have a callback.
 
   if (callback) {
     codeEditArea.on('keydown', function () {
@@ -30983,7 +30991,7 @@ makeTextEditor = function makeTextEditor(el) {
   editArea.on('input', function () {
     el.val($(this).html());
     codeEditArea.val($(this).html());
-  });
+  }); //Only check for changes in editArea if we have a callback.
 
   if (callback) {
     editArea.on('keydown', function () {
@@ -31000,9 +31008,20 @@ makeTextEditor = function makeTextEditor(el) {
 
   editor.append(el);
   return editor;
-};
+}; //Remove HTML (except links) from copy.
 
-function stripTags(el) {
+
+stripTags = function (_stripTags) {
+  function stripTags(_x) {
+    return _stripTags.apply(this, arguments);
+  }
+
+  stripTags.toString = function () {
+    return _stripTags.toString();
+  };
+
+  return stripTags;
+}(function (el) {
   if ('A' === el.tagName) {
     //Remove style and any data attr
     $(el).removeAttr('style');
@@ -31020,7 +31039,7 @@ function stripTags(el) {
   } else {
     $(el).replaceWith($(el).contents());
   }
-} //Init on load; include showUnsavedFlag as callback
+}); //Init on load; include default defined in centa.js as callback.
 
 
 initTextEdtitors(textEditorDefaultCallback);
