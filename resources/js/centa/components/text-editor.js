@@ -1,11 +1,11 @@
 
 //Define rich-text-editing tools.
 let toolsArray = [
-    {class:'fas fa-bold',tool: 'bold',title: 'Bold'},
+    {class:'fas fa-bold',tool: 'b',title: 'Bold'},
     {class:'fas fa-italic',tool: 'italic',title: 'Italic'},
     {class:'fas fa-underline',tool: 'underline',title: 'Underline'},
     {class:'fas fa-strikethrough toolbar-spacer',tool: 'strikeThrough',title: 'Strikethrough'},
-    {class:'fas fa-image toolbar-spacer',tool: 'insertHorizontalRule',title: 'Insert image'},
+    {class:'fas fa-image toolbar-spacer',tool: 'inserImage',title: 'Insert image'},
     {class:'fas fa-minus toolbar-spacer',tool: 'insertHorizontalRule',title: 'Horizontal rule'},
     {class:'fas fa-link',tool: 'createLink',title: 'Link'},
     {class:'fas fa-unlink toolbar-spacer',tool: 'unlink',title: 'Unlink'},
@@ -116,6 +116,7 @@ makeTextEditor = (el,callback = false) => {
     $(toolsArray).each(function(index,item) {
         let tool = $('<i class="toolbar-button">');
         tool.addClass(item.class);
+        tool.attr('data-tool',item.tool);
         tool.prop('title',item.title);
         tool.on('mousedown',function(e) {
             e.preventDefault();
@@ -171,12 +172,34 @@ makeTextEditor = (el,callback = false) => {
                     codeDiv.toggle();
                     break;
                 default:
-                    document.execCommand(item.tool,false,input);
+                    execTool(item.tool);
                     break;
             }
         });
         toolbar.append(tool);
     });
+
+    execTool = tool => {
+      let range = window.getSelection().getRangeAt(0);
+      console.log('range.commonAncestorContainer');
+      console.log(range.commonAncestorContainer);
+    	const oldConent = document.createTextNode(range.toString());
+      console.log('oldConent');
+      console.log(oldConent);
+      let newElement;
+      if(tool === range.commonAncestorContainer) {
+        console.log('It is a match.');
+        newElement = oldConent;
+      } else {
+        newElement = document.createElement(tool);
+          console.log('No match.');
+      	  newElement.append(oldConent);
+          console.log('newElement');
+          console.log(newElement);
+      }
+    	range.deleteContents();
+    	range.insertNode(newElement);
+    }
 
     //Make edit elements
     let codeEditArea = $('<textarea style="display:none">');

@@ -30690,7 +30690,7 @@ addSortParams = function addSortParams(el, key) {
 //Define rich-text-editing tools.
 var toolsArray = [{
   "class": 'fas fa-bold',
-  tool: 'bold',
+  tool: 'b',
   title: 'Bold'
 }, {
   "class": 'fas fa-italic',
@@ -30706,7 +30706,7 @@ var toolsArray = [{
   title: 'Strikethrough'
 }, {
   "class": 'fas fa-image toolbar-spacer',
-  tool: 'insertHorizontalRule',
+  tool: 'inserImage',
   title: 'Insert image'
 }, {
   "class": 'fas fa-minus toolbar-spacer',
@@ -30864,6 +30864,7 @@ makeTextEditor = function makeTextEditor(el) {
   $(toolsArray).each(function (index, item) {
     var tool = $('<i class="toolbar-button">');
     tool.addClass(item["class"]);
+    tool.attr('data-tool', item.tool);
     tool.prop('title', item.title);
     tool.on('mousedown', function (e) {
       e.preventDefault();
@@ -30936,12 +30937,37 @@ makeTextEditor = function makeTextEditor(el) {
           break;
 
         default:
-          document.execCommand(item.tool, false, input);
+          execTool(item.tool);
           break;
       }
     });
     toolbar.append(tool);
-  }); //Make edit elements
+  });
+
+  execTool = function execTool(tool) {
+    var range = window.getSelection().getRangeAt(0);
+    console.log('range.commonAncestorContainer');
+    console.log(range.commonAncestorContainer);
+    var oldConent = document.createTextNode(range.toString());
+    console.log('oldConent');
+    console.log(oldConent);
+    var newElement;
+
+    if (tool === range.commonAncestorContainer) {
+      console.log('It is a match.');
+      newElement = oldConent;
+    } else {
+      newElement = document.createElement(tool);
+      console.log('No match.');
+      newElement.append(oldConent);
+      console.log('newElement');
+      console.log(newElement);
+    }
+
+    range.deleteContents();
+    range.insertNode(newElement);
+  }; //Make edit elements
+
 
   var codeEditArea = $('<textarea style="display:none">');
   codeEditArea.addClass('code-editor');
