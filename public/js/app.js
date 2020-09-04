@@ -30780,7 +30780,8 @@ var toolsArray = [{
 
 initTextEdtitors = function initTextEdtitors() {
   var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  //Turn hidden inputs with 'text-editor' class into rich-text editors
+  console.log('Whoop'); //Turn hidden inputs with 'text-editor' class into rich-text editors
+
   $('input[type="hidden"]').each(function (index, item) {
     if ($(item).hasClass('text-editor')) {
       //Bail if it's already a text-editor
@@ -31120,8 +31121,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
