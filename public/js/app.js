@@ -30780,8 +30780,7 @@ var toolsArray = [{
 
 initTextEdtitors = function initTextEdtitors() {
   var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  console.log('Whoop'); //Turn hidden inputs with 'text-editor' class into rich-text editors
-
+  //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function (index, item) {
     if ($(item).hasClass('text-editor')) {
       //Bail if it's already a text-editor

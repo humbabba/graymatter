@@ -27,7 +27,6 @@ let toolsArray = [
 
 //Find all hidden inputs with text-editor class and replace them with rich-text editors.
 initTextEdtitors = (callback = false) => {
-    console.log('Whoop');
   //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function(index,item) {
       if($(item).hasClass('text-editor')) {
