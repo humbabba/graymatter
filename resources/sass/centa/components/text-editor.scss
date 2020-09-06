@@ -26,6 +26,7 @@
     padding: $padding-base;
     resize: vertical;
     overflow: auto;
+    white-space: pre-wrap;
     width: 100%;
     &.is-invalid {
       border: 1px solid $red;

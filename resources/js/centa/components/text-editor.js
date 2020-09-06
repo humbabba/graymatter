@@ -245,33 +245,35 @@ makeTextEditor = (el,callback = false) => {
 
 execTool = (tool,editArea) => {
   let range = window.getSelection().getRangeAt(0);
-  console.log('range');
-  console.log(range);
   let newNode = document.createElement(tool);
   try {
     range.surroundContents(newNode);
     console.log('Surrounded!');
   } catch(e) {
     console.log('Faked!');
-    wrapTagholders(range,tool,editArea);
+    wrapTagholders(range,tool);
+    convertTagholders(editArea);
+    // cleanRedundantCode(editArea);
   }
 }
 
-wrapTagholders = (range,tool,editArea) => {
+wrapTagholders = (range,tool) => {
     const newOpenTag = document.createElement('tagholder');
     $(newOpenTag).attr('data-tag',tool).attr('data-tag-state','open');
+    const openMarker = document.createElement('marker');
+    $(openMarker).attr('id','openMarker');
     const newCloseTag = document.createElement('tagholder');
     $(newCloseTag).attr('data-tag',tool).attr('data-tag-state','close');
-    const originalStartNode = range.startContainer;
-    const originalStartOffset = range.startOffset;
+    const closeMarker = document.createElement('marker');
+    $(closeMarker).attr('id','closeMarker');
+    range.insertNode(openMarker);
     range.insertNode(newOpenTag);
     range.collapse(false);
+    range.insertNode(closeMarker);
     range.insertNode(newCloseTag);
-    range.setStart(originalStartNode,originalStartOffset);
-    convertTagholders(editArea);
 }
 
-convertTagholders = (editArea) => {
+convertTagholders = editArea => {
   editArea.find('tagholder').each(function() {
     const tag = $(this).data('tag');
     const tagState = $(this).data('tagState');
@@ -280,6 +282,22 @@ convertTagholders = (editArea) => {
     } else {
       editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>','<' + tag + '>'));
     }
+  });
+  const range = document.createRange();
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+  range.setStartAfter(editArea.find('#openMarker')[0]);
+  range.setEndBefore(editArea.find('#closeMarker')[0]);
+  console.log('range');
+  console.log(range);
+  editArea.find('marker').remove();
+}
+
+cleanRedundantCode = editArea => {
+  editArea.children().each(function() {
+    el = $(this);
+    console.log('Still cleaning.')
   });
 }
 

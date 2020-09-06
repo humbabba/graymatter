@@ -1173,6 +1173,7 @@ span.striped-odd:nth-child(odd) {
   padding: 10px;
   resize: vertical;
   overflow: auto;
+  white-space: pre-wrap;
   width: 100%;
 }
 
