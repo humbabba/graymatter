@@ -248,9 +248,7 @@ execTool = (tool,editArea) => {
   let newNode = document.createElement(tool);
   try {
     range.surroundContents(newNode);
-    console.log('Surrounded!');
   } catch(e) {
-    console.log('Faked!');
     wrapTagholders(range,tool);
     convertTagholders(editArea);
     // cleanRedundantCode(editArea);
@@ -289,8 +287,6 @@ convertTagholders = editArea => {
   selection.addRange(range);
   range.setStartAfter(editArea.find('#openMarker')[0]);
   range.setEndBefore(editArea.find('#closeMarker')[0]);
-  console.log('range');
-  console.log(range);
   editArea.find('marker').remove();
 }
 
