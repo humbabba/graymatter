@@ -1,10 +1,10 @@
 
 //Define rich-text-editing tools.
-let toolsArray = [
+const toolsArray = [
     {class:'fas fa-bold',tool: 'b',title: 'Bold'},
-    {class:'fas fa-italic',tool: 'italic',title: 'Italic'},
-    {class:'fas fa-underline',tool: 'underline',title: 'Underline'},
-    {class:'fas fa-strikethrough toolbar-spacer',tool: 'strikeThrough',title: 'Strikethrough'},
+    {class:'fas fa-italic',tool: 'i',title: 'Italic'},
+    {class:'fas fa-underline',tool: 'u',title: 'Underline'},
+    {class:'fas fa-strikethrough toolbar-spacer',tool: 'strike',title: 'Strikethrough'},
     {class:'fas fa-image toolbar-spacer',tool: 'inserImage',title: 'Insert image'},
     {class:'fas fa-minus toolbar-spacer',tool: 'insertHorizontalRule',title: 'Horizontal rule'},
     {class:'fas fa-link',tool: 'createLink',title: 'Link'},
@@ -172,34 +172,12 @@ makeTextEditor = (el,callback = false) => {
                     codeDiv.toggle();
                     break;
                 default:
-                    execTool(item.tool);
+                    execTool(item.tool,editArea);
                     break;
             }
         });
         toolbar.append(tool);
     });
-
-    execTool = tool => {
-      let range = window.getSelection().getRangeAt(0);
-      console.log('range.commonAncestorContainer');
-      console.log(range.commonAncestorContainer);
-    	const oldConent = document.createTextNode(range.toString());
-      console.log('oldConent');
-      console.log(oldConent);
-      let newElement;
-      if(tool === range.commonAncestorContainer) {
-        console.log('It is a match.');
-        newElement = oldConent;
-      } else {
-        newElement = document.createElement(tool);
-          console.log('No match.');
-      	  newElement.append(oldConent);
-          console.log('newElement');
-          console.log(newElement);
-      }
-    	range.deleteContents();
-    	range.insertNode(newElement);
-    }
 
     //Make edit elements
     let codeEditArea = $('<textarea style="display:none">');
@@ -263,6 +241,46 @@ makeTextEditor = (el,callback = false) => {
     }
     editor.append(el);
     return editor;
+}
+
+execTool = (tool,editArea) => {
+  let range = window.getSelection().getRangeAt(0);
+  console.log('range');
+  console.log(range);
+  let newNode = document.createElement(tool);
+  try {
+    range.surroundContents(newNode);
+    console.log('Surrounded!');
+  } catch(e) {
+    console.log('Faked!');
+    wrapTagholders(range,tool,editArea);
+  }
+}
+
+wrapTagholders = (range,tool,editArea) => {
+    const newOpenTag = document.createElement('tagholder');
+    $(newOpenTag).attr('data-tag',tool).attr('data-tag-state','open');
+    const newCloseTag = document.createElement('tagholder');
+    $(newCloseTag).attr('data-tag',tool).attr('data-tag-state','close');
+    const originalStartNode = range.startContainer;
+    const originalStartOffset = range.startOffset;
+    range.insertNode(newOpenTag);
+    range.collapse(false);
+    range.insertNode(newCloseTag);
+    range.setStart(originalStartNode,originalStartOffset);
+    convertTagholders(editArea);
+}
+
+convertTagholders = (editArea) => {
+  editArea.find('tagholder').each(function() {
+    const tag = $(this).data('tag');
+    const tagState = $(this).data('tagState');
+    if('close' === tagState) {
+      editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>','</' + tag + '>'));
+    } else {
+      editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>','<' + tag + '>'));
+    }
+  });
 }
 
 //Remove HTML (except links) from copy.

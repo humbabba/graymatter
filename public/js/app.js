@@ -30258,7 +30258,7 @@ window.modalConfigsPath = '/centa/modal.json'; //Define the default callback for
 //Set to false for no callback
 
 window.textEditorDefaultCallback = function () {
-  return showUnsavedFlag(documentForm);
+  return console.log('showUnsavedFlag(documentForm)');
 }; //Included components
 
 
@@ -30694,15 +30694,15 @@ var toolsArray = [{
   title: 'Bold'
 }, {
   "class": 'fas fa-italic',
-  tool: 'italic',
+  tool: 'i',
   title: 'Italic'
 }, {
   "class": 'fas fa-underline',
-  tool: 'underline',
+  tool: 'u',
   title: 'Underline'
 }, {
   "class": 'fas fa-strikethrough toolbar-spacer',
-  tool: 'strikeThrough',
+  tool: 'strike',
   title: 'Strikethrough'
 }, {
   "class": 'fas fa-image toolbar-spacer',
@@ -30937,37 +30937,12 @@ makeTextEditor = function makeTextEditor(el) {
           break;
 
         default:
-          execTool(item.tool);
+          execTool(item.tool, editArea);
           break;
       }
     });
     toolbar.append(tool);
-  });
-
-  execTool = function execTool(tool) {
-    var range = window.getSelection().getRangeAt(0);
-    console.log('range.commonAncestorContainer');
-    console.log(range.commonAncestorContainer);
-    var oldConent = document.createTextNode(range.toString());
-    console.log('oldConent');
-    console.log(oldConent);
-    var newElement;
-
-    if (tool === range.commonAncestorContainer) {
-      console.log('It is a match.');
-      newElement = oldConent;
-    } else {
-      newElement = document.createElement(tool);
-      console.log('No match.');
-      newElement.append(oldConent);
-      console.log('newElement');
-      console.log(newElement);
-    }
-
-    range.deleteContents();
-    range.insertNode(newElement);
-  }; //Make edit elements
-
+  }); //Make edit elements
 
   var codeEditArea = $('<textarea style="display:none">');
   codeEditArea.addClass('code-editor');
@@ -31034,6 +31009,48 @@ makeTextEditor = function makeTextEditor(el) {
 
   editor.append(el);
   return editor;
+};
+
+execTool = function execTool(tool, editArea) {
+  var range = window.getSelection().getRangeAt(0);
+  console.log('range');
+  console.log(range);
+  var newNode = document.createElement(tool);
+
+  try {
+    range.surroundContents(newNode);
+    console.log('Surrounded!');
+  } catch (e) {
+    console.log('Faked!');
+    wrapTagholders(range, tool, editArea);
+  }
+};
+
+wrapTagholders = function wrapTagholders(range, tool, editArea) {
+  var newOpenTag = document.createElement('tagholder');
+  $(newOpenTag).attr('data-tag', tool).attr('data-tag-state', 'open');
+  var newCloseTag = document.createElement('tagholder');
+  $(newCloseTag).attr('data-tag', tool).attr('data-tag-state', 'close');
+  var originalStartNode = range.startContainer;
+  var originalStartOffset = range.startOffset;
+  range.insertNode(newOpenTag);
+  range.collapse(false);
+  range.insertNode(newCloseTag);
+  range.setStart(originalStartNode, originalStartOffset);
+  convertTagholders(editArea);
+};
+
+convertTagholders = function convertTagholders(editArea) {
+  editArea.find('tagholder').each(function () {
+    var tag = $(this).data('tag');
+    var tagState = $(this).data('tagState');
+
+    if ('close' === tagState) {
+      editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>', '</' + tag + '>'));
+    } else {
+      editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>', '<' + tag + '>'));
+    }
+  });
 }; //Remove HTML (except links) from copy.
 
 
