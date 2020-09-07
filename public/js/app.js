@@ -31121,9 +31121,17 @@ cleanRedundantCode = function (_cleanRedundantCode) {
           newContent += '</' + tool + '><marker id="openMarker"></marker>';
           newContent += this.textContent;
           newContent += '<marker id="closeMarker"></marker><' + tool + '>';
+        } else {
+          console.log('this');
+          console.log(this);
+
+          if ('undefined' !== typeof this.innerHTML) {
+            newContent += this.innerHTML;
+          }
         }
       });
       newContent += '</' + tool + '>';
+      console.log('newContent');
       console.log(newContent);
       elObjParentObj[0].outerHTML = newContent;
       console.log('editArea from cleanRedundantCode');
