@@ -30687,7 +30687,10 @@ addSortParams = function addSortParams(el, key) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-//Define rich-text-editing tools.
+//Globals
+//For cleanRedundantCode
+var elObj, elObjParentObj, elTagName, elPrentTagName; //Define rich-text-editing tools.
+
 var toolsArray = [{
   "class": 'fas fa-bold',
   tool: 'b',
@@ -31058,6 +31061,12 @@ convertTagholders = function convertTagholders(editArea) {
       editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>', '<' + tag + '>'));
     }
   });
+  replaceMarkersWithSelection(editArea);
+};
+
+replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
+  console.log('editArea');
+  console.log(editArea);
   var range = document.createRange();
   var selection = window.getSelection();
   selection.removeAllRanges();
@@ -31077,28 +31086,57 @@ cleanRedundantCode = function (_cleanRedundantCode) {
   };
 
   return cleanRedundantCode;
-}(function (editAreaEl) {
-  el = $(editAreaEl);
-  console.log('El in cleanRedundantCode');
-  console.log(el);
-  elTagName = editAreaEl.tagName.toUpperCase();
-  console.log('elTagName');
-  console.log(elTagName);
-  console.log('el.children().length');
-  console.log(el.children().length);
+}(function (el) {
+  elObj = $(el);
 
-  if (0 < el.children().length) {
-    console.log('this.firstElementChild.tagName');
-    console.log(editAreaEl.firstElementChild.tagName);
-
-    if (1 === el.children().length && editAreaEl.firstElementChild.tagName === elTagName) {
-      console.log("We got a double.");
-    }
+  if (elObj.is(':empty')) {
+    elObj.remove();
   }
 
-  while ((currentGeneration = el.children()).length) {
-    currentGeneration.each(function (index, currentEl) {
-      cleanRedundantCode(currentEl);
+  elObjParentObj = $(el).parent();
+  elTagName = el.tagName;
+  elPrentTagName = elObjParentObj[0].tagName;
+
+  if (elTagName === elPrentTagName) {
+    var editArea = elObj.closest('.fancy-text-div');
+    var tool = elTagName.toLowerCase();
+    console.log('Parent and child tagName match: ' + tool);
+
+    if (elObj.text() === elObjParentObj.text()) {
+      console.log('Parent and child text match. Replacing parent');
+      elObjParentObj.replaceWith(elObj.html());
+    } else {
+      console.log('Parent and child text mismatch.');
+      console.log(elObjParentObj.contents());
+      console.log(elObjParentObj.html());
+      var newContent = '<' + tool + '>';
+      elObjParentObj.contents().each(function () {
+        console.log(this);
+
+        if ('#text' === this.nodeName) {
+          newContent += this.textContent;
+        }
+
+        if (elTagName === this.nodeName) {
+          newContent += '</' + tool + '><marker id="openMarker"></marker>';
+          newContent += this.textContent;
+          newContent += '<marker id="closeMarker"></marker><' + tool + '>';
+        }
+      });
+      newContent += '</' + tool + '>';
+      console.log(newContent);
+      elObjParentObj[0].outerHTML = newContent;
+      console.log('editArea from cleanRedundantCode');
+      console.log(elObjParentObj);
+      replaceMarkersWithSelection(editArea);
+    }
+  } else {
+    console.log('Parent and child tagName mismatch.');
+  }
+
+  while ((currentGeneration = elObj.children()).length) {
+    currentGeneration.each(function () {
+      cleanRedundantCode(this);
     });
   }
 }); //Remove HTML (except links) from copy.
