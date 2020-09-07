@@ -31017,10 +31017,18 @@ execTool = function execTool(tool, editArea) {
 
   try {
     range.surroundContents(newNode);
+    console.log('Surrounded');
   } catch (e) {
+    console.log('Manually wrapped');
     wrapTagholders(range, tool);
-    convertTagholders(editArea); // cleanRedundantCode(editArea);
+    convertTagholders(editArea);
   }
+
+  editArea.children().each(function () {
+    console.log('editArea loop this:');
+    console.log(this);
+    cleanRedundantCode(this);
+  });
 };
 
 wrapTagholders = function wrapTagholders(range, tool) {
@@ -31059,16 +31067,45 @@ convertTagholders = function convertTagholders(editArea) {
   editArea.find('marker').remove();
 };
 
-cleanRedundantCode = function cleanRedundantCode(editArea) {
-  editArea.children().each(function () {
-    el = $(this);
-    console.log('Still cleaning.');
-  });
-}; //Remove HTML (except links) from copy.
+cleanRedundantCode = function (_cleanRedundantCode) {
+  function cleanRedundantCode(_x) {
+    return _cleanRedundantCode.apply(this, arguments);
+  }
+
+  cleanRedundantCode.toString = function () {
+    return _cleanRedundantCode.toString();
+  };
+
+  return cleanRedundantCode;
+}(function (editAreaEl) {
+  el = $(editAreaEl);
+  console.log('El in cleanRedundantCode');
+  console.log(el);
+  elTagName = editAreaEl.tagName.toUpperCase();
+  console.log('elTagName');
+  console.log(elTagName);
+  console.log('el.children().length');
+  console.log(el.children().length);
+
+  if (0 < el.children().length) {
+    console.log('this.firstElementChild.tagName');
+    console.log(editAreaEl.firstElementChild.tagName);
+
+    if (1 === el.children().length && editAreaEl.firstElementChild.tagName === elTagName) {
+      console.log("We got a double.");
+    }
+  }
+
+  while ((currentGeneration = el.children()).length) {
+    currentGeneration.each(function (index, currentEl) {
+      cleanRedundantCode(currentEl);
+    });
+  }
+}); //Remove HTML (except links) from copy.
 
 
 stripTags = function (_stripTags) {
-  function stripTags(_x) {
+  function stripTags(_x2) {
     return _stripTags.apply(this, arguments);
   }
 

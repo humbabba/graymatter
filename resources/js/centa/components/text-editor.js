@@ -248,11 +248,17 @@ execTool = (tool,editArea) => {
   let newNode = document.createElement(tool);
   try {
     range.surroundContents(newNode);
+    console.log('Surrounded');
   } catch(e) {
+    console.log('Manually wrapped');
     wrapTagholders(range,tool);
     convertTagholders(editArea);
-    // cleanRedundantCode(editArea);
   }
+  editArea.children().each(function() {
+    console.log('editArea loop this:');
+    console.log(this);
+    cleanRedundantCode(this);
+  });
 }
 
 wrapTagholders = (range,tool) => {
@@ -290,11 +296,28 @@ convertTagholders = editArea => {
   editArea.find('marker').remove();
 }
 
-cleanRedundantCode = editArea => {
-  editArea.children().each(function() {
-    el = $(this);
-    console.log('Still cleaning.')
-  });
+cleanRedundantCode = editAreaEl => {
+  el = $(editAreaEl);
+  console.log('El in cleanRedundantCode');
+  console.log(el)
+  elTagName = editAreaEl.tagName.toUpperCase();
+  console.log('elTagName');
+  console.log(elTagName);
+  console.log('el.children().length');
+  console.log(el.children().length);
+  if(0 < el.children().length) {
+    console.log('this.firstElementChild.tagName');
+    console.log(editAreaEl.firstElementChild.tagName);
+    if(1 === el.children().length && editAreaEl.firstElementChild.tagName === elTagName) {
+      console.log("We got a double.");
+    }
+  }
+
+  while((currentGeneration = el.children()).length) {
+      currentGeneration.each(function(index,currentEl) {
+          cleanRedundantCode(currentEl);
+      });
+  }
 }
 
 //Remove HTML (except links) from copy.
