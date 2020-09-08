@@ -263,12 +263,16 @@ execTool = (tool,editArea) => {
         console.log('Manually wrapped');
         wrapTagholders(range,tool);
     }
+    convertTagholders(editArea);
     editArea.children().each(function() {
         console.log('editArea loop this:');
         console.log(this);
-        cleanRedundantCode(editArea);
+        cleanRedundantCode(this);
     });
-    convertTagholders(editArea);
+    if(editArea.find('marker').length) {
+        console.log('There are markers');
+        replaceMarkersWithSelection(editArea);
+    }
 }
 
 wrapTagholders = (range,tool) => {
@@ -312,73 +316,67 @@ replaceMarkersWithSelection = editArea => {
 }
 
 cleanRedundantCode = el => {
-    if('TAGHOLDER' === el.tagName || 'MARKER' === el.tagName) {
-        return;
-    }
     elObj = $(el);
-    let clearRedundantEditArea = elObj.closest('.fancy-text-div');
     if(elObj.is(':empty')) {
         elObj.remove();
     }
-    elObjParentObj = $(el).parent();
-    elTagName = el.tagName;
-    elParentTagName = elObjParentObj[0].tagName;
-    console.log('elTagName');
-    console.log(elTagName);
-    console.log('elParentTagName');
-    console.log(elParentTagName);
-    if(elTagName === elParentTagName) {
-        const tool = elTagName.toLowerCase();
-        console.log('Parent and child tagName match: ' + tool);
-        if(elObj.text() === elObjParentObj.text()) {
-            console.log('Parent and child text match. Replacing parent');
-            elObjParentObj.replaceWith(elObj.html());
-        } else {
-            console.log('Parent and child text mismatch.');
-            console.log(elObjParentObj.contents());
-            console.log(elObjParentObj.html());
-            let newContent = '<' + tool + '>';
-            elObjParentObj.contents().each(function() {
-                console.log(this);
-                if('#text' === this.nodeName) {
-                    newContent += this.textContent;
-                } else if(elTagName === this.nodeName) {
-                    newContent += '</' + tool + '>';
-                    newContent += this.textContent;
-                    newContent += '<' + tool + '>';
-                } else if ('MARKER' === this.nodeName) {
-                    newContent += this.outerHTML;
-                } else {
-                    if('undefined' !== typeof this.innerHTML) {
-                        newContent += this.innerHTML;
-                    }
-                }
-            });
-            newContent += '</' + tool + '>';
-            console.log('newContent');
-            console.log(newContent);
-            elObjParentObj[0].outerHTML = newContent;
+    let elObjDescendents = elObj.find('*');
+    let clearRedundantEditArea = elObj.closest('.fancy-text-div');
+    console.log('elObjDescendents');
+    console.log(elObjDescendents);
+    elObjDescendents.each(function() {
+        let element = this;
+        let elementObj = $(this);
+        let elementParentObject = elementObj.parent();
+        let elementTagName = element.tagName;
+        if('MARKER' === elementTagName) {
+            return;
         }
-    } else {
-        console.log('Parent and child tagName mismatch.');
-    }
-
-
-    while((currentGeneration = elObj.children()).length) {
-        currentGeneration.each(function() {
-            console.log('About to clean this:');
-            console.log(this);
-            cleanRedundantCode(this);
-        });
-    }
-
-    console.log('editArea from after while loop');
-    console.log(clearRedundantEditArea);
-
-    if(clearRedundantEditArea.find('marker').length) {
-        console.log('There are markers');
-        replaceMarkersWithSelection(clearRedundantEditArea);
-    }
+        let elementParentTagName = elementParentObject[0].tagName;
+        console.log('elementTagName');
+        console.log(elementTagName);
+        console.log('elementParentTagName');
+        console.log(elementParentTagName);
+        if(elementTagName === elementParentTagName) {
+            const tool = elementTagName.toLowerCase();
+            console.log('Parent and child tagName match: ' + tool);
+            if (elementObj.text() === elementParentObject.text()) {
+                console.log('Parent and child text match. Replacing parent');
+                elementParentObject.replaceWith(elementObj.html());
+            }
+        }
+        //     else {
+        //         console.log('Parent and child text mismatch.');
+        //         console.log(elObjParentObj.contents());
+        //         console.log(elObjParentObj.html());
+        //         let newContent = '<' + tool + '>';
+        //         elObjParentObj.contents().each(function() {
+        //             console.log(this);
+        //             if('#text' === this.nodeName) {
+        //                 newContent += this.textContent;
+        //             } else if(elTagName === this.nodeName) {
+        //                 newContent += '</' + tool + '>';
+        //                 newContent += this.textContent;
+        //                 newContent += '<' + tool + '>';
+        //             } else if ('MARKER' === this.nodeName) {
+        //                 newContent += this.outerHTML;
+        //             } else {
+        //                 if('undefined' !== typeof this.innerHTML) {
+        //                     newContent += this.innerHTML;
+        //                 }
+        //             }
+        //         });
+        //         newContent += '</' + tool + '>';
+        //         console.log('newContent');
+        //         console.log(newContent);
+        //         elObjParentObj[0].outerHTML = newContent;
+        //     }
+        // } else {
+        //     console.log('Parent and child tagName mismatch.');
+        // }
+    });
+    //
+    //
 }
 
 //Remove HTML (except links) from copy.
