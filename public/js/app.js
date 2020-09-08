@@ -30689,7 +30689,7 @@ addSortParams = function addSortParams(el, key) {
 
 //Globals
 //For cleanRedundantCode
-var elObj, elObjParentObj, elTagName, elPrentTagName; //Define rich-text-editing tools.
+var elObj, elObjParentObj, elTagName, elParentTagName, currentGeneration; //Define rich-text-editing tools.
 
 var toolsArray = [{
   "class": 'fas fa-bold',
@@ -31020,18 +31020,25 @@ execTool = function execTool(tool, editArea) {
 
   try {
     range.surroundContents(newNode);
+    var openMarker = document.createElement('marker');
+    $(openMarker).attr('id', 'openMarker');
+    var closeMarker = document.createElement('marker');
+    $(closeMarker).attr('id', 'closeMarker');
+    range.insertNode(openMarker);
+    range.collapse(false);
+    range.insertNode(closeMarker);
     console.log('Surrounded');
   } catch (e) {
     console.log('Manually wrapped');
     wrapTagholders(range, tool);
-    convertTagholders(editArea);
   }
 
   editArea.children().each(function () {
     console.log('editArea loop this:');
     console.log(this);
-    cleanRedundantCode(this);
+    cleanRedundantCode(editArea);
   });
+  convertTagholders(editArea);
 };
 
 wrapTagholders = function wrapTagholders(range, tool) {
@@ -31061,11 +31068,10 @@ convertTagholders = function convertTagholders(editArea) {
       editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>', '<' + tag + '>'));
     }
   });
-  replaceMarkersWithSelection(editArea);
 };
 
 replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
-  console.log('editArea');
+  console.log('editArea at start of replaceMarkersWithSelection');
   console.log(editArea);
   var range = document.createRange();
   var selection = window.getSelection();
@@ -31087,7 +31093,12 @@ cleanRedundantCode = function (_cleanRedundantCode) {
 
   return cleanRedundantCode;
 }(function (el) {
+  if ('TAGHOLDER' === el.tagName || 'MARKER' === el.tagName) {
+    return;
+  }
+
   elObj = $(el);
+  var clearRedundantEditArea = elObj.closest('.fancy-text-div');
 
   if (elObj.is(':empty')) {
     elObj.remove();
@@ -31095,10 +31106,13 @@ cleanRedundantCode = function (_cleanRedundantCode) {
 
   elObjParentObj = $(el).parent();
   elTagName = el.tagName;
-  elPrentTagName = elObjParentObj[0].tagName;
+  elParentTagName = elObjParentObj[0].tagName;
+  console.log('elTagName');
+  console.log(elTagName);
+  console.log('elParentTagName');
+  console.log(elParentTagName);
 
-  if (elTagName === elPrentTagName) {
-    var editArea = elObj.closest('.fancy-text-div');
+  if (elTagName === elParentTagName) {
     var tool = elTagName.toLowerCase();
     console.log('Parent and child tagName match: ' + tool);
 
@@ -31115,16 +31129,13 @@ cleanRedundantCode = function (_cleanRedundantCode) {
 
         if ('#text' === this.nodeName) {
           newContent += this.textContent;
-        }
-
-        if (elTagName === this.nodeName) {
-          newContent += '</' + tool + '><marker id="openMarker"></marker>';
+        } else if (elTagName === this.nodeName) {
+          newContent += '</' + tool + '>';
           newContent += this.textContent;
-          newContent += '<marker id="closeMarker"></marker><' + tool + '>';
+          newContent += '<' + tool + '>';
+        } else if ('MARKER' === this.nodeName) {
+          newContent += this.outerHTML;
         } else {
-          console.log('this');
-          console.log(this);
-
           if ('undefined' !== typeof this.innerHTML) {
             newContent += this.innerHTML;
           }
@@ -31134,9 +31145,6 @@ cleanRedundantCode = function (_cleanRedundantCode) {
       console.log('newContent');
       console.log(newContent);
       elObjParentObj[0].outerHTML = newContent;
-      console.log('editArea from cleanRedundantCode');
-      console.log(elObjParentObj);
-      replaceMarkersWithSelection(editArea);
     }
   } else {
     console.log('Parent and child tagName mismatch.');
@@ -31144,8 +31152,18 @@ cleanRedundantCode = function (_cleanRedundantCode) {
 
   while ((currentGeneration = elObj.children()).length) {
     currentGeneration.each(function () {
+      console.log('About to clean this:');
+      console.log(this);
       cleanRedundantCode(this);
     });
+  }
+
+  console.log('editArea from after while loop');
+  console.log(clearRedundantEditArea);
+
+  if (clearRedundantEditArea.find('marker').length) {
+    console.log('There are markers');
+    replaceMarkersWithSelection(clearRedundantEditArea);
   }
 }); //Remove HTML (except links) from copy.
 
@@ -31233,8 +31251,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

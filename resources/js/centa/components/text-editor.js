@@ -1,6 +1,6 @@
 //Globals
 //For cleanRedundantCode
-let elObj,elObjParentObj,elTagName,elPrentTagName;
+let elObj,elObjParentObj,elTagName,elParentTagName,currentGeneration;
 
 //Define rich-text-editing tools.
 const toolsArray = [
@@ -247,21 +247,28 @@ makeTextEditor = (el,callback = false) => {
 }
 
 execTool = (tool,editArea) => {
-  let range = window.getSelection().getRangeAt(0);
-  let newNode = document.createElement(tool);
-  try {
-    range.surroundContents(newNode);
-    console.log('Surrounded');
-  } catch(e) {
-    console.log('Manually wrapped');
-    wrapTagholders(range,tool);
+    let range = window.getSelection().getRangeAt(0);
+    let newNode = document.createElement(tool);
+    try {
+        range.surroundContents(newNode);
+        const openMarker = document.createElement('marker');
+        $(openMarker).attr('id','openMarker');
+        const closeMarker = document.createElement('marker');
+        $(closeMarker).attr('id','closeMarker');
+        range.insertNode(openMarker);
+        range.collapse(false);
+        range.insertNode(closeMarker);
+        console.log('Surrounded');
+    } catch(e) {
+        console.log('Manually wrapped');
+        wrapTagholders(range,tool);
+    }
+    editArea.children().each(function() {
+        console.log('editArea loop this:');
+        console.log(this);
+        cleanRedundantCode(editArea);
+    });
     convertTagholders(editArea);
-  }
-  editArea.children().each(function() {
-    console.log('editArea loop this:');
-    console.log(this);
-    cleanRedundantCode(this);
-  });
 }
 
 wrapTagholders = (range,tool) => {
@@ -290,11 +297,10 @@ convertTagholders = editArea => {
       editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>','<' + tag + '>'));
     }
   });
-  replaceMarkersWithSelection(editArea);
 }
 
 replaceMarkersWithSelection = editArea => {
-  console.log('editArea');
+  console.log('editArea at start of replaceMarkersWithSelection');
   console.log(editArea);
   const range = document.createRange();
   const selection = window.getSelection();
@@ -306,59 +312,73 @@ replaceMarkersWithSelection = editArea => {
 }
 
 cleanRedundantCode = el => {
-  elObj = $(el);
-  if(elObj.is(':empty')) {
-    elObj.remove();
-  }
-  elObjParentObj = $(el).parent();
-  elTagName = el.tagName;
-  elPrentTagName = elObjParentObj[0].tagName;
-  if(elTagName === elPrentTagName) {
-    const editArea = elObj.closest('.fancy-text-div');
-    const tool = elTagName.toLowerCase();
-    console.log('Parent and child tagName match: ' + tool);
-    if(elObj.text() === elObjParentObj.text()) {
-      console.log('Parent and child text match. Replacing parent');
-      elObjParentObj.replaceWith(elObj.html());
-    } else {
-      console.log('Parent and child text mismatch.');
-      console.log(elObjParentObj.contents());
-      console.log(elObjParentObj.html());
-      let newContent = '<' + tool + '>';
-      elObjParentObj.contents().each(function() {
-        console.log(this);
-        if('#text' === this.nodeName) {
-          newContent += this.textContent;
-        }
-        if(elTagName === this.nodeName) {
-          newContent += '</' + tool + '><marker id="openMarker"></marker>';
-          newContent += this.textContent;
-          newContent += '<marker id="closeMarker"></marker><' + tool + '>';
-        } else {
-          console.log('this');
-          console.log(this);
-          if('undefined' !== typeof this.innerHTML) {
-            newContent += this.innerHTML;
-          }
-        }
-      });
-      newContent += '</' + tool + '>';
-      console.log('newContent');
-      console.log(newContent);
-      elObjParentObj[0].outerHTML = newContent;
-      console.log('editArea from cleanRedundantCode');
-      console.log(elObjParentObj);
-      replaceMarkersWithSelection(editArea);
+    if('TAGHOLDER' === el.tagName || 'MARKER' === el.tagName) {
+        return;
     }
-  } else {
-    console.log('Parent and child tagName mismatch.');
-  }
+    elObj = $(el);
+    let clearRedundantEditArea = elObj.closest('.fancy-text-div');
+    if(elObj.is(':empty')) {
+        elObj.remove();
+    }
+    elObjParentObj = $(el).parent();
+    elTagName = el.tagName;
+    elParentTagName = elObjParentObj[0].tagName;
+    console.log('elTagName');
+    console.log(elTagName);
+    console.log('elParentTagName');
+    console.log(elParentTagName);
+    if(elTagName === elParentTagName) {
+        const tool = elTagName.toLowerCase();
+        console.log('Parent and child tagName match: ' + tool);
+        if(elObj.text() === elObjParentObj.text()) {
+            console.log('Parent and child text match. Replacing parent');
+            elObjParentObj.replaceWith(elObj.html());
+        } else {
+            console.log('Parent and child text mismatch.');
+            console.log(elObjParentObj.contents());
+            console.log(elObjParentObj.html());
+            let newContent = '<' + tool + '>';
+            elObjParentObj.contents().each(function() {
+                console.log(this);
+                if('#text' === this.nodeName) {
+                    newContent += this.textContent;
+                } else if(elTagName === this.nodeName) {
+                    newContent += '</' + tool + '>';
+                    newContent += this.textContent;
+                    newContent += '<' + tool + '>';
+                } else if ('MARKER' === this.nodeName) {
+                    newContent += this.outerHTML;
+                } else {
+                    if('undefined' !== typeof this.innerHTML) {
+                        newContent += this.innerHTML;
+                    }
+                }
+            });
+            newContent += '</' + tool + '>';
+            console.log('newContent');
+            console.log(newContent);
+            elObjParentObj[0].outerHTML = newContent;
+        }
+    } else {
+        console.log('Parent and child tagName mismatch.');
+    }
 
-  while((currentGeneration = elObj.children()).length) {
-      currentGeneration.each(function() {
-          cleanRedundantCode(this);
-      });
-  }
+
+    while((currentGeneration = elObj.children()).length) {
+        currentGeneration.each(function() {
+            console.log('About to clean this:');
+            console.log(this);
+            cleanRedundantCode(this);
+        });
+    }
+
+    console.log('editArea from after while loop');
+    console.log(clearRedundantEditArea);
+
+    if(clearRedundantEditArea.find('marker').length) {
+        console.log('There are markers');
+        replaceMarkersWithSelection(clearRedundantEditArea);
+    }
 }
 
 //Remove HTML (except links) from copy.
