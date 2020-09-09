@@ -31101,59 +31101,56 @@ cleanRedundantCode = function cleanRedundantCode(el) {
   elObjDescendents.each(function () {
     var element = this;
     var elementObj = $(this);
-    var elementParentObject = elementObj.parent();
     var elementTagName = element.tagName;
+    var tool = elementTagName.toLowerCase();
+    var elementParentObject = elementObj.parent();
+    var elementAncestorObject = elementParentObject.closest(tool);
 
     if ('MARKER' === elementTagName) {
       return;
     }
 
+    if (elementObj.is(':empty')) {
+      elementObj.remove();
+    }
+
     var elementParentTagName = elementParentObject[0].tagName;
-    console.log('elementTagName');
-    console.log(elementTagName);
-    console.log('elementParentTagName');
-    console.log(elementParentTagName);
 
     if (elementTagName === elementParentTagName) {
-      var tool = elementTagName.toLowerCase();
       console.log('Parent and child tagName match: ' + tool);
 
       if (elementObj.text() === elementParentObject.text()) {
         console.log('Parent and child text match. Replacing parent');
         elementParentObject.replaceWith(elementObj.html());
+      } else {
+        console.log('Parent and child text mismatch.');
+        console.log(elementParentObject.contents());
+        console.log(elementParentObject.html());
+        var newContent = '<' + tool + '>';
+        elementParentObject.contents().each(function () {
+          if ('#text' === this.nodeName) {
+            newContent += this.textContent;
+          } else if (elementTagName === this.nodeName) {
+            newContent += '</' + tool + '>';
+            newContent += this.innerHTML;
+            newContent += '<' + tool + '>';
+          } else if ('MARKER' === this.nodeName) {
+            newContent += this.outerHTML;
+          } else {
+            if ('undefined' !== typeof this.innerHTML) {
+              newContent += this.innerHTML;
+            }
+          }
+        });
+        newContent += '</' + tool + '>';
+        console.log('newContent');
+        console.log(newContent);
+        elementParentObject[0].outerHTML = newContent;
       }
-    } //     else {
-    //         console.log('Parent and child text mismatch.');
-    //         console.log(elObjParentObj.contents());
-    //         console.log(elObjParentObj.html());
-    //         let newContent = '<' + tool + '>';
-    //         elObjParentObj.contents().each(function() {
-    //             console.log(this);
-    //             if('#text' === this.nodeName) {
-    //                 newContent += this.textContent;
-    //             } else if(elTagName === this.nodeName) {
-    //                 newContent += '</' + tool + '>';
-    //                 newContent += this.textContent;
-    //                 newContent += '<' + tool + '>';
-    //             } else if ('MARKER' === this.nodeName) {
-    //                 newContent += this.outerHTML;
-    //             } else {
-    //                 if('undefined' !== typeof this.innerHTML) {
-    //                     newContent += this.innerHTML;
-    //                 }
-    //             }
-    //         });
-    //         newContent += '</' + tool + '>';
-    //         console.log('newContent');
-    //         console.log(newContent);
-    //         elObjParentObj[0].outerHTML = newContent;
-    //     }
-    // } else {
-    //     console.log('Parent and child tagName mismatch.');
-    // }
-
-  }); //
-  //
+    } else {
+      console.log('Parent and child tagName mismatch.');
+    }
+  });
 }; //Remove HTML (except links) from copy.
 
 
