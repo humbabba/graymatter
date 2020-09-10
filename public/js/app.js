@@ -30688,7 +30688,7 @@ addSortParams = function addSortParams(el, key) {
 /***/ (function(module, exports) {
 
 //Globals
-//For cleanRedundantCode
+//For processEditAreaCode
 var elObj, elObjParentObj, elTagName, elParentTagName, currentGeneration; //Define rich-text-editing tools.
 
 var toolsArray = [{
@@ -31035,15 +31035,15 @@ execTool = function execTool(tool, editArea) {
 
   convertTagholders(editArea);
   editArea.children().each(function () {
-    console.log('editArea loop this:');
-    console.log(this);
-    cleanRedundantCode(this);
+    processEditAreaCode(this);
   });
+  cleanRedundantCode(editArea);
 
   if (editArea.find('marker').length) {
-    console.log('There are markers');
     replaceMarkersWithSelection(editArea);
   }
+
+  removeEmptyTags(editArea);
 };
 
 wrapTagholders = function wrapTagholders(range, tool) {
@@ -31076,8 +31076,6 @@ convertTagholders = function convertTagholders(editArea) {
 };
 
 replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
-  console.log('editArea at start of replaceMarkersWithSelection');
-  console.log(editArea);
   var range = document.createRange();
   var selection = window.getSelection();
   selection.removeAllRanges();
@@ -31087,17 +31085,9 @@ replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
   editArea.find('marker').remove();
 };
 
-cleanRedundantCode = function cleanRedundantCode(el) {
+processEditAreaCode = function processEditAreaCode(el) {
   elObj = $(el);
-
-  if (elObj.is(':empty')) {
-    elObj.remove();
-  }
-
   var elObjDescendents = elObj.find('*');
-  var clearRedundantEditArea = elObj.closest('.fancy-text-div');
-  console.log('elObjDescendents');
-  console.log(elObjDescendents);
   elObjDescendents.each(function () {
     var element = this;
     var elementObj = $(this);
@@ -31110,17 +31100,10 @@ cleanRedundantCode = function cleanRedundantCode(el) {
       return;
     }
 
-    if (elementObj.is(':empty')) {
-      elementObj.remove();
-    }
-
     var elementParentTagName = elementParentObject[0].tagName;
 
     if (elementTagName === elementParentTagName) {
-      console.log('Parent and child tagName match: ' + tool);
-
       if (elementObj.text() === elementParentObject.text()) {
-        console.log('Parent and child text match. Replacing parent');
         var elementParentObjectString = elementParentObject.html();
         var replaceString = '';
 
@@ -31136,17 +31119,29 @@ cleanRedundantCode = function cleanRedundantCode(el) {
 
         elementParentObject.replaceWith(replaceString);
       } else {
-        console.log('Parent and child text mismatch.');
-        console.log(elementParentObject.contents());
-        console.log(elementParentObject.html());
         var newContent = '<' + tool + '>';
         elementParentObject.contents().each(function () {
           if ('#text' === this.nodeName) {
             newContent += this.textContent;
           } else if (elementTagName === this.nodeName) {
-            newContent += '</' + tool + '>';
+            console.log('Previous sibling:');
+            console.log(this.previousSibling);
+            console.log('Previous condition:');
+            console.log(null !== this.previousSibling && this.previousSibling.nodeName === this.nodeName);
+
+            if (null !== this.previousSibling && (this.previousSibling.nodeName === this.nodeName || 'MARKER' === this.previousSibling.nodeName)) {
+              newContent += '</' + tool + '>';
+            }
+
             newContent += this.innerHTML;
-            newContent += '<' + tool + '>';
+            console.log('Next sibling:');
+            console.log(this.nextSibling);
+            console.log('Next condition:');
+            console.log(null !== this.nextSibling && (this.nextSibling.nodeName === this.nodeName || 'MARKER' === this.nextSibling.nodeName));
+
+            if (null !== this.nextSibling && (this.nextSibling.nodeName === this.nodeName || 'MARKER' === this.nextSibling.nodeName)) {
+              newContent += '<' + tool + '>';
+            }
           } else if ('MARKER' === this.nodeName) {
             newContent += this.outerHTML;
           } else {
@@ -31156,21 +31151,52 @@ cleanRedundantCode = function cleanRedundantCode(el) {
           }
         });
         newContent += '</' + tool + '>';
-        console.log('newContent');
-        console.log(newContent);
-        console.log('elementParentObject');
-        console.log(elementParentObject);
 
         if (elementParentObject[0].parentNode) {
           elementParentObject[0].outerHTML = newContent;
-          console.log('We have NO case');
-        } else {
-          console.log("We have a case!");
         }
       }
-    } else {
-      console.log('Parent and child tagName mismatch.');
     }
+  });
+};
+
+cleanRedundantCode = function cleanRedundantCode(editArea) {
+  editArea.children().each(function () {
+    var inspectedElement = $(this);
+    var inspectedElementTagName = inspectedElement[0].tagName;
+
+    if (inspectedElementTagName) {
+      if ('MARKER' === inspectedElementTagName) {
+        return;
+      } else {
+        var inspectedElementDescendents = inspectedElement.find('*');
+        inspectedElementDescendents.each(function () {
+          var inspectedElementDescendentTagName = this.tagName;
+
+          if ('MARKER' === inspectedElementDescendentTagName) {
+            return;
+          }
+
+          var inspectedElementDescendentParentTagName = this.parentNode.tagName;
+
+          if (inspectedElementDescendentTagName === inspectedElementDescendentParentTagName) {
+            $(this).replaceWith($(this).html());
+          }
+        });
+      }
+    }
+  });
+};
+
+removeEmptyTags = function removeEmptyTags(editArea) {
+  editArea.children().each(function () {
+    $(this).find('*').each(function () {
+      if (0 === this.childNodes.length) {
+        $(this).remove();
+      } else if (' ' === $(this).html()) {
+        $(this).replaceWith(' ');
+      }
+    });
   });
 }; //Remove HTML (except links) from copy.
 
