@@ -31121,7 +31121,20 @@ cleanRedundantCode = function cleanRedundantCode(el) {
 
       if (elementObj.text() === elementParentObject.text()) {
         console.log('Parent and child text match. Replacing parent');
-        elementParentObject.replaceWith(elementObj.html());
+        var elementParentObjectString = elementParentObject.html();
+        var replaceString = '';
+
+        if (elementParentObjectString.indexOf('<marker id="openMarker"></marker>') > -1) {
+          replaceString += '<marker id="openMarker"></marker>';
+        }
+
+        replaceString += elementObj.html();
+
+        if (elementParentObjectString.indexOf('<marker id="closeMarker"></marker>') > -1) {
+          replaceString += '<marker id="closeMarker"></marker>';
+        }
+
+        elementParentObject.replaceWith(replaceString);
       } else {
         console.log('Parent and child text mismatch.');
         console.log(elementParentObject.contents());
@@ -31145,7 +31158,15 @@ cleanRedundantCode = function cleanRedundantCode(el) {
         newContent += '</' + tool + '>';
         console.log('newContent');
         console.log(newContent);
-        elementParentObject[0].outerHTML = newContent;
+        console.log('elementParentObject');
+        console.log(elementParentObject);
+
+        if (elementParentObject[0].parentNode) {
+          elementParentObject[0].outerHTML = newContent;
+          console.log('We have NO case');
+        } else {
+          console.log("We have a case!");
+        }
       }
     } else {
       console.log('Parent and child tagName mismatch.');
