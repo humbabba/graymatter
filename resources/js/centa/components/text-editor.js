@@ -264,9 +264,7 @@ execTool = (tool,editArea) => {
         wrapTagholders(range,tool);
     }
     convertTagholders(editArea);
-    editArea.children().each(function() {
-        processEditAreaCode(this);
-    });
+    processEditAreaCode(editArea);
     cleanRedundantCode(editArea);
     if(editArea.find('marker').length) {
         replaceMarkersWithSelection(editArea);
@@ -312,9 +310,10 @@ replaceMarkersWithSelection = editArea => {
   editArea.find('marker').remove();
 }
 
-processEditAreaCode = el => {
-    elObj = $(el);
-    let elObjDescendents = elObj.find('*');
+processEditAreaCode = editArea => {
+    console.log('editArea');
+    console.log(editArea);
+    let elObjDescendents = editArea.find('*');
     elObjDescendents.each(function() {
         let element = this;
         let elementObj = $(this);
@@ -328,6 +327,7 @@ processEditAreaCode = el => {
         let elementParentTagName = elementParentObject[0].tagName;
         if(elementTagName === elementParentTagName) {
             if (elementObj.text() === elementParentObject.text()) {
+                console.log("Replacing parent.");
                 let elementParentObjectString = elementParentObject.html();
                 let replaceString = '';
                 if(elementParentObjectString.indexOf('<marker id="openMarker"></marker>') > -1) {
@@ -339,6 +339,7 @@ processEditAreaCode = el => {
                 }
                 elementParentObject.replaceWith(replaceString);
             } else {
+                console.log("Parsing content");
                 let newContent = '<' + tool + '>';
                 elementParentObject.contents().each(function() {
                     if('#text' === this.nodeName) {
