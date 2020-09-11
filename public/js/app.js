@@ -31017,22 +31017,7 @@ makeTextEditor = function makeTextEditor(el) {
 execTool = function execTool(tool, editArea) {
   var range = window.getSelection().getRangeAt(0);
   var newNode = document.createElement(tool);
-
-  try {
-    range.surroundContents(newNode);
-    var openMarker = document.createElement('marker');
-    $(openMarker).attr('id', 'openMarker');
-    var closeMarker = document.createElement('marker');
-    $(closeMarker).attr('id', 'closeMarker');
-    range.insertNode(openMarker);
-    range.collapse(false);
-    range.insertNode(closeMarker);
-    console.log('Surrounded');
-  } catch (e) {
-    console.log('Manually wrapped');
-    wrapTagholders(range, tool);
-  }
-
+  wrapTagholders(range, tool);
   convertTagholders(editArea);
   processEditAreaCode(editArea);
   cleanRedundantCode(editArea);
@@ -31084,9 +31069,9 @@ replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
 };
 
 processEditAreaCode = function processEditAreaCode(editArea) {
-  console.log('editArea');
-  console.log(editArea);
   var elObjDescendents = editArea.find('*');
+  console.log('elObjDescendents');
+  console.log(elObjDescendents);
   elObjDescendents.each(function () {
     var element = this;
     var elementObj = $(this);
@@ -31108,13 +31093,19 @@ processEditAreaCode = function processEditAreaCode(editArea) {
         var replaceString = '';
 
         if (elementParentObjectString.indexOf('<marker id="openMarker"></marker>') > -1) {
+          elementParentObject.html(elementParentObject.html().replace('<marker id="openMarker"></marker>', ''));
           replaceString += '<marker id="openMarker"></marker>';
         }
 
+        elementObj.html(elementObj.html().replace('<marker id="openMarker"></marker>', ''));
         replaceString += elementObj.html();
 
         if (elementParentObjectString.indexOf('<marker id="closeMarker"></marker>') > -1) {
-          replaceString += '<marker id="closeMarker"></marker>';
+          elementParentObject.html(elementParentObject.html().replace('<marker id="closeMarker"></marker>', ''));
+
+          if (replaceString.indexOf('<marker id="closeMarker"></marker>') === -1) {
+            replaceString += '<marker id="closeMarker"></marker>';
+          }
         }
 
         elementParentObject.replaceWith(replaceString);
@@ -31157,6 +31148,8 @@ processEditAreaCode = function processEditAreaCode(editArea) {
           elementParentObject[0].outerHTML = newContent;
         }
       }
+    } else {
+      console.log('Tag name mismatch.');
     }
   });
 };
