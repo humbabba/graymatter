@@ -248,43 +248,63 @@ makeTextEditor = (el,callback = false) => {
 
 execTool = (tool,editArea) => {
     let range = window.getSelection().getRangeAt(0);
-    let newNode = document.createElement(tool);
-    wrapTagholders(range,tool);
-    convertTagholders(editArea);
-    processEditAreaCode(editArea);
-    cleanRedundantCode(editArea);
-    if(editArea.find('marker').length) {
-        replaceMarkersWithSelection(editArea);
-    }
-    removeEmptyTags(editArea);
-}
-
-wrapTagholders = (range,tool) => {
-    const newOpenTag = document.createElement('tagholder');
-    $(newOpenTag).attr('data-tag',tool).attr('data-tag-state','open');
     const openMarker = document.createElement('marker');
     $(openMarker).attr('id','openMarker');
-    const newCloseTag = document.createElement('tagholder');
-    $(newCloseTag).attr('data-tag',tool).attr('data-tag-state','close');
     const closeMarker = document.createElement('marker');
     $(closeMarker).attr('id','closeMarker');
     range.insertNode(openMarker);
-    range.insertNode(newOpenTag);
     range.collapse(false);
     range.insertNode(closeMarker);
-    range.insertNode(newCloseTag);
+    console.log('BEFORE: editArea.html()');
+    console.log(editArea.html());
+    editArea.children().each(function() {
+        if('MARKER' === this.tagName) {
+            if('openMarker' === $(this).prop('id')) {
+                let that = $(this).next();
+                that.prepend($(this));
+            }
+            if('closeMarker' === $(this).prop('id')) {
+                let that = $(this).prev();
+                that.append($(this));
+            }
+        }
+    });
+    let tags = ['b','i','u','strike'];
+    tags.forEach(tag => {
+        editArea.html(editArea.html().replace('<marker id="openMarker"></marker><' + tag + '>','<' + tag + '><marker id="openMarker"></marker>'));
+    });
+    console.log('AFTER: editArea.html()');
+    console.log(editArea.html());
+    wrapTags(tool,editArea);
+    // processEditAreaCode(editArea);
+    cleanRedundantCode(editArea);
+    replaceMarkersWithSelection(editArea);
+    removeEmptyTags(editArea);
+    console.log('FINAL: editArea.html()');
+    console.log(editArea.html());
 }
 
-convertTagholders = editArea => {
-  editArea.find('tagholder').each(function() {
-    const tag = $(this).data('tag');
-    const tagState = $(this).data('tagState');
-    if('close' === tagState) {
-      editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>','</' + tag + '>'));
+wrapTags = (tool,editArea) => {
+    let editAreaString = editArea.html();
+    let openMarker = editArea.find('#openMarker');
+    let openMarkerAncestor = openMarker.closest(tool);
+    let openReplacer = '<marker id="openMarker"></marker>';
+    let closeReplacer = '<marker id="closeMarker"></marker>';
+    let toolOpen = '<' + tool + '>';
+    let toolClose = '</' + tool + '>';
+    if(openMarkerAncestor.length) {
+        editAreaString = editAreaString.replace(openReplacer,openReplacer + toolClose);
     } else {
-      editArea.html(editArea.html().replace('<tagholder data-tag="' + tag + '" data-tag-state="' + tagState + '"></tagholder>','<' + tag + '>'));
+        editAreaString = editAreaString.replace(openReplacer,openReplacer + toolOpen);
     }
-  });
+    let closeMarker = editArea.find('#closeMarker');
+    let closeMarkerAncestor = closeMarker.closest(tool);
+    if(closeMarkerAncestor.length) {
+        editAreaString = editAreaString.replace(closeReplacer,closeReplacer + toolOpen);
+    } else {
+        editAreaString = editAreaString.replace(closeReplacer,closeReplacer + toolClose);
+    }
+    editArea.html(editAreaString);
 }
 
 replaceMarkersWithSelection = editArea => {
