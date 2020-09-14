@@ -2,6 +2,9 @@
 //For processEditAreaCode
 let elObj,elObjParentObj,elTagName,elParentTagName,currentGeneration;
 
+const openMarkerString = '<marker id="openMarker"></marker>';
+const closeMarkerString = '<marker id="closeMarker"></marker>';
+
 //Define rich-text-editing tools.
 const toolsArray = [
     {class:'fas fa-bold',tool: 'b',title: 'Bold'},
@@ -271,7 +274,7 @@ execTool = (tool,editArea) => {
     });
     let tags = ['b','i','u','strike'];
     tags.forEach(tag => {
-        editArea.html(editArea.html().replace('<marker id="openMarker"></marker><' + tag + '>','<' + tag + '><marker id="openMarker"></marker>'));
+        editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>','<' + tag + '>' + openMarkerString));
     });
     console.log('AFTER: editArea.html()');
     console.log(editArea.html());
@@ -288,23 +291,74 @@ wrapTags = (tool,editArea) => {
     let editAreaString = editArea.html();
     let openMarker = editArea.find('#openMarker');
     let openMarkerAncestor = openMarker.closest(tool);
-    let openReplacer = '<marker id="openMarker"></marker>';
-    let closeReplacer = '<marker id="closeMarker"></marker>';
+    let closeMarker = editArea.find('#closeMarker');
+    let closeMarkerAncestor = closeMarker.closest(tool);
     let toolOpen = '<' + tool + '>';
     let toolClose = '</' + tool + '>';
     if(openMarkerAncestor.length) {
-        editAreaString = editAreaString.replace(openReplacer,openReplacer + toolClose);
+      console.log('openMarkerAncestor has length');
+        if(areTagsBetween(tool,editAreaString)) {
+          editAreaString = removeException(tool,editAreaString);
+        } else {
+          editAreaString = editAreaString.replace(openMarkerString,openMarkerString + toolClose);
+        }
     } else {
-        editAreaString = editAreaString.replace(openReplacer,openReplacer + toolOpen);
+        editAreaString = editAreaString.replace(openMarkerString,openMarkerString + toolOpen);
     }
-    let closeMarker = editArea.find('#closeMarker');
-    let closeMarkerAncestor = closeMarker.closest(tool);
     if(closeMarkerAncestor.length) {
-        editAreaString = editAreaString.replace(closeReplacer,closeReplacer + toolOpen);
+      console.log('closeMarkerAncestor has length');
+        if(areTagsBetween(tool,editAreaString)) {
+          editAreaString = removeException(tool,editAreaString);
+        } else {
+          editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + toolOpen);
+        }
     } else {
-        editAreaString = editAreaString.replace(closeReplacer,closeReplacer + toolClose);
+        editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + toolClose);
     }
     editArea.html(editAreaString);
+}
+
+areTagsBetween = (tool,editAreaString) => {
+  let patternString = openMarkerString + '(.*)' + closeMarkerString;
+  let pattern = new RegExp(patternString);
+  let contentString = editAreaString.match(pattern)[1];
+  console.log('areTagsBetween contentString');
+  console.log(contentString);
+
+  let toolOpen = '<' + tool + '>';
+  let toolClose = '</' + tool + '>';
+  if(contentString.indexOf(toolOpen) > -1) {
+    console.log('areTagsBetween is true');
+    return true;
+  }
+  console.log('areTagsBetween is false');
+  return false;
+}
+
+removeException = (tool,editAreaString) => {
+  let patternString = openMarkerString + '(.*)' + closeMarkerString;
+  let pattern = new RegExp(patternString);
+  let contentString = editAreaString.match(pattern)[1];
+  console.log('contentString');
+  console.log(contentString);
+
+  patternString = '<' + tool + '>';
+  pattern = new RegExp(patternString,'gi');
+  let updatedContentString = contentString.replace(pattern,'');
+  console.log('updatedContentString');
+  console.log(updatedContentString);
+
+  patternString = '</' + tool + '>';
+  pattern = new RegExp(patternString,'gi');
+  let finalContentString = updatedContentString.replace(pattern,'');
+  console.log('finalContentString');
+  console.log(finalContentString);
+
+  editAreaString = editAreaString.replace(contentString,finalContentString);
+  console.log('editAreaString');
+  console.log(editAreaString);
+
+  return editAreaString;
 }
 
 replaceMarkersWithSelection = editArea => {
@@ -337,16 +391,16 @@ processEditAreaCode = editArea => {
                 console.log("Replacing parent.");
                 let elementParentObjectString = elementParentObject.html();
                 let replaceString = '';
-                if(elementParentObjectString.indexOf('<marker id="openMarker"></marker>') > -1) {
-                    elementParentObject.html(elementParentObject.html().replace('<marker id="openMarker"></marker>',''));
-                    replaceString += '<marker id="openMarker"></marker>';
+                if(elementParentObjectString.indexOf(openMarkerString) > -1) {
+                    elementParentObject.html(elementParentObject.html().replace(openMarkerString,''));
+                    replaceString += openMarkerString;
                 }
-                elementObj.html(elementObj.html().replace('<marker id="openMarker"></marker>',''));
+                elementObj.html(elementObj.html().replace(openMarkerString,''));
                 replaceString += elementObj.html();
-                if(elementParentObjectString.indexOf('<marker id="closeMarker"></marker>') > -1) {
-                    elementParentObject.html(elementParentObject.html().replace('<marker id="closeMarker"></marker>',''));
-                    if(replaceString.indexOf('<marker id="closeMarker"></marker>') === -1) {
-                        replaceString += '<marker id="closeMarker"></marker>';
+                if(elementParentObjectString.indexOf(closeMarkerString) > -1) {
+                    elementParentObject.html(elementParentObject.html().replace(closeMarkerString,''));
+                    if(replaceString.indexOf(closeMarkerString) === -1) {
+                        replaceString += closeMarkerString;
                     }
                 }
                 elementParentObject.replaceWith(replaceString);

@@ -30689,7 +30689,9 @@ addSortParams = function addSortParams(el, key) {
 
 //Globals
 //For processEditAreaCode
-var elObj, elObjParentObj, elTagName, elParentTagName, currentGeneration; //Define rich-text-editing tools.
+var elObj, elObjParentObj, elTagName, elParentTagName, currentGeneration;
+var openMarkerString = '<marker id="openMarker"></marker>';
+var closeMarkerString = '<marker id="closeMarker"></marker>'; //Define rich-text-editing tools.
 
 var toolsArray = [{
   "class": 'fas fa-bold',
@@ -31041,7 +31043,7 @@ execTool = function execTool(tool, editArea) {
   });
   var tags = ['b', 'i', 'u', 'strike'];
   tags.forEach(function (tag) {
-    editArea.html(editArea.html().replace('<marker id="openMarker"></marker><' + tag + '>', '<' + tag + '><marker id="openMarker"></marker>'));
+    editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>', '<' + tag + '>' + openMarkerString));
   });
   console.log('AFTER: editArea.html()');
   console.log(editArea.html());
@@ -31058,27 +31060,76 @@ wrapTags = function wrapTags(tool, editArea) {
   var editAreaString = editArea.html();
   var openMarker = editArea.find('#openMarker');
   var openMarkerAncestor = openMarker.closest(tool);
-  var openReplacer = '<marker id="openMarker"></marker>';
-  var closeReplacer = '<marker id="closeMarker"></marker>';
+  var closeMarker = editArea.find('#closeMarker');
+  var closeMarkerAncestor = closeMarker.closest(tool);
   var toolOpen = '<' + tool + '>';
   var toolClose = '</' + tool + '>';
 
   if (openMarkerAncestor.length) {
-    editAreaString = editAreaString.replace(openReplacer, openReplacer + toolClose);
+    console.log('openMarkerAncestor has length');
+
+    if (areTagsBetween(tool, editAreaString)) {
+      editAreaString = removeException(tool, editAreaString);
+    } else {
+      editAreaString = editAreaString.replace(openMarkerString, openMarkerString + toolClose);
+    }
   } else {
-    editAreaString = editAreaString.replace(openReplacer, openReplacer + toolOpen);
+    editAreaString = editAreaString.replace(openMarkerString, openMarkerString + toolOpen);
   }
 
-  var closeMarker = editArea.find('#closeMarker');
-  var closeMarkerAncestor = closeMarker.closest(tool);
-
   if (closeMarkerAncestor.length) {
-    editAreaString = editAreaString.replace(closeReplacer, closeReplacer + toolOpen);
+    console.log('closeMarkerAncestor has length');
+
+    if (areTagsBetween(tool, editAreaString)) {
+      editAreaString = removeException(tool, editAreaString);
+    } else {
+      editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + toolOpen);
+    }
   } else {
-    editAreaString = editAreaString.replace(closeReplacer, closeReplacer + toolClose);
+    editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + toolClose);
   }
 
   editArea.html(editAreaString);
+};
+
+areTagsBetween = function areTagsBetween(tool, editAreaString) {
+  var patternString = openMarkerString + '(.*)' + closeMarkerString;
+  var pattern = new RegExp(patternString);
+  var contentString = editAreaString.match(pattern)[1];
+  console.log('areTagsBetween contentString');
+  console.log(contentString);
+  var toolOpen = '<' + tool + '>';
+  var toolClose = '</' + tool + '>';
+
+  if (contentString.indexOf(toolOpen) > -1) {
+    console.log('areTagsBetween is true');
+    return true;
+  }
+
+  console.log('areTagsBetween is false');
+  return false;
+};
+
+removeException = function removeException(tool, editAreaString) {
+  var patternString = openMarkerString + '(.*)' + closeMarkerString;
+  var pattern = new RegExp(patternString);
+  var contentString = editAreaString.match(pattern)[1];
+  console.log('contentString');
+  console.log(contentString);
+  patternString = '<' + tool + '>';
+  pattern = new RegExp(patternString, 'gi');
+  var updatedContentString = contentString.replace(pattern, '');
+  console.log('updatedContentString');
+  console.log(updatedContentString);
+  patternString = '</' + tool + '>';
+  pattern = new RegExp(patternString, 'gi');
+  var finalContentString = updatedContentString.replace(pattern, '');
+  console.log('finalContentString');
+  console.log(finalContentString);
+  editAreaString = editAreaString.replace(contentString, finalContentString);
+  console.log('editAreaString');
+  console.log(editAreaString);
+  return editAreaString;
 };
 
 replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
@@ -31115,19 +31166,19 @@ processEditAreaCode = function processEditAreaCode(editArea) {
         var elementParentObjectString = elementParentObject.html();
         var replaceString = '';
 
-        if (elementParentObjectString.indexOf('<marker id="openMarker"></marker>') > -1) {
-          elementParentObject.html(elementParentObject.html().replace('<marker id="openMarker"></marker>', ''));
-          replaceString += '<marker id="openMarker"></marker>';
+        if (elementParentObjectString.indexOf(openMarkerString) > -1) {
+          elementParentObject.html(elementParentObject.html().replace(openMarkerString, ''));
+          replaceString += openMarkerString;
         }
 
-        elementObj.html(elementObj.html().replace('<marker id="openMarker"></marker>', ''));
+        elementObj.html(elementObj.html().replace(openMarkerString, ''));
         replaceString += elementObj.html();
 
-        if (elementParentObjectString.indexOf('<marker id="closeMarker"></marker>') > -1) {
-          elementParentObject.html(elementParentObject.html().replace('<marker id="closeMarker"></marker>', ''));
+        if (elementParentObjectString.indexOf(closeMarkerString) > -1) {
+          elementParentObject.html(elementParentObject.html().replace(closeMarkerString, ''));
 
-          if (replaceString.indexOf('<marker id="closeMarker"></marker>') === -1) {
-            replaceString += '<marker id="closeMarker"></marker>';
+          if (replaceString.indexOf(closeMarkerString) === -1) {
+            replaceString += closeMarkerString;
           }
         }
 
@@ -31301,8 +31352,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
