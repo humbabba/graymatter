@@ -1,9 +1,10 @@
 //Globals
 //For processEditAreaCode
-let elObj,elObjParentObj,elTagName,elParentTagName,currentGeneration;
+let elObj,elObjParentObj,elTagName,elParentTagName,currentGeneration,selectionObject;
 
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
+const tags = ['b','i','u','strike'];
 
 //Define rich-text-editing tools.
 const toolsArray = [
@@ -272,13 +273,18 @@ execTool = (tool,editArea) => {
             }
         }
     });
-    let tags = ['b','i','u','strike'];
-    tags.forEach(tag => {
-        editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>','<' + tag + '>' + openMarkerString));
-    });
+
+    getSelectionObject(tool,editArea);
+
+    let tagBalanceArray = selectionObject.tagBalance;
+    let tagImbalance = selectionObject.tagBalance.find(o => o.value !== 0);
+    if('undefined' !== typeof tagImbalance) {
+        rebalanceTag(tagImbalance,editArea);
+    }
+
     console.log('AFTER: editArea.html()');
     console.log(editArea.html());
-    wrapTags(tool,editArea);
+    wrapTags(editArea);
     // processEditAreaCode(editArea);
     cleanRedundantCode(editArea);
     replaceMarkersWithSelection(editArea);
@@ -287,36 +293,101 @@ execTool = (tool,editArea) => {
     console.log(editArea.html());
 }
 
-wrapTags = (tool,editArea) => {
+rebalanceTag = (tagImbalance,editArea) => {
+    console.log('Rebalancing');
+    console.log(tagImbalance);
+    let tag = tagImbalance.name;
+    if(tagImbalance.value > 0) {
+        editArea.html(editArea.html().replace(closeMarkerString + '</' + tag + '>','</' + tag + '>' + closeMarkerString));
+    } else {
+        editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>','<' + tag + '>' + openMarkerString));
+    }
+}
+
+getSelectionObject = (tool,editArea) => {
+    selectionObject = {};
     let editAreaString = editArea.html();
+    let openTool = '<' + tool + '>';
+    let closeTool = '</' + tool + '>';
     let openMarker = editArea.find('#openMarker');
     let openMarkerAncestor = openMarker.closest(tool);
     let closeMarker = editArea.find('#closeMarker');
     let closeMarkerAncestor = closeMarker.closest(tool);
-    let toolOpen = '<' + tool + '>';
-    let toolClose = '</' + tool + '>';
+    let patternString = openMarkerString + '(.*)' + closeMarkerString;
+    let pattern = new RegExp(patternString);
+    let contentString = editAreaString.match(pattern)[1];
+    selectionObject.tagBalance = [];
+    if(tool) {
+        selectionObject.tool = tool;
+        selectionObject.openTool = openTool;
+        selectionObject.closeTool = closeTool;
+
+        tags.forEach(tag => {
+            let openTag = '<' + tag + '>';
+            let closeTag = '</' + tag + '>';
+            let tagReport = {};
+            tagReport.name = tag;
+            let pattern = new RegExp(openTag,'gi');
+            tagReport.value = (contentString.match(pattern) || []).length;
+            console.log('Tag balance before for "' + tag + '":');
+            console.log(tagReport.value);
+            pattern = new RegExp(closeTool,'gi');
+            tagReport.value -= (contentString.match(pattern) || []).length;
+            console.log('Tag balance before for "' + tag + '":');
+            console.log(tagReport.value);
+            selectionObject.tagBalance.push(tagReport);
+        });
+    }
+
+    if(contentString) {
+        selectionObject.contentString = contentString;
+    }
+    if(contentString.indexOf(openTool) > -1) {
+        selectionObject.containsOpenTag = true;
+    }
+
+    if(contentString.indexOf(closeTool) > -1) {
+        selectionObject.containsCloseTag = true;
+    }
     if(openMarkerAncestor.length) {
-      console.log('openMarkerAncestor has length');
-        if(areTagsBetween(tool,editAreaString)) {
-          editAreaString = removeException(tool,editAreaString);
-        } else {
-          editAreaString = editAreaString.replace(openMarkerString,openMarkerString + toolClose);
-        }
-    } else {
-        editAreaString = editAreaString.replace(openMarkerString,openMarkerString + toolOpen);
+        selectionObject.openAncestor = openMarkerAncestor;
     }
     if(closeMarkerAncestor.length) {
-      console.log('closeMarkerAncestor has length');
-        if(areTagsBetween(tool,editAreaString)) {
-          editAreaString = removeException(tool,editAreaString);
+        selectionObject.closeAncestor = closeMarkerAncestor;
+    }
+    if(openMarkerAncestor === closeMarkerAncestor) {
+        selectionObject.sameAncestor = true;
+    }
+
+    console.log('selectionObject');
+    console.log(selectionObject);
+};
+
+wrapTags = editArea => {
+    let editAreaString = editArea.html();
+
+    if(selectionObject.openAncestor) {
+        if(selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
+            console.log('Has openAncestor, found internal tag.');
+          editAreaString = removeException(selectionObject.tool,editAreaString);
         } else {
-          editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + toolOpen);
+          editAreaString = editAreaString.replace(openMarkerString,openMarkerString + selectionObject.closeTool);
         }
     } else {
-        editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + toolClose);
+        editAreaString = editAreaString.replace(openMarkerString,openMarkerString + selectionObject.openTool);
+    }
+    if(selectionObject.closeAncestor) {
+        if(selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
+            console.log('Has closeAncestor, found internal tag.');
+          editAreaString = removeException(selectionObject.tool,editAreaString);
+        } else {
+          editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + selectionObject.openTool);
+        }
+    } else {
+        editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + selectionObject.closeTool);
     }
     editArea.html(editAreaString);
-}
+};
 
 areTagsBetween = (tool,editAreaString) => {
   let patternString = openMarkerString + '(.*)' + closeMarkerString;

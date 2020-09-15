@@ -30689,9 +30689,10 @@ addSortParams = function addSortParams(el, key) {
 
 //Globals
 //For processEditAreaCode
-var elObj, elObjParentObj, elTagName, elParentTagName, currentGeneration;
+var elObj, elObjParentObj, elTagName, elParentTagName, currentGeneration, selectionObject;
 var openMarkerString = '<marker id="openMarker"></marker>';
-var closeMarkerString = '<marker id="closeMarker"></marker>'; //Define rich-text-editing tools.
+var closeMarkerString = '<marker id="closeMarker"></marker>';
+var tags = ['b', 'i', 'u', 'strike']; //Define rich-text-editing tools.
 
 var toolsArray = [{
   "class": 'fas fa-bold',
@@ -31041,13 +31042,19 @@ execTool = function execTool(tool, editArea) {
       }
     }
   });
-  var tags = ['b', 'i', 'u', 'strike'];
-  tags.forEach(function (tag) {
-    editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>', '<' + tag + '>' + openMarkerString));
+  getSelectionObject(tool, editArea);
+  var tagBalanceArray = selectionObject.tagBalance;
+  var tagImbalance = selectionObject.tagBalance.find(function (o) {
+    return o.value !== 0;
   });
+
+  if ('undefined' !== typeof tagImbalance) {
+    rebalanceTag(tagImbalance, editArea);
+  }
+
   console.log('AFTER: editArea.html()');
   console.log(editArea.html());
-  wrapTags(tool, editArea); // processEditAreaCode(editArea);
+  wrapTags(editArea); // processEditAreaCode(editArea);
 
   cleanRedundantCode(editArea);
   replaceMarkersWithSelection(editArea);
@@ -31056,37 +31063,104 @@ execTool = function execTool(tool, editArea) {
   console.log(editArea.html());
 };
 
-wrapTags = function wrapTags(tool, editArea) {
+rebalanceTag = function rebalanceTag(tagImbalance, editArea) {
+  console.log('Rebalancing');
+  console.log(tagImbalance);
+  var tag = tagImbalance.name;
+
+  if (tagImbalance.value > 0) {
+    editArea.html(editArea.html().replace(closeMarkerString + '</' + tag + '>', '</' + tag + '>' + closeMarkerString));
+  } else {
+    editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>', '<' + tag + '>' + openMarkerString));
+  }
+};
+
+getSelectionObject = function getSelectionObject(tool, editArea) {
+  selectionObject = {};
   var editAreaString = editArea.html();
+  var openTool = '<' + tool + '>';
+  var closeTool = '</' + tool + '>';
   var openMarker = editArea.find('#openMarker');
   var openMarkerAncestor = openMarker.closest(tool);
   var closeMarker = editArea.find('#closeMarker');
   var closeMarkerAncestor = closeMarker.closest(tool);
-  var toolOpen = '<' + tool + '>';
-  var toolClose = '</' + tool + '>';
+  var patternString = openMarkerString + '(.*)' + closeMarkerString;
+  var pattern = new RegExp(patternString);
+  var contentString = editAreaString.match(pattern)[1];
+  selectionObject.tagBalance = [];
+
+  if (tool) {
+    selectionObject.tool = tool;
+    selectionObject.openTool = openTool;
+    selectionObject.closeTool = closeTool;
+    tags.forEach(function (tag) {
+      var openTag = '<' + tag + '>';
+      var closeTag = '</' + tag + '>';
+      var tagReport = {};
+      tagReport.name = tag;
+      var pattern = new RegExp(openTag, 'gi');
+      tagReport.value = (contentString.match(pattern) || []).length;
+      console.log('Tag balance before for "' + tag + '":');
+      console.log(tagReport.value);
+      pattern = new RegExp(closeTool, 'gi');
+      tagReport.value -= (contentString.match(pattern) || []).length;
+      console.log('Tag balance before for "' + tag + '":');
+      console.log(tagReport.value);
+      selectionObject.tagBalance.push(tagReport);
+    });
+  }
+
+  if (contentString) {
+    selectionObject.contentString = contentString;
+  }
+
+  if (contentString.indexOf(openTool) > -1) {
+    selectionObject.containsOpenTag = true;
+  }
+
+  if (contentString.indexOf(closeTool) > -1) {
+    selectionObject.containsCloseTag = true;
+  }
 
   if (openMarkerAncestor.length) {
-    console.log('openMarkerAncestor has length');
-
-    if (areTagsBetween(tool, editAreaString)) {
-      editAreaString = removeException(tool, editAreaString);
-    } else {
-      editAreaString = editAreaString.replace(openMarkerString, openMarkerString + toolClose);
-    }
-  } else {
-    editAreaString = editAreaString.replace(openMarkerString, openMarkerString + toolOpen);
+    selectionObject.openAncestor = openMarkerAncestor;
   }
 
   if (closeMarkerAncestor.length) {
-    console.log('closeMarkerAncestor has length');
+    selectionObject.closeAncestor = closeMarkerAncestor;
+  }
 
-    if (areTagsBetween(tool, editAreaString)) {
-      editAreaString = removeException(tool, editAreaString);
+  if (openMarkerAncestor === closeMarkerAncestor) {
+    selectionObject.sameAncestor = true;
+  }
+
+  console.log('selectionObject');
+  console.log(selectionObject);
+};
+
+wrapTags = function wrapTags(editArea) {
+  var editAreaString = editArea.html();
+
+  if (selectionObject.openAncestor) {
+    if (selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
+      console.log('Has openAncestor, found internal tag.');
+      editAreaString = removeException(selectionObject.tool, editAreaString);
     } else {
-      editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + toolOpen);
+      editAreaString = editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool);
     }
   } else {
-    editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + toolClose);
+    editAreaString = editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool);
+  }
+
+  if (selectionObject.closeAncestor) {
+    if (selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
+      console.log('Has closeAncestor, found internal tag.');
+      editAreaString = removeException(selectionObject.tool, editAreaString);
+    } else {
+      editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + selectionObject.openTool);
+    }
+  } else {
+    editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + selectionObject.closeTool);
   }
 
   editArea.html(editAreaString);
@@ -31352,8 +31426,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
