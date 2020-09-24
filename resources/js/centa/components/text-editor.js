@@ -275,15 +275,24 @@ execTool = (tool,editArea) => {
     });
 
     getSelectionObject(tool,editArea);
+    console.log('SELECTION OBJECT BEFORE:');
+    console.log(selectionObject);
 
-    let tagBalanceArray = selectionObject.tagBalance;
-    let tagImbalance = selectionObject.tagBalance.find(o => o.value !== 0);
+    let tagImbalance = selectionObject.tagBalance.find(tagObj => tagObj.value !== 0);
     if('undefined' !== typeof tagImbalance) {
         rebalanceTag(tagImbalance,editArea);
     }
 
     console.log('AFTER: editArea.html()');
     console.log(editArea.html());
+
+    getSelectionObject(tool,editArea);
+    console.log('SELECTION OBJECT AFTER:');
+    console.log(selectionObject);
+
+    // analyzeTextWrapping(tool,editArea);
+
+
     wrapTags(editArea);
     // processEditAreaCode(editArea);
     cleanRedundantCode(editArea);
@@ -291,28 +300,59 @@ execTool = (tool,editArea) => {
     removeEmptyTags(editArea);
     console.log('FINAL: editArea.html()');
     console.log(editArea.html());
-}
+};
+
+analyzeTextWrapping = (tool,editArea) => {
+    let pattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
+    let selectedText = editArea.html().match(pattern)[1];
+    let openTag = '<' + tool + '>';
+    let closeTag = '</' + tool + '>';
+    let openTagIndex = selectedText.indexOf(openTag);
+    let closeTagIndex = selectedText.indexOf(closeTag);
+    let openTagLastIndex = selectedText.lastIndexOf(openTag);
+    let closeTagLastIndex = selectedText.lastIndexOf(closeTag);
+    if(openTagIndex !== openTagLastIndex || closeTagIndex !== closeTagLastIndex) {
+        return;
+    }
+    selectedText.replace(openTag,'').replace(closeTag,'');
+    if(openTagIndex < closeTagIndex) {
+        editArea.html(editArea.html().replace(pattern,openTag + openMarkerString + selectedText + closeMarkerString + closeTag));
+    } else {
+        editArea.html(editArea.html().replace(pattern,closeTag + openMarkerString + selectedText + closeMarkerString + openTag));
+    }
+};
 
 rebalanceTag = (tagImbalance,editArea) => {
-    console.log('Rebalancing');
-    console.log(tagImbalance);
     let tag = tagImbalance.name;
     if(tagImbalance.value > 0) {
         editArea.html(editArea.html().replace(closeMarkerString + '</' + tag + '>','</' + tag + '>' + closeMarkerString));
+        editArea.html(editArea.html().replace(openMarkerString + '</' + tag + '>','</' + tag + '>' + openMarkerString));
     } else {
         editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>','<' + tag + '>' + openMarkerString));
+        editArea.html(editArea.html().replace(closeMarkerString + '<' + tag + '>','<' + tag + '>' + closeMarkerString));
     }
-}
+};
 
 getSelectionObject = (tool,editArea) => {
     selectionObject = {};
+    selectionObject.openAncestor = false;
+    selectionObject.closeAncestor = false;
+    selectionObject.containsOpenTag = false;
+    selectionObject.containsCloseTag = false;
+    selectionObject.openAncestorParagraph = false;
+    selectionObject.closeAncestorParagraph = false;
+    selectionObject.openAncestor = false;
+    selectionObject.closeAncestor = false;
+    selectionObject.sameAncestor = false;
     let editAreaString = editArea.html();
     let openTool = '<' + tool + '>';
     let closeTool = '</' + tool + '>';
     let openMarker = editArea.find('#openMarker');
     let openMarkerAncestor = openMarker.closest(tool);
+    let openMarkerAncestorParagraph = openMarker.closest('p');
     let closeMarker = editArea.find('#closeMarker');
     let closeMarkerAncestor = closeMarker.closest(tool);
+    let closeMarkerAncestorParagraph = closeMarker.closest('p');
     let patternString = openMarkerString + '(.*)' + closeMarkerString;
     let pattern = new RegExp(patternString);
     let contentString = editAreaString.match(pattern)[1];
@@ -329,12 +369,8 @@ getSelectionObject = (tool,editArea) => {
             tagReport.name = tag;
             let pattern = new RegExp(openTag,'gi');
             tagReport.value = (contentString.match(pattern) || []).length;
-            console.log('Tag balance before for "' + tag + '":');
-            console.log(tagReport.value);
-            pattern = new RegExp(closeTool,'gi');
+            pattern = new RegExp(closeTag,'gi');
             tagReport.value -= (contentString.match(pattern) || []).length;
-            console.log('Tag balance before for "' + tag + '":');
-            console.log(tagReport.value);
             selectionObject.tagBalance.push(tagReport);
         });
     }
@@ -355,36 +391,47 @@ getSelectionObject = (tool,editArea) => {
     if(closeMarkerAncestor.length) {
         selectionObject.closeAncestor = closeMarkerAncestor;
     }
-    if(openMarkerAncestor === closeMarkerAncestor) {
-        selectionObject.sameAncestor = true;
+    if(openMarkerAncestorParagraph.length) {
+        selectionObject.openAncestorParagraph = openMarkerAncestorParagraph;
     }
-
-    console.log('selectionObject');
-    console.log(selectionObject);
-};
+    if(closeMarkerAncestorParagraph.length) {
+        selectionObject.closeAncestorParagraph = closeMarkerAncestorParagraph;
+    }
+    selectionObject.sameAncestor = openMarkerAncestor[0] === closeMarkerAncestor[0];
+    selectionObject.sameAncestorParagraph = openMarkerAncestorParagraph[0] === closeMarkerAncestorParagraph[0];
+}
 
 wrapTags = editArea => {
     let editAreaString = editArea.html();
 
     if(selectionObject.openAncestor) {
         if(selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
-            console.log('Has openAncestor, found internal tag.');
-          editAreaString = removeException(selectionObject.tool,editAreaString);
+            editAreaString = removeException(selectionObject.tool,editAreaString);
         } else {
-          editAreaString = editAreaString.replace(openMarkerString,openMarkerString + selectionObject.closeTool);
+            editAreaString = editAreaString.replace(openMarkerString,openMarkerString + selectionObject.closeTool);
         }
     } else {
         editAreaString = editAreaString.replace(openMarkerString,openMarkerString + selectionObject.openTool);
     }
+
     if(selectionObject.closeAncestor) {
         if(selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
-            console.log('Has closeAncestor, found internal tag.');
           editAreaString = removeException(selectionObject.tool,editAreaString);
         } else {
           editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + selectionObject.openTool);
         }
     } else {
         editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + selectionObject.closeTool);
+    }
+
+    if(!selectionObject.sameAncestorParagraph) {
+        console.log('We have different ancestor paragraphs.')
+        if(selectionObject.openAncestor && selectionObject.containsCloseTag) {
+            console.log('We have an open ancestor and a close tag');
+        }
+        if(selectionObject.closeAncestor && selectionObject.containsOpenTag) {
+            console.log('We have a close ancestor and an open tag');
+        }
     }
     editArea.html(editAreaString);
 };
@@ -393,44 +440,32 @@ areTagsBetween = (tool,editAreaString) => {
   let patternString = openMarkerString + '(.*)' + closeMarkerString;
   let pattern = new RegExp(patternString);
   let contentString = editAreaString.match(pattern)[1];
-  console.log('areTagsBetween contentString');
-  console.log(contentString);
 
   let toolOpen = '<' + tool + '>';
   let toolClose = '</' + tool + '>';
   if(contentString.indexOf(toolOpen) > -1) {
-    console.log('areTagsBetween is true');
     return true;
   }
-  console.log('areTagsBetween is false');
   return false;
-}
+};
 
 removeException = (tool,editAreaString) => {
   let patternString = openMarkerString + '(.*)' + closeMarkerString;
   let pattern = new RegExp(patternString);
   let contentString = editAreaString.match(pattern)[1];
-  console.log('contentString');
-  console.log(contentString);
 
   patternString = '<' + tool + '>';
   pattern = new RegExp(patternString,'gi');
   let updatedContentString = contentString.replace(pattern,'');
-  console.log('updatedContentString');
-  console.log(updatedContentString);
 
   patternString = '</' + tool + '>';
   pattern = new RegExp(patternString,'gi');
   let finalContentString = updatedContentString.replace(pattern,'');
-  console.log('finalContentString');
-  console.log(finalContentString);
 
   editAreaString = editAreaString.replace(contentString,finalContentString);
-  console.log('editAreaString');
-  console.log(editAreaString);
 
   return editAreaString;
-}
+};
 
 replaceMarkersWithSelection = editArea => {
   const range = document.createRange();
@@ -444,8 +479,6 @@ replaceMarkersWithSelection = editArea => {
 
 processEditAreaCode = editArea => {
     let elObjDescendents = editArea.find('*');
-    console.log('elObjDescendents');
-    console.log(elObjDescendents);
     elObjDescendents.each(function() {
         let element = this;
         let elementObj = $(this);
@@ -459,7 +492,6 @@ processEditAreaCode = editArea => {
         let elementParentTagName = elementParentObject[0].tagName;
         if(elementTagName === elementParentTagName) {
             if (elementObj.text() === elementParentObject.text()) {
-                console.log("Replacing parent.");
                 let elementParentObjectString = elementParentObject.html();
                 let replaceString = '';
                 if(elementParentObjectString.indexOf(openMarkerString) > -1) {
@@ -476,24 +508,15 @@ processEditAreaCode = editArea => {
                 }
                 elementParentObject.replaceWith(replaceString);
             } else {
-                console.log("Parsing content");
                 let newContent = '<' + tool + '>';
                 elementParentObject.contents().each(function() {
                     if('#text' === this.nodeName) {
                         newContent += this.textContent;
                     } else if(elementTagName === this.nodeName) {
-                        console.log('Previous sibling:');
-                        console.log(this.previousSibling);
-                        console.log('Previous condition:');
-                        console.log(null !== this.previousSibling && this.previousSibling.nodeName === this.nodeName);
                         if(null !== this.previousSibling && (this.previousSibling.nodeName === this.nodeName || 'MARKER' === this.previousSibling.nodeName)) {
                             newContent += '</' + tool + '>';
                         }
                         newContent += this.innerHTML;
-                        console.log('Next sibling:');
-                        console.log(this.nextSibling);
-                        console.log('Next condition:');
-                        console.log(null !== this.nextSibling && (this.nextSibling.nodeName === this.nodeName || 'MARKER' === this.nextSibling.nodeName));
                         if(null !== this.nextSibling && (this.nextSibling.nodeName === this.nodeName || 'MARKER' === this.nextSibling.nodeName)) {
                             newContent += '<' + tool + '>';
                         }
@@ -514,7 +537,7 @@ processEditAreaCode = editArea => {
             console.log('Tag name mismatch.');
         }
     });
-}
+};
 
 cleanRedundantCode = editArea => {
     editArea.children().each(function() {
@@ -538,7 +561,7 @@ cleanRedundantCode = editArea => {
             }
         }
     });
-}
+};
 
 removeEmptyTags = editArea => {
     editArea.children().each(function() {
@@ -550,7 +573,7 @@ removeEmptyTags = editArea => {
             }
         });
     });
-}
+};
 
 //Remove HTML (except links) from copy.
 stripTags = el => {
@@ -570,7 +593,7 @@ stripTags = el => {
     } else {
         $(el).replaceWith($(el).contents());
     }
-}
+};
 
 //Init on load; include default defined in centa.js as callback.
 initTextEdtitors(textEditorDefaultCallback);
