@@ -283,6 +283,8 @@ execTool = (tool,editArea) => {
         rebalanceTag(tagImbalance,editArea);
     }
 
+    internalizeTool(tool,editArea);
+
     console.log('AFTER: editArea.html()');
     console.log(editArea.html());
 
@@ -290,9 +292,6 @@ execTool = (tool,editArea) => {
 
     console.log('SELECTION OBJECT 2:');
     console.log(selectionObject);
-
-    // analyzeTextWrapping(tool,editArea);
-
 
     wrapTags(editArea);
 
@@ -306,24 +305,16 @@ execTool = (tool,editArea) => {
     console.log(editArea.html());
 };
 
-analyzeTextWrapping = (tool,editArea) => {
-    let pattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-    let selectedText = editArea.html().match(pattern)[1];
-    let openTag = '<' + tool + '>';
-    let closeTag = '</' + tool + '>';
-    let openTagIndex = selectedText.indexOf(openTag);
-    let closeTagIndex = selectedText.indexOf(closeTag);
-    let openTagLastIndex = selectedText.lastIndexOf(openTag);
-    let closeTagLastIndex = selectedText.lastIndexOf(closeTag);
-    if(openTagIndex !== openTagLastIndex || closeTagIndex !== closeTagLastIndex) {
-        return;
-    }
-    selectedText.replace(openTag,'').replace(closeTag,'');
-    if(openTagIndex < closeTagIndex) {
-        editArea.html(editArea.html().replace(pattern,openTag + openMarkerString + selectedText + closeMarkerString + closeTag));
-    } else {
-        editArea.html(editArea.html().replace(pattern,closeTag + openMarkerString + selectedText + closeMarkerString + openTag));
-    }
+internalizeTool = (tool,editArea) => {
+  let editAreaString = editArea.html();
+  let openTag = '<' + tool + '>';
+  let closeTag = '</' + tool + '>';
+  let openMarkerPattern = new RegExp(openTag + openMarkerString);
+  let closeMarkerPattern = new RegExp(closeMarkerString + closeTag);
+  editAreaString = editAreaString.replace(openMarkerPattern, openMarkerString + openTag).replace(closeMarkerPattern, closeTag + closeMarkerString);
+  editArea.html(editAreaString);
+  console.log('editArea.contents()');
+  console.log(editArea.contents());
 };
 
 rebalanceTag = (tagImbalance,editArea) => {
@@ -348,6 +339,7 @@ getSelectionObject = (tool,editArea) => {
     selectionObject.openAncestor = false;
     selectionObject.closeAncestor = false;
     selectionObject.sameAncestor = false;
+    selectionObject.allFormatted = false;
     let editAreaString = editArea.html();
     let openTool = '<' + tool + '>';
     let closeTool = '</' + tool + '>';
@@ -401,12 +393,27 @@ getSelectionObject = (tool,editArea) => {
     if(closeMarkerAncestorParagraph.length) {
         selectionObject.closeAncestorParagraph = closeMarkerAncestorParagraph;
     }
-    selectionObject.sameAncestor = openMarkerAncestor[0] === closeMarkerAncestor[0];
+    if(selectionObject.openAncestor && selectionObject.closeAncestor) {
+        console.log('Evidently we have both ancestors');
+        selectionObject.sameAncestor = openMarkerAncestor[0] === closeMarkerAncestor[0];
+    }
     selectionObject.sameAncestorParagraph = openMarkerAncestorParagraph[0] === closeMarkerAncestorParagraph[0];
+
+    //Determine if all text in editArea is already wrapped in this tool
+    let tools = editArea.find(tool);
+    let wrappedText = '';
+    tools.each(function() {
+        wrappedText += $(this).text();
+    });
+    if(editArea.text() === wrappedText) {
+        selectionObject.allFormatted = true;
+    }
 }
 
 wrapTags = editArea => {
     let editAreaString = editArea.html();
+
+
 
     if(selectionObject.openAncestor) {
         if(selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
@@ -425,7 +432,7 @@ wrapTags = editArea => {
           editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + selectionObject.openTool);
         }
     } else {
-        editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + selectionObject.closeTool);
+        editAreaString = editAreaString.replace(closeMarkerString,selectionObject.closeTool + closeMarkerString);
     }
 
     //Deal with multiline selections
@@ -440,26 +447,16 @@ wrapTags = editArea => {
         }
     }
 
-    //Here we have close tag within and an ancestor; covers cases of whole lines selected
-    if(selectionObject.containsCloseTag && selectionObject.openAncestor) {
-        console.log('CASE: Tags outside');
-        let openMarkerPattern = new RegExp(openMarkerString);
-        editAreaString = editAreaString.replace(openMarkerPattern,selectionObject.closeTool + openMarkerString);
-    }
-    //Here we have both tags inside and no ancestor; covers cases of whole lines selected
-    if(selectionObject.containsOpenTag && selectionObject.containsCloseTag && !selectionObject.openAncestor) {
-        console.log('CASE: Tags inside');
-        let openMarkerPattern = new RegExp(openMarkerString + selectionObject.openTool);
-        let updatedEditString = editAreaString.replace(openMarkerPattern,openMarkerString).replace(openMarkerPattern,openMarkerString);
-        console.log('editAreaString');
+    //Case where whole text is selected and all of it is already formatted.
+    if(selectionObject.allFormatted && !selectionObject.openAncestor && !selectionObject.closeAncestor) {
         console.log(editAreaString);
-        console.log('updatedEditString');
-        console.log(updatedEditString);
-        if(updatedEditString === editAreaString) {
-            console.log('CASE ADDENDUM: Way inside.')
-        }
-        editAreaString = updatedEditString;
+        let openTagPattern = new RegExp(selectionObject.openTool,'g');
+        let closeTagPattern = new RegExp(selectionObject.closeTool,'g');
+        editAreaString = editAreaString.replace(openTagPattern,'').replace(closeTagPattern,'');
     }
+
+    console.log('editAreaString after wrapTags:');
+    console.log(editAreaString);
     editArea.html(editAreaString);
 };
 
