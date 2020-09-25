@@ -31164,7 +31164,6 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
   }
 
   if (selectionObject.openAncestor && selectionObject.closeAncestor) {
-    console.log('Evidently we have both ancestors');
     selectionObject.sameAncestor = openMarkerAncestor[0] === closeMarkerAncestor[0];
   }
 
@@ -31184,44 +31183,48 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
 wrapTags = function wrapTags(editArea) {
   var editAreaString = editArea.html();
 
-  if (selectionObject.openAncestor) {
-    if (selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
-      editAreaString = removeException(selectionObject.tool, editAreaString);
-    } else {
-      editAreaString = editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool);
-    }
-  } else {
-    editAreaString = editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool);
-  }
-
-  if (selectionObject.closeAncestor) {
-    if (selectionObject.containsOpenTag || selectionObject.containsCloseTag) {
-      editAreaString = removeException(selectionObject.tool, editAreaString);
-    } else {
-      editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + selectionObject.openTool);
-    }
-  } else {
-    editAreaString = editAreaString.replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
-  } //Deal with multiline selections
-
-
-  if (!selectionObject.sameAncestorParagraph) {
-    //These cases are reversing existing formatting for a subset of the main content
-    if (selectionObject.openAncestor && selectionObject.containsCloseTag && selectionObject.closeAncestor && selectionObject.containsOpenTag) {
+  if (selectionObject.allFormatted) {
+    if (selectionObject.openAncestor || selectionObject.closeAncestor) {
       console.log('CASE: Reversing formatting.');
       var openMarkerPattern = new RegExp(openMarkerString);
       var closeMarkerPattern = new RegExp(closeMarkerString);
       editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
-      editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool);
+      editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any open tools in between markers
+
+      console.log('editAreaString immediatly after reversal replace');
+      console.log(editAreaString);
+      var betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
+      var betweenMarkersContent = editAreaString.match(betweenMarkersPattern)[1];
+
+      if (betweenMarkersContent) {
+        editAreaString = editAreaString.replace(betweenMarkersContent, betweenMarkersContent.replace(selectionObject.openTool, ''));
+      }
+    } else {
+      console.log('CASE: Already formatted.');
+      var openTagPattern = new RegExp(selectionObject.openTool, 'g');
+      var closeTagPattern = new RegExp(selectionObject.closeTool, 'g');
+      editAreaString = editAreaString.replace(openTagPattern, '').replace(closeTagPattern, '');
     }
-  } //Case where whole text is selected and all of it is already formatted.
+  } else {
+    console.log('CASE: Not all formatted.');
 
+    if (selectionObject.containsOpenTag) {
+      console.log('contains open tag');
+      editAreaString = editAreaString.replace(selectionObject.openTool, '').replace(closeMarkerString, closeMarkerString + selectionObject.openTool);
+    } else if (!selectionObject.containsOpenTag && !selectionObject.containsCloseTag && selectionObject.sameAncestor) {
+      console.log('buncha things');
 
-  if (selectionObject.allFormatted && !selectionObject.openAncestor && !selectionObject.closeAncestor) {
-    console.log(editAreaString);
-    var openTagPattern = new RegExp(selectionObject.openTool, 'g');
-    var closeTagPattern = new RegExp(selectionObject.closeTool, 'g');
-    editAreaString = editAreaString.replace(openTagPattern, '').replace(closeTagPattern, '');
+      var _betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
+
+      var _betweenMarkersContent = editAreaString.match(_betweenMarkersPattern)[1];
+
+      if (_betweenMarkersContent) {
+        editAreaString = editAreaString.replace(_betweenMarkersContent, selectionObject.closeTool + _betweenMarkersContent + selectionObject.openTool);
+      }
+    } else {
+      console.log('meh');
+      editAreaString = editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool).replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
+    }
   }
 
   console.log('editAreaString after wrapTags:');
