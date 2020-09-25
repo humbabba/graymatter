@@ -31191,7 +31191,6 @@ wrapTags = function wrapTags(editArea) {
       editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
       editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any open tools in between markers
 
-      console.log('editAreaString immediatly after reversal replace');
       console.log(editAreaString);
       var betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
       var betweenMarkersContent = editAreaString.match(betweenMarkersPattern)[1];
@@ -31201,25 +31200,48 @@ wrapTags = function wrapTags(editArea) {
       }
     } else {
       console.log('CASE: Already formatted.');
-      var openTagPattern = new RegExp(selectionObject.openTool, 'g');
-      var closeTagPattern = new RegExp(selectionObject.closeTool, 'g');
-      editAreaString = editAreaString.replace(openTagPattern, '').replace(closeTagPattern, '');
-    }
-  } else {
-    console.log('CASE: Not all formatted.');
-
-    if (selectionObject.containsOpenTag) {
-      console.log('contains open tag');
-      editAreaString = editAreaString.replace(selectionObject.openTool, '').replace(closeMarkerString, closeMarkerString + selectionObject.openTool);
-    } else if (!selectionObject.containsOpenTag && !selectionObject.containsCloseTag && selectionObject.sameAncestor) {
-      console.log('buncha things');
 
       var _betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
 
       var _betweenMarkersContent = editAreaString.match(_betweenMarkersPattern)[1];
 
       if (_betweenMarkersContent) {
-        editAreaString = editAreaString.replace(_betweenMarkersContent, selectionObject.closeTool + _betweenMarkersContent + selectionObject.openTool);
+        var openTagPattern = new RegExp(selectionObject.openTool, 'g');
+        var closeTagPattern = new RegExp(selectionObject.closeTool, 'g');
+
+        var cleanBetweenMarkertsContent = _betweenMarkersContent.replace(openTagPattern, '').replace(closeTagPattern, '');
+
+        editAreaString = editAreaString.replace(_betweenMarkersContent, cleanBetweenMarkertsContent);
+      }
+    }
+  } else {
+    console.log('CASE: Not all formatted.');
+
+    if (selectionObject.containsOpenTag && selectionObject.containsCloseTag) {
+      console.log('contains open and close tags');
+
+      var _betweenMarkersPattern2 = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
+
+      var _betweenMarkersContent2 = editAreaString.match(_betweenMarkersPattern2)[1];
+
+      if (_betweenMarkersContent2) {
+        var _openTagPattern = new RegExp(selectionObject.openTool, 'g');
+
+        var _closeTagPattern = new RegExp(selectionObject.closeTool, 'g');
+
+        var _cleanBetweenMarkertsContent = _betweenMarkersContent2.replace(_openTagPattern, '').replace(_closeTagPattern, '');
+
+        editAreaString = editAreaString.replace(_betweenMarkersContent2, _cleanBetweenMarkertsContent);
+      }
+    } else if (!selectionObject.containsOpenTag && !selectionObject.containsCloseTag && selectionObject.sameAncestor) {
+      console.log('buncha things');
+
+      var _betweenMarkersPattern3 = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
+
+      var _betweenMarkersContent3 = editAreaString.match(_betweenMarkersPattern3)[1];
+
+      if (_betweenMarkersContent3) {
+        editAreaString = editAreaString.replace(_betweenMarkersContent3, selectionObject.closeTool + _betweenMarkersContent3 + selectionObject.openTool);
       }
     } else {
       console.log('meh');
