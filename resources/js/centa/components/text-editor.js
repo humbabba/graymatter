@@ -288,6 +288,9 @@ execTool = (tool,editArea) => {
 
     getSelectionObject(tool,editArea);
 
+    console.log('SELECTION OBJECT 2:');
+    console.log(selectionObject);
+
     // analyzeTextWrapping(tool,editArea);
 
 
@@ -425,15 +428,37 @@ wrapTags = editArea => {
         editAreaString = editAreaString.replace(closeMarkerString,closeMarkerString + selectionObject.closeTool);
     }
 
-    //Deal with multi-line selections
+    //Deal with multiline selections
     if(!selectionObject.sameAncestorParagraph) {
         //These cases are reversing existing formatting for a subset of the main content
         if(selectionObject.openAncestor && selectionObject.containsCloseTag && selectionObject.closeAncestor && selectionObject.containsOpenTag) {
+            console.log('CASE: Reversing formatting.');
             let openMarkerPattern = new RegExp(openMarkerString);
             let closeMarkerPattern = new RegExp(closeMarkerString);
             editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
             editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
         }
+    }
+
+    //Here we have close tag within and an ancestor; covers cases of whole lines selected
+    if(selectionObject.containsCloseTag && selectionObject.openAncestor) {
+        console.log('CASE: Tags outside');
+        let openMarkerPattern = new RegExp(openMarkerString);
+        editAreaString = editAreaString.replace(openMarkerPattern,selectionObject.closeTool + openMarkerString);
+    }
+    //Here we have both tags inside and no ancestor; covers cases of whole lines selected
+    if(selectionObject.containsOpenTag && selectionObject.containsCloseTag && !selectionObject.openAncestor) {
+        console.log('CASE: Tags inside');
+        let openMarkerPattern = new RegExp(openMarkerString + selectionObject.openTool);
+        let updatedEditString = editAreaString.replace(openMarkerPattern,openMarkerString).replace(openMarkerPattern,openMarkerString);
+        console.log('editAreaString');
+        console.log(editAreaString);
+        console.log('updatedEditString');
+        console.log(updatedEditString);
+        if(updatedEditString === editAreaString) {
+            console.log('CASE ADDENDUM: Way inside.')
+        }
+        editAreaString = updatedEditString;
     }
     editArea.html(editAreaString);
 };
