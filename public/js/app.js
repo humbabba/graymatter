@@ -31043,7 +31043,7 @@ execTool = function execTool(tool, editArea) {
     }
   });
   getSelectionObject(tool, editArea);
-  console.log('SELECTION OBJECT BEFORE:');
+  console.log('SELECTION OBJECT:');
   console.log(selectionObject);
   var tagImbalance = selectionObject.tagBalance.find(function (tagObj) {
     return tagObj.value !== 0;
@@ -31055,9 +31055,7 @@ execTool = function execTool(tool, editArea) {
 
   console.log('AFTER: editArea.html()');
   console.log(editArea.html());
-  getSelectionObject(tool, editArea);
-  console.log('SELECTION OBJECT AFTER:');
-  console.log(selectionObject); // analyzeTextWrapping(tool,editArea);
+  getSelectionObject(tool, editArea); // analyzeTextWrapping(tool,editArea);
 
   wrapTags(editArea); // processEditAreaCode(editArea);
 
@@ -31198,17 +31196,16 @@ wrapTags = function wrapTags(editArea) {
     }
   } else {
     editAreaString = editAreaString.replace(closeMarkerString, closeMarkerString + selectionObject.closeTool);
-  }
+  } //Deal with multi-line selections
+
 
   if (!selectionObject.sameAncestorParagraph) {
-    console.log('We have different ancestor paragraphs.');
-
-    if (selectionObject.openAncestor && selectionObject.containsCloseTag) {
-      console.log('We have an open ancestor and a close tag');
-    }
-
-    if (selectionObject.closeAncestor && selectionObject.containsOpenTag) {
-      console.log('We have a close ancestor and an open tag');
+    //These cases are reversing existing formatting for a subset of the main content
+    if (selectionObject.openAncestor && selectionObject.containsCloseTag && selectionObject.closeAncestor && selectionObject.containsOpenTag) {
+      var openMarkerPattern = new RegExp(openMarkerString);
+      var closeMarkerPattern = new RegExp(closeMarkerString);
+      editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
+      editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool);
     }
   }
 
@@ -31351,7 +31348,18 @@ cleanRedundantCode = function cleanRedundantCode(editArea) {
         });
       }
     }
+  }); //Find specified redundancies
+
+  var editAreaString = editArea.html();
+  tags.forEach(function (tag) {
+    var openTag = '<' + tag + '>';
+    var closeTag = '</' + tag + '>';
+    var redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag);
+    editAreaString = editAreaString.replace(redundantCloseOpen, openMarkerString);
+    redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag);
+    editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString);
   });
+  editArea.html(editAreaString);
 };
 
 removeEmptyTags = function removeEmptyTags(editArea) {
