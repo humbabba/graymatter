@@ -31167,28 +31167,31 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
     selectionObject.sameAncestor = openMarkerAncestor[0] === closeMarkerAncestor[0];
   }
 
-  selectionObject.sameAncestorParagraph = openMarkerAncestorParagraph[0] === closeMarkerAncestorParagraph[0]; // //Determine if all text in editArea is already wrapped in this tool
-  // let tools = editArea.find(tool);
-  // let wrappedText = '';
-  // tools.each(function() {
-  //     wrappedText += $(this).text();
-  // });
-  // if(editArea.text() === wrappedText) {
-  //     selectionObject.allFormatted = true;
+  selectionObject.sameAncestorParagraph = openMarkerAncestorParagraph[0] === closeMarkerAncestorParagraph[0]; //     selectionObject.allFormatted = true;
   // }
   //Determine if all text in contentString is already wrapped in this tool
 
   if (selectionObject.containsOpenTag || selectionObject.containsCloseTag || selectionObject.openAncestor || selectionObject.closeAncestor) {
     contentString = selectionObject.openTool + contentString + selectionObject.closeTool;
+    console.log('DETERMINING 1 (contentString):');
+    console.log(contentString);
     var openTagPattern = new RegExp(selectionObject.openTool + selectionObject.openTool, 'gi');
     var closeTagPattern = new RegExp(selectionObject.closeTool + selectionObject.closeTool, 'gi');
     contentString = contentString.replace(openTagPattern, selectionObject.openTool).replace(closeTagPattern, selectionObject.closeTool);
+    console.log('DETERMINING 2 (contentString):');
+    console.log(contentString);
     var contentStringObj = $('<span>');
     contentStringObj.html(contentString);
+    console.log('DETERMINING 3 (contentStringObj.html()):');
+    console.log(contentStringObj.html());
     var tools = contentStringObj.find(tool);
+    console.log('DETERMINING 4 (tools):');
+    console.log(tools);
     var wrappedText = '';
     tools.each(function () {
-      wrappedText += $(this).text();
+      if (0 === $(this).children().length) {
+        wrappedText += $(this).text();
+      }
     });
 
     if (contentStringObj.text() === wrappedText) {
@@ -31379,31 +31382,19 @@ processEditAreaCode = function processEditAreaCode(editArea) {
 };
 
 cleanRedundantCode = function cleanRedundantCode(editArea) {
-  console.log('editArea.html() before cleanRedundantCode');
-  console.log(editArea.html());
-  editArea.children().each(function () {
-    var inspectedElement = $(this);
-    var inspectedElementTagName = inspectedElement[0].tagName;
+  tags.forEach(function (tag) {
+    var inspectedElements = editArea.find(tag);
 
-    if (inspectedElementTagName) {
-      if ('MARKER' === inspectedElementTagName) {
-        return;
-      } else {
-        tags.forEach(function (tag) {
-          var inspectedElementDescendents = inspectedElement.find(tag);
+    if (inspectedElements.length) {
+      inspectedElements.each(function () {
+        var inspectedElementsDescendants = $(this).find(tag);
 
-          if (inspectedElementDescendents.length) {
-            inspectedElementDescendents.each(function () {
-              var inspectedElementDescendentsDescendents = inspectedElementDescendents.find(tag);
-              inspectedElementDescendentsDescendents.each(function () {
-                var openTagPattern = new RegExp('<' + tag + '>', 'gi');
-                var closeTagPattern = new RegExp('</' + tag + '>', 'gi');
-                inspectedElement.html(inspectedElement.html().replace(openTagPattern, '').replace(closeTagPattern, ''));
-              });
-            });
-          }
-        });
-      }
+        if (inspectedElementsDescendants.length) {
+          inspectedElementsDescendants.each(function () {
+            $(this).replaceWith($(this).html());
+          });
+        }
+      });
     }
   }); //Find specified redundancies
 
@@ -31411,14 +31402,16 @@ cleanRedundantCode = function cleanRedundantCode(editArea) {
   tags.forEach(function (tag) {
     var openTag = '<' + tag + '>';
     var closeTag = '</' + tag + '>';
-    var redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag);
+    var redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag, 'gi');
     editAreaString = editAreaString.replace(redundantCloseOpen, openMarkerString);
-    redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag);
+    redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag, 'gi');
     editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString);
+    redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
+    editAreaString = editAreaString.replace(redundantCloseOpen, '');
+    redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
+    editAreaString = editAreaString.replace(redundantCloseOpen, '');
   });
   editArea.html(editAreaString);
-  console.log('editArea.html() after cleanRedundantCode');
-  console.log(editArea.html());
 };
 
 removeEmptyTags = function removeEmptyTags(editArea) {

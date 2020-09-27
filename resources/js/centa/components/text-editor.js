@@ -398,13 +398,6 @@ getSelectionObject = (tool,editArea) => {
     }
     selectionObject.sameAncestorParagraph = openMarkerAncestorParagraph[0] === closeMarkerAncestorParagraph[0];
 
-    // //Determine if all text in editArea is already wrapped in this tool
-    // let tools = editArea.find(tool);
-    // let wrappedText = '';
-    // tools.each(function() {
-    //     wrappedText += $(this).text();
-    // });
-    // if(editArea.text() === wrappedText) {
     //     selectionObject.allFormatted = true;
     // }
 
@@ -412,15 +405,25 @@ getSelectionObject = (tool,editArea) => {
     if((selectionObject.containsOpenTag || selectionObject.containsCloseTag) ||
       (selectionObject.openAncestor || selectionObject.closeAncestor)) {
       contentString = selectionObject.openTool + contentString + selectionObject.closeTool;
+      console.log('DETERMINING 1 (contentString):');
+      console.log(contentString);
       let openTagPattern = new RegExp(selectionObject.openTool + selectionObject.openTool, 'gi');
       let closeTagPattern = new RegExp(selectionObject.closeTool + selectionObject.closeTool, 'gi');
       contentString = contentString.replace(openTagPattern,selectionObject.openTool).replace(closeTagPattern,selectionObject.closeTool);
+      console.log('DETERMINING 2 (contentString):');
+      console.log(contentString);
       let contentStringObj = $('<span>');
       contentStringObj.html(contentString);
+      console.log('DETERMINING 3 (contentStringObj.html()):');
+      console.log(contentStringObj.html());
       let tools = contentStringObj.find(tool);
+      console.log('DETERMINING 4 (tools):');
+      console.log(tools);
       let wrappedText = '';
       tools.each(function() {
+        if(0 === $(this).children().length) {
           wrappedText += $(this).text();
+        }
       });
       if(contentStringObj.text() === wrappedText) {
           selectionObject.allFormatted = true;
@@ -599,44 +602,34 @@ processEditAreaCode = editArea => {
 };
 
 cleanRedundantCode = editArea => {
-  console.log('editArea.html() before cleanRedundantCode');
-  console.log(editArea.html());
-    editArea.children().each(function() {
-        let inspectedElement =  $(this);
-        let inspectedElementTagName = inspectedElement[0].tagName;
-        if(inspectedElementTagName) {
-            if('MARKER' === inspectedElementTagName) {
-                return;
-            } else {
-              tags.forEach(function(tag) {
-                let inspectedElementDescendents = inspectedElement.find(tag);
-                if(inspectedElementDescendents.length) {
-                  inspectedElementDescendents.each(function() {
-                      let inspectedElementDescendentsDescendents = inspectedElementDescendents.find(tag);
-                      inspectedElementDescendentsDescendents.each(function() {
-                        let openTagPattern = new RegExp('<' + tag + '>', 'gi');
-                        let closeTagPattern = new RegExp('</' + tag + '>', 'gi');
-                        inspectedElement.html(inspectedElement.html().replace(openTagPattern,'').replace(closeTagPattern,''));
-                      });
-                  });
-                }
-              });
-            }
-        }
+    tags.forEach(function(tag) {
+      let inspectedElements = editArea.find(tag);
+      if(inspectedElements.length) {
+        inspectedElements.each(function() {
+          let inspectedElementsDescendants = $(this).find(tag);
+          if(inspectedElementsDescendants.length) {
+            inspectedElementsDescendants.each(function() {
+              $(this).replaceWith($(this).html());
+            });
+          }
+        });
+      }
     });
     //Find specified redundancies
     let editAreaString = editArea.html();
     tags.forEach(function(tag) {
         let openTag = '<' + tag + '>';
         let closeTag = '</' + tag + '>';
-        let redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag);
+        let redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag,'gi');
         editAreaString = editAreaString.replace(redundantCloseOpen,openMarkerString);
-        redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag);
+        redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag,'gi');
         editAreaString = editAreaString.replace(redundantCloseOpen,closeMarkerString);
+        redundantCloseOpen = new RegExp(closeTag + openTag,'gi');
+        editAreaString = editAreaString.replace(redundantCloseOpen,'');
+        redundantCloseOpen = new RegExp(openTag + closeTag,'gi');
+        editAreaString = editAreaString.replace(redundantCloseOpen,'');
     });
     editArea.html(editAreaString);
-      console.log('editArea.html() after cleanRedundantCode');
-      console.log(editArea.html());
 };
 
 
