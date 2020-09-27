@@ -449,11 +449,13 @@ reverseFormatting = editAreaString => {
   if((selectionObject.openAncestor && !selectionObject.closeAncestor) || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
       console.log('CASE: Open ancestor only or no ancestors.');
       editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~');
-  } else {
+  } else if((!selectionObject.openAncestor && selectionObject.closeAncestor) || (selectionObject.openAncestor && selectionObject.closeAncestor)) {
       console.log('CASE: Close ancestor only or both ancestors');
       editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
+  } else {
+      console.log('CASE: Fail.');
   }
-  
+
   editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
 
   //Get rid of any open tools in between markers
