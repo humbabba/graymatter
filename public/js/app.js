@@ -31379,6 +31379,8 @@ processEditAreaCode = function processEditAreaCode(editArea) {
 };
 
 cleanRedundantCode = function cleanRedundantCode(editArea) {
+  console.log('editArea.html() before cleanRedundantCode');
+  console.log(editArea.html());
   editArea.children().each(function () {
     var inspectedElement = $(this);
     var inspectedElementTagName = inspectedElement[0].tagName;
@@ -31387,18 +31389,18 @@ cleanRedundantCode = function cleanRedundantCode(editArea) {
       if ('MARKER' === inspectedElementTagName) {
         return;
       } else {
-        var inspectedElementDescendents = inspectedElement.find('*');
-        inspectedElementDescendents.each(function () {
-          var inspectedElementDescendentTagName = this.tagName;
+        tags.forEach(function (tag) {
+          var inspectedElementDescendents = inspectedElement.find(tag);
 
-          if ('MARKER' === inspectedElementDescendentTagName) {
-            return;
-          }
-
-          var inspectedElementDescendentParentTagName = this.parentNode.tagName;
-
-          if (inspectedElementDescendentTagName === inspectedElementDescendentParentTagName) {
-            $(this).replaceWith($(this).html());
+          if (inspectedElementDescendents.length) {
+            inspectedElementDescendents.each(function () {
+              var inspectedElementDescendentsDescendents = inspectedElementDescendents.find(tag);
+              inspectedElementDescendentsDescendents.each(function () {
+                var openTagPattern = new RegExp('<' + tag + '>', 'gi');
+                var closeTagPattern = new RegExp('</' + tag + '>', 'gi');
+                inspectedElement.html(inspectedElement.html().replace(openTagPattern, '').replace(closeTagPattern, ''));
+              });
+            });
           }
         });
       }
@@ -31415,6 +31417,8 @@ cleanRedundantCode = function cleanRedundantCode(editArea) {
     editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString);
   });
   editArea.html(editAreaString);
+  console.log('editArea.html() after cleanRedundantCode');
+  console.log(editArea.html());
 };
 
 removeEmptyTags = function removeEmptyTags(editArea) {

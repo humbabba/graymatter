@@ -599,6 +599,8 @@ processEditAreaCode = editArea => {
 };
 
 cleanRedundantCode = editArea => {
+  console.log('editArea.html() before cleanRedundantCode');
+  console.log(editArea.html());
     editArea.children().each(function() {
         let inspectedElement =  $(this);
         let inspectedElementTagName = inspectedElement[0].tagName;
@@ -606,17 +608,19 @@ cleanRedundantCode = editArea => {
             if('MARKER' === inspectedElementTagName) {
                 return;
             } else {
-                let inspectedElementDescendents = inspectedElement.find('*');
-                inspectedElementDescendents.each(function() {
-                    let inspectedElementDescendentTagName = this.tagName;
-                    if('MARKER' === inspectedElementDescendentTagName) {
-                        return;
-                    }
-                    let inspectedElementDescendentParentTagName = this.parentNode.tagName;
-                    if(inspectedElementDescendentTagName === inspectedElementDescendentParentTagName) {
-                        $(this).replaceWith($(this).html());
-                    }
-                });
+              tags.forEach(function(tag) {
+                let inspectedElementDescendents = inspectedElement.find(tag);
+                if(inspectedElementDescendents.length) {
+                  inspectedElementDescendents.each(function() {
+                      let inspectedElementDescendentsDescendents = inspectedElementDescendents.find(tag);
+                      inspectedElementDescendentsDescendents.each(function() {
+                        let openTagPattern = new RegExp('<' + tag + '>', 'gi');
+                        let closeTagPattern = new RegExp('</' + tag + '>', 'gi');
+                        inspectedElement.html(inspectedElement.html().replace(openTagPattern,'').replace(closeTagPattern,''));
+                      });
+                  });
+                }
+              });
             }
         }
     });
@@ -631,6 +635,8 @@ cleanRedundantCode = editArea => {
         editAreaString = editAreaString.replace(redundantCloseOpen,closeMarkerString);
     });
     editArea.html(editAreaString);
+      console.log('editArea.html() after cleanRedundantCode');
+      console.log(editArea.html());
 };
 
 
