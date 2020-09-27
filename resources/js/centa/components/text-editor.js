@@ -334,8 +334,6 @@ getSelectionObject = (tool,editArea) => {
     selectionObject.closeAncestor = false;
     selectionObject.containsOpenTag = false;
     selectionObject.containsCloseTag = false;
-    selectionObject.openAncestorParagraph = false;
-    selectionObject.closeAncestorParagraph = false;
     selectionObject.openAncestor = false;
     selectionObject.closeAncestor = false;
     selectionObject.sameAncestor = false;
@@ -387,12 +385,6 @@ getSelectionObject = (tool,editArea) => {
     if(closeMarkerAncestor.length) {
         selectionObject.closeAncestor = closeMarkerAncestor;
     }
-    if(openMarkerAncestorParagraph.length) {
-        selectionObject.openAncestorParagraph = openMarkerAncestorParagraph;
-    }
-    if(closeMarkerAncestorParagraph.length) {
-        selectionObject.closeAncestorParagraph = closeMarkerAncestorParagraph;
-    }
     if(selectionObject.openAncestor && selectionObject.closeAncestor) {
         selectionObject.sameAncestor = openMarkerAncestor[0] === closeMarkerAncestor[0];
     }
@@ -433,37 +425,10 @@ getSelectionObject = (tool,editArea) => {
 
 wrapTags = editArea => {
     let editAreaString = editArea.html();
-
-    if(selectionObject.openAncestor && selectionObject.closeAncestor) {
-        console.log('CASE: Both ancestors');
-        if(selectionObject.allFormatted) {
-          editAreaString = reverseFormatting(editAreaString);
-        } else {
-          editAreaString = addFormatting(editAreaString);
-        }
-    } else if(!selectionObject.openAncestor && !selectionObject.closeAncestor) {
-        console.log('CASE: No ancestors.');
-        if(selectionObject.allFormatted) {
-          editAreaString = reverseFormatting(editAreaString);
-        } else {
-          editAreaString = addFormatting(editAreaString);
-        }
-    } else if(selectionObject.openAncestor && !selectionObject.closeAncestor) {
-        console.log('CASE: Open ancestor only.');
-        if(selectionObject.allFormatted) {
-          editAreaString = reverseFormatting(editAreaString);
-        } else {
-          editAreaString = addFormatting(editAreaString);
-        }
-    } else if(!selectionObject.openAncestor && selectionObject.closeAncestor) {
-        console.log('CASE: Close ancestor only.');
-        if(selectionObject.allFormatted) {
-          editAreaString = reverseFormatting(editAreaString);
-        } else {
-          editAreaString = addFormatting(editAreaString);
-        }
+    if(selectionObject.allFormatted) {
+      editAreaString = reverseFormatting(editAreaString);
     } else {
-        console.log('CASE: No case here, Cheif.');
+      editAreaString = addFormatting(editAreaString);
     }
     console.log('editAreaString after wrapTags:');
     console.log(editAreaString);
@@ -480,7 +445,15 @@ reverseFormatting = editAreaString => {
   console.log('Reversing formatting.');
   let openMarkerPattern = new RegExp(openMarkerString);
   let closeMarkerPattern = new RegExp(closeMarkerString);
-  editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
+
+  if((selectionObject.openAncestor && !selectionObject.closeAncestor) || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
+      console.log('CASE: Open ancestor only or no ancestors.');
+      editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~');
+  } else {
+      console.log('CASE: Close ancestor only or both ancestors');
+      editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
+  }
+  
   editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
 
   //Get rid of any open tools in between markers
