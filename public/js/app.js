@@ -31189,7 +31189,7 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
     console.log(tools);
     var wrappedText = '';
     tools.each(function () {
-      if (0 === $(this).children().length) {
+      if (0 === $(this).find(tool).length) {
         wrappedText += $(this).text();
       }
     });
@@ -31221,10 +31221,20 @@ wrapTags = function wrapTags(editArea) {
     }
   } else if (selectionObject.openAncestor && !selectionObject.closeAncestor) {
     console.log('CASE: Open ancestor only.');
-    editAreaString = reverseFormatting(editAreaString);
+
+    if (selectionObject.allFormatted) {
+      editAreaString = reverseFormatting(editAreaString);
+    } else {
+      editAreaString = addFormatting(editAreaString);
+    }
   } else if (!selectionObject.openAncestor && selectionObject.closeAncestor) {
     console.log('CASE: Close ancestor only.');
-    editAreaString = reverseFormatting(editAreaString);
+
+    if (selectionObject.allFormatted) {
+      editAreaString = reverseFormatting(editAreaString);
+    } else {
+      editAreaString = addFormatting(editAreaString);
+    }
   } else {
     console.log('CASE: No case here, Cheif.');
   }
