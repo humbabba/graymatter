@@ -411,6 +411,7 @@ getSelectionObject = (tool,editArea) => {
 
 wrapTags = editArea => {
     let editAreaString = editArea.html();
+    let betweenMarkersContent = getBetweenMarkersContent(editAreaString);
 
     if(selectionObject.allFormatted) {
         if(selectionObject.openAncestor || selectionObject.closeAncestor) {
@@ -421,15 +422,12 @@ wrapTags = editArea => {
             editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
             //Get rid of any open tools in between markers
             console.log(editAreaString);
-            let betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-            let betweenMarkersContent = editAreaString.match(betweenMarkersPattern)[1];
+            betweenMarkersContent = getBetweenMarkersContent(editAreaString);
             if(betweenMarkersContent) {
                 editAreaString = editAreaString.replace(betweenMarkersContent,betweenMarkersContent.replace(selectionObject.openTool,''));
             }
         } else {
             console.log('CASE: Already formatted.');
-            let betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-            let betweenMarkersContent = editAreaString.match(betweenMarkersPattern)[1];
             if(betweenMarkersContent) {
                 let openTagPattern = new RegExp(selectionObject.openTool, 'g');
                 let closeTagPattern = new RegExp(selectionObject.closeTool, 'g');
@@ -441,8 +439,6 @@ wrapTags = editArea => {
         console.log('CASE: Not all formatted.');
         if(selectionObject.containsOpenTag && selectionObject.containsCloseTag) {
             console.log('contains open and close tags');
-            let betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-            let betweenMarkersContent = editAreaString.match(betweenMarkersPattern)[1];
             if(betweenMarkersContent) {
                 let openTagPattern = new RegExp(selectionObject.openTool,'g');
                 let closeTagPattern = new RegExp(selectionObject.closeTool,'g');
@@ -450,14 +446,16 @@ wrapTags = editArea => {
                 editAreaString = editAreaString.replace(betweenMarkersContent,cleanBetweenMarkertsContent);
             }
         } else if(!selectionObject.containsOpenTag && !selectionObject.containsCloseTag && selectionObject.sameAncestor) {
-            console.log('buncha things')
-            let betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-            let betweenMarkersContent = editAreaString.match(betweenMarkersPattern)[1];
+            console.log('buncha things');
             if(betweenMarkersContent) {
                 editAreaString = editAreaString.replace(betweenMarkersContent,selectionObject.closeTool + betweenMarkersContent + selectionObject.openTool);
             }
+        } else if(selectionObject.containsOpenTag && !selectionObject.containsCloseTag) {
+            console.log('contains open tag but not close');
+            cleanBetweenMarkersContent = betweenMarkersContent.replace(selectionObject.openTool,'');
+            editAreaString = editAreaString.replace(betweenMarkersContent,cleanBetweenMarkersContent + selectionObject.openTool);
         } else {
-            console.log('meh');
+            console.log('meh, man');
             editAreaString = editAreaString.replace(openMarkerString,openMarkerString + selectionObject.openTool).replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
         }
     }
@@ -465,6 +463,15 @@ wrapTags = editArea => {
     console.log(editAreaString);
     editArea.html(editAreaString);
 };
+
+getBetweenMarkersContent = editAreaString => {
+  let betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
+  let betweenMarkersContent = editAreaString.match(betweenMarkersPattern)[1];
+  if(betweenMarkersContent) {
+      return betweenMarkersContent;
+  }
+  return false;
+}
 
 areTagsBetween = (tool,editAreaString) => {
   let patternString = openMarkerString + '(.*)' + closeMarkerString;
