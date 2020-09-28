@@ -30781,7 +30781,10 @@ var toolsArray = [{
   "class": 'fas fa-code',
   tool: 'toggleCode',
   title: 'Toggle code view'
-}]; //Find all hidden inputs with text-editor class and replace them with rich-text editors.
+}];
+/*
+* Find all hidden inputs with text-editor class and replace them with rich-text editors.
+*/
 
 initTextEdtitors = function initTextEdtitors() {
   var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -30803,8 +30806,11 @@ initTextEdtitors = function initTextEdtitors() {
       processToolbarForWidth(toolbar);
     }
   });
-}; //Build the container that will hold buttons that don't fit.
-//It's hidden till revealed (if necessary) in processToolbarForWidth.
+};
+/*
+* Build the container that will hold buttons that don't fit.
+* It's hidden till revealed (if necessary) in processToolbarForWidth.
+*/
 
 
 insertMoreTools = function insertMoreTools(toolbar) {
@@ -30817,7 +30823,10 @@ insertMoreTools = function insertMoreTools(toolbar) {
   moreToolsContainer.append(moreToolsButton);
   moreToolsContainer.insertAfter(toolbar);
   moreToolsHolder.insertAfter(moreToolsContainer);
-}; //Depending on container width, hide tools that don't fit and display button to toggle them.
+};
+/*
+* Depending on container width, hide tools that don't fit and display button to toggle them.
+*/
 
 
 processToolbarForWidth = function processToolbarForWidth(toolbar) {
@@ -30842,8 +30851,11 @@ processToolbarForWidth = function processToolbarForWidth(toolbar) {
       moreToolsContainer.show();
     }
   });
-}; //Handle window resize events viz. text-editors.
-//This will make sure the toolbars display correctly.
+};
+/*
+* Handle window resize events viz. text-editors.
+* This will make sure the toolbars display correctly.
+*/
 
 
 $(window).resize(function () {
@@ -30857,8 +30869,11 @@ $(window).resize(function () {
   }); //Reinitialize all text editors
 
   initTextEdtitors(textEditorDefaultCallback);
-}); //Build rich-text editors to replace hidden inputs with.
-//Loops through tools defined above and assigns click events.
+});
+/*
+* Build rich-text editors to replace hidden inputs with.
+* Loops through tools defined above and assigns click events.
+*/
 
 makeTextEditor = function makeTextEditor(el) {
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;

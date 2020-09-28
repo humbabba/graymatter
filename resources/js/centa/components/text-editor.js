@@ -31,7 +31,9 @@ const toolsArray = [
     {class:'fas fa-code',tool: 'toggleCode',title: 'Toggle code view'},
 ];
 
-//Find all hidden inputs with text-editor class and replace them with rich-text editors.
+/*
+* Find all hidden inputs with text-editor class and replace them with rich-text editors.
+*/
 initTextEdtitors = (callback = false) => {
   //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function(index,item) {
@@ -55,8 +57,10 @@ initTextEdtitors = (callback = false) => {
   });
 }
 
-//Build the container that will hold buttons that don't fit.
-//It's hidden till revealed (if necessary) in processToolbarForWidth.
+/*
+* Build the container that will hold buttons that don't fit.
+* It's hidden till revealed (if necessary) in processToolbarForWidth.
+*/
 insertMoreTools = toolbar => {
   let moreToolsContainer = $('<span class="more-tools-container">');
   moreToolsContainer.on('click',function() {
@@ -69,7 +73,9 @@ insertMoreTools = toolbar => {
   moreToolsHolder.insertAfter(moreToolsContainer);
 }
 
-//Depending on container width, hide tools that don't fit and display button to toggle them.
+/*
+* Depending on container width, hide tools that don't fit and display button to toggle them.
+*/
 processToolbarForWidth = toolbar => {
   let moreToolsHolder = toolbar.parent().find('.more-tools-holder');
   let toolbarWidth = toolbar.outerWidth();
@@ -94,8 +100,11 @@ processToolbarForWidth = toolbar => {
   });
 }
 
-//Handle window resize events viz. text-editors.
-//This will make sure the toolbars display correctly.
+
+/*
+* Handle window resize events viz. text-editors.
+* This will make sure the toolbars display correctly.
+*/
 $(window).resize(function() {
   //Find them all
   let textEditors = $('.textEditorMasterDiv');
@@ -111,8 +120,10 @@ $(window).resize(function() {
   initTextEdtitors(textEditorDefaultCallback);
 });
 
-//Build rich-text editors to replace hidden inputs with.
-//Loops through tools defined above and assigns click events.
+/*
+* Build rich-text editors to replace hidden inputs with.
+* Loops through tools defined above and assigns click events.
+*/
 makeTextEditor = (el,callback = false) => {
     //Div to hold editor-input combo
     let editor = $('<div class="textEditorMasterDiv">');
