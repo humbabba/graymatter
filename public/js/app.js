@@ -30688,8 +30688,7 @@ addSortParams = function addSortParams(el, key) {
 /***/ (function(module, exports) {
 
 //Globals
-//For processEditAreaCode
-var elObj, elObjParentObj, elTagName, elParentTagName, currentGeneration, selectionObject;
+var currentGeneration, selectionObject;
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike']; //Define rich-text-editing tools.
@@ -30923,7 +30922,7 @@ makeTextEditor = function makeTextEditor(el) {
             }
           }
 
-          copyDiv.html('<p>' + copyDiv.html().replace(/&nbsp;/g, ' ') + '</p>'); //Put the stripped code back inside a p tag
+          copyDiv.html('<p>' + copyDiv.html().replace(/&nbsp;/g, ' ').replace(/\s\s/g, ' ').trim() + '</p>'); //Put the stripped code back inside a p tag
 
           codeDiv.val(copyDiv.html()); //Put the stripped code into the editor
 
@@ -30943,7 +30942,7 @@ makeTextEditor = function makeTextEditor(el) {
           break;
 
         default:
-          execTool(item.tool, editArea);
+          execFormattingTool(item.tool, editArea);
           break;
       }
     });
@@ -31016,18 +31015,24 @@ makeTextEditor = function makeTextEditor(el) {
   editor.append(el);
   return editor;
 };
+/*
+* For basic text formatting only
+*/
 
-execTool = function execTool(tool, editArea) {
-  var range = window.getSelection().getRangeAt(0);
+
+execFormattingTool = function execFormattingTool(tool, editArea) {
+  //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
+  var range = window.getSelection().getRangeAt(0); //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
+
   var openMarker = document.createElement('marker');
   $(openMarker).attr('id', 'openMarker');
   var closeMarker = document.createElement('marker');
   $(closeMarker).attr('id', 'closeMarker');
-  range.insertNode(openMarker);
+  range.insertNode(openMarker); //Collaps the range to the end, so we can insert the closeMarker in the proper spot
+
   range.collapse(false);
-  range.insertNode(closeMarker);
-  console.log('BEFORE: editArea.html()');
-  console.log(editArea.html());
+  range.insertNode(closeMarker); //This makes sure markers are *inside* top-level P tags
+
   editArea.children().each(function () {
     if ('MARKER' === this.tagName) {
       if ('openMarker' === $(this).prop('id')) {
@@ -31041,107 +31046,51 @@ execTool = function execTool(tool, editArea) {
         _that.append($(this));
       }
     }
-  });
+  }); //We get a special object representing some key info about the selection for later use
+
   getSelectionObject(tool, editArea);
-  console.log('SELECTION OBJECT:');
-  console.log(selectionObject);
-  var tagImbalance = selectionObject.tagBalance.find(function (tagObj) {
-    return tagObj.value !== 0;
-  });
-
-  if ('undefined' !== typeof tagImbalance) {
-    rebalanceTag(tagImbalance, editArea);
-  }
-
-  internalizeTool(tool, editArea);
   console.log('AFTER: editArea.html()');
   console.log(editArea.html());
-  getSelectionObject(tool, editArea);
-  console.log('SELECTION OBJECT 2:');
-  console.log(selectionObject);
-  wrapTags(editArea); // processEditAreaCode(editArea);
-
+  wrapTags(editArea);
   cleanRedundantCode(editArea);
   replaceMarkersWithSelection(editArea);
-  removeEmptyTags(editArea);
   console.log('FINAL: editArea.html()');
   console.log(editArea.html());
 };
+/**
+* Get some info about the selection in an object we can reference in code later on.
+*/
 
-internalizeTool = function internalizeTool(tool, editArea) {
-  var editAreaString = editArea.html();
-  var openTag = '<' + tool + '>';
-  var closeTag = '</' + tool + '>';
-  var openMarkerPattern = new RegExp(openTag + openMarkerString);
-  var closeMarkerPattern = new RegExp(closeMarkerString + closeTag);
-  editAreaString = editAreaString.replace(openMarkerPattern, openMarkerString + openTag).replace(closeMarkerPattern, closeTag + closeMarkerString);
-  editArea.html(editAreaString);
-  console.log('editArea.contents()');
-  console.log(editArea.contents());
-};
-
-rebalanceTag = function rebalanceTag(tagImbalance, editArea) {
-  var tag = tagImbalance.name;
-
-  if (tagImbalance.value > 0) {
-    editArea.html(editArea.html().replace(closeMarkerString + '</' + tag + '>', '</' + tag + '>' + closeMarkerString));
-    editArea.html(editArea.html().replace(openMarkerString + '</' + tag + '>', '</' + tag + '>' + openMarkerString));
-  } else {
-    editArea.html(editArea.html().replace(openMarkerString + '<' + tag + '>', '<' + tag + '>' + openMarkerString));
-    editArea.html(editArea.html().replace(closeMarkerString + '<' + tag + '>', '<' + tag + '>' + closeMarkerString));
-  }
-};
 
 getSelectionObject = function getSelectionObject(tool, editArea) {
-  selectionObject = {};
-  selectionObject.openAncestor = false;
-  selectionObject.closeAncestor = false;
-  selectionObject.containsOpenTag = false;
-  selectionObject.containsCloseTag = false;
-  selectionObject.openAncestor = false;
-  selectionObject.closeAncestor = false;
-  selectionObject.sameAncestor = false;
-  selectionObject.allFormatted = false;
+  selectionObject = {
+    openAncestor: false,
+    closeAncestor: false,
+    containsOpenTag: false,
+    containsCloseTag: false,
+    allFormatted: false,
+    tool: tool,
+    openTool: '<' + tool + '>',
+    closeTool: '</' + tool + '>'
+  };
   var editAreaString = editArea.html();
-  var openTool = '<' + tool + '>';
-  var closeTool = '</' + tool + '>';
-  var openMarker = editArea.find('#openMarker');
-  var openMarkerAncestor = openMarker.closest(tool);
-  var openMarkerAncestorParagraph = openMarker.closest('p');
-  var closeMarker = editArea.find('#closeMarker');
-  var closeMarkerAncestor = closeMarker.closest(tool);
-  var closeMarkerAncestorParagraph = closeMarker.closest('p');
   var patternString = openMarkerString + '(.*)' + closeMarkerString;
   var pattern = new RegExp(patternString);
   var contentString = editAreaString.match(pattern)[1];
-  selectionObject.tagBalance = [];
-
-  if (tool) {
-    selectionObject.tool = tool;
-    selectionObject.openTool = openTool;
-    selectionObject.closeTool = closeTool;
-    tags.forEach(function (tag) {
-      var openTag = '<' + tag + '>';
-      var closeTag = '</' + tag + '>';
-      var tagReport = {};
-      tagReport.name = tag;
-      var pattern = new RegExp(openTag, 'gi');
-      tagReport.value = (contentString.match(pattern) || []).length;
-      pattern = new RegExp(closeTag, 'gi');
-      tagReport.value -= (contentString.match(pattern) || []).length;
-      selectionObject.tagBalance.push(tagReport);
-    });
-  }
+  var openMarker = editArea.find('#openMarker');
+  var openMarkerAncestor = openMarker.closest(tool);
+  var closeMarker = editArea.find('#closeMarker');
+  var closeMarkerAncestor = closeMarker.closest(tool);
 
   if (contentString) {
     selectionObject.contentString = contentString;
   }
 
-  if (contentString.indexOf(openTool) > -1) {
+  if (contentString.indexOf(selectionObject.openTool) > -1) {
     selectionObject.containsOpenTag = true;
   }
 
-  if (contentString.indexOf(closeTool) > -1) {
+  if (contentString.indexOf(selectionObject.closeTool) > -1) {
     selectionObject.containsCloseTag = true;
   }
 
@@ -31151,44 +31100,41 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
 
   if (closeMarkerAncestor.length) {
     selectionObject.closeAncestor = closeMarkerAncestor;
-  }
+  } //Determine if all text in contentString is already wrapped in this tool
 
-  if (selectionObject.openAncestor && selectionObject.closeAncestor) {
-    selectionObject.sameAncestor = openMarkerAncestor[0] === closeMarkerAncestor[0];
-  }
-
-  selectionObject.sameAncestorParagraph = openMarkerAncestorParagraph[0] === closeMarkerAncestorParagraph[0]; //     selectionObject.allFormatted = true;
-  // }
-  //Determine if all text in contentString is already wrapped in this tool
 
   if (selectionObject.containsOpenTag || selectionObject.containsCloseTag || selectionObject.openAncestor || selectionObject.closeAncestor) {
-    contentString = selectionObject.openTool + contentString + selectionObject.closeTool;
-    console.log('DETERMINING 1 (contentString):');
-    console.log(contentString);
+    //Only necessary if we've got an tag inside the selection or either marker has an ancestor of the selected tool
+    //We are 'faking' proper HTML by wrapping the (possibly) partial HTML in the selected formatting tool.
+    contentString = selectionObject.openTool + contentString + selectionObject.closeTool; //Search for and remove any doubles of tags created by the step above
+
     var openTagPattern = new RegExp(selectionObject.openTool + selectionObject.openTool, 'gi');
     var closeTagPattern = new RegExp(selectionObject.closeTool + selectionObject.closeTool, 'gi');
-    contentString = contentString.replace(openTagPattern, selectionObject.openTool).replace(closeTagPattern, selectionObject.closeTool);
-    console.log('DETERMINING 2 (contentString):');
-    console.log(contentString);
+    contentString = contentString.replace(openTagPattern, selectionObject.openTool).replace(closeTagPattern, selectionObject.closeTool); //Create new JQuery object containing the cleaned HTML of the selected content
+
     var contentStringObj = $('<span>');
-    contentStringObj.html(contentString);
-    console.log('DETERMINING 3 (contentStringObj.html()):');
-    console.log(contentStringObj.html());
+    contentStringObj.html(contentString); //Find any instances of the selected tool as *children* of our JQuery object
+
     var tools = contentStringObj.find(tool);
-    console.log('DETERMINING 4 (tools):');
-    console.log(tools);
-    var wrappedText = '';
+    var wrappedText = ''; //A placeholder string for all text already wrapped in tool
+
     tools.each(function () {
       if (0 === $(this).find(tool).length) {
-        wrappedText += $(this).text();
+        //This allows us only to give this treatment to the bottom-most children
+        wrappedText += $(this).text(); //We "unwrap" them by simply replacing them with their own inner HTML and that to our placeholder string
       }
     });
 
     if (contentStringObj.text() === wrappedText) {
+      //So if placeholder sting equals the text of the overall object, then we know all text had already been wrapped in the tool.
       selectionObject.allFormatted = true;
     }
   }
 };
+/*
+* If selected text is already all formatted, reverse it. Otherwise apply selected tool.
+*/
+
 
 wrapTags = function wrapTags(editArea) {
   var editAreaString = editArea.html();
@@ -31199,167 +31145,65 @@ wrapTags = function wrapTags(editArea) {
     editAreaString = addFormatting(editAreaString);
   }
 
-  console.log('editAreaString after wrapTags:');
-  console.log(editAreaString);
   editArea.html(editAreaString);
 };
+/*
+* Simply wrap selected content in tags for tool.
+*/
+
 
 addFormatting = function addFormatting(editAreaString) {
-  console.log('Adding formatting.');
   var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
   return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
 };
+/*
+* This is the more-complex case. Sometimes we need to wrap selected content in tags in reverse order,
+* sometimes we need to just close formatting at the beginning of the selection.
+*/
+
 
 reverseFormatting = function reverseFormatting(editAreaString) {
-  console.log('Reversing formatting.');
   var openMarkerPattern = new RegExp(openMarkerString);
-  var closeMarkerPattern = new RegExp(closeMarkerString);
+  var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
 
   if (selectionObject.openAncestor && !selectionObject.closeAncestor || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
     console.log('CASE: Open ancestor only or no ancestors.');
     editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~');
-  } else if (!selectionObject.openAncestor && selectionObject.closeAncestor || selectionObject.openAncestor && selectionObject.closeAncestor) {
+  } else {
+    //Otherwise, we have formatted conent BEYOND the selection and need to repoen the formatting after reversing it for the selection.
     console.log('CASE: Close ancestor only or both ancestors');
     editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
-  } else {
-    console.log('CASE: Fail.');
   }
 
-  editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any open tools in between markers
+  editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
 
-  var betweenMarkersContent = getBetweenMarkersContent(editAreaString); //Need to redefine since we've mauled it above
-
-  console.log('betweenMarkersContent in reverseFormatting');
-  console.log(betweenMarkersContent);
-  var openTagPattern = new RegExp(selectionObject.openTool, 'gi');
-  var closeTagPattern = new RegExp(selectionObject.closeTool, 'gi');
-  cleanBetweenMarkersContent = betweenMarkersContent.replace(openTagPattern, '').replace(closeTagPattern, '');
-  console.log('cleanBetweenMarkersContent in reverseFormatting after replace');
-  console.log(cleanBetweenMarkersContent);
+  var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
   return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
 };
+/*
+* For selecting the content between the markers for manuplulation.
+*/
+
 
 getBetweenMarkersContent = function getBetweenMarkersContent(editAreaString) {
   var betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
   return editAreaString.match(betweenMarkersPattern)[1];
 };
+/*
+* For removing any instances of the tool in a given piece of content
+*/
 
-getCleanBetweenMarkersContent = function getCleanBetweenMarkersContent(betweenMarkersContent) {
+
+getCleanContent = function getCleanContent(content) {
   var openTagPattern = new RegExp(selectionObject.openTool, 'gi');
   var closeTagPattern = new RegExp(selectionObject.closeTool, 'gi');
-  return betweenMarkersContent.replace(openTagPattern, '').replace(closeTagPattern, '');
+  return content.replace(openTagPattern, '').replace(closeTagPattern, '');
 };
+/*
+* It's possible we've got "redundant" formatting tags left over after the above, as in a B tag with B children. Clean 'em up.'
+*/
 
-areTagsBetween = function areTagsBetween(tool, editAreaString) {
-  var patternString = openMarkerString + '(.*)' + closeMarkerString;
-  var pattern = new RegExp(patternString);
-  var contentString = editAreaString.match(pattern)[1];
-  var toolOpen = '<' + tool + '>';
-  var toolClose = '</' + tool + '>';
-
-  if (contentString.indexOf(toolOpen) > -1) {
-    return true;
-  }
-
-  return false;
-};
-
-removeException = function removeException(tool, editAreaString) {
-  var patternString = openMarkerString + '(.*)' + closeMarkerString;
-  var pattern = new RegExp(patternString);
-  var contentString = editAreaString.match(pattern)[1];
-  patternString = '<' + tool + '>';
-  pattern = new RegExp(patternString, 'gi');
-  var updatedContentString = contentString.replace(pattern, '');
-  patternString = '</' + tool + '>';
-  pattern = new RegExp(patternString, 'gi');
-  var finalContentString = updatedContentString.replace(pattern, '');
-  editAreaString = editAreaString.replace(contentString, finalContentString);
-  return editAreaString;
-};
-
-replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
-  var range = document.createRange();
-  var selection = window.getSelection();
-  selection.removeAllRanges();
-  selection.addRange(range);
-  range.setStartAfter(editArea.find('#openMarker')[0]);
-  range.setEndBefore(editArea.find('#closeMarker')[0]);
-  editArea.find('marker').remove();
-};
-
-processEditAreaCode = function processEditAreaCode(editArea) {
-  var elObjDescendents = editArea.find('*');
-  elObjDescendents.each(function () {
-    var element = this;
-    var elementObj = $(this);
-    var elementTagName = element.tagName;
-    var tool = elementTagName.toLowerCase();
-    var elementParentObject = elementObj.parent();
-    var elementAncestorObject = elementParentObject.closest(tool);
-
-    if ('MARKER' === elementTagName) {
-      return;
-    }
-
-    var elementParentTagName = elementParentObject[0].tagName;
-
-    if (elementTagName === elementParentTagName) {
-      if (elementObj.text() === elementParentObject.text()) {
-        var elementParentObjectString = elementParentObject.html();
-        var replaceString = '';
-
-        if (elementParentObjectString.indexOf(openMarkerString) > -1) {
-          elementParentObject.html(elementParentObject.html().replace(openMarkerString, ''));
-          replaceString += openMarkerString;
-        }
-
-        elementObj.html(elementObj.html().replace(openMarkerString, ''));
-        replaceString += elementObj.html();
-
-        if (elementParentObjectString.indexOf(closeMarkerString) > -1) {
-          elementParentObject.html(elementParentObject.html().replace(closeMarkerString, ''));
-
-          if (replaceString.indexOf(closeMarkerString) === -1) {
-            replaceString += closeMarkerString;
-          }
-        }
-
-        elementParentObject.replaceWith(replaceString);
-      } else {
-        var newContent = '<' + tool + '>';
-        elementParentObject.contents().each(function () {
-          if ('#text' === this.nodeName) {
-            newContent += this.textContent;
-          } else if (elementTagName === this.nodeName) {
-            if (null !== this.previousSibling && (this.previousSibling.nodeName === this.nodeName || 'MARKER' === this.previousSibling.nodeName)) {
-              newContent += '</' + tool + '>';
-            }
-
-            newContent += this.innerHTML;
-
-            if (null !== this.nextSibling && (this.nextSibling.nodeName === this.nodeName || 'MARKER' === this.nextSibling.nodeName)) {
-              newContent += '<' + tool + '>';
-            }
-          } else if ('MARKER' === this.nodeName) {
-            newContent += this.outerHTML;
-          } else {
-            if ('undefined' !== typeof this.innerHTML) {
-              newContent += this.innerHTML;
-            }
-          }
-        });
-        newContent += '</' + tool + '>';
-
-        if (elementParentObject[0].parentNode) {
-          elementParentObject[0].outerHTML = newContent;
-        }
-      }
-    } else {
-      console.log('Tag name mismatch.');
-    }
-  });
-};
 
 cleanRedundantCode = function cleanRedundantCode(editArea) {
   tags.forEach(function (tag) {
@@ -31376,34 +31220,47 @@ cleanRedundantCode = function cleanRedundantCode(editArea) {
         }
       });
     }
-  }); //Find specified redundancies
+  }); //Find specified redundancies we know of due to experience.
 
   var editAreaString = editArea.html();
   tags.forEach(function (tag) {
     var openTag = '<' + tag + '>';
-    var closeTag = '</' + tag + '>';
+    var closeTag = '</' + tag + '>'; //Case: Tag closes and immediately opens again, with or without a marker between.
+
     var redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag, 'gi');
     editAreaString = editAreaString.replace(redundantCloseOpen, openMarkerString);
     redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag, 'gi');
     editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString);
     redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, '');
+    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
+
     redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, '');
+    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
+
+    editAreaString = editAreaString.replace('<br></p>', '</p>'); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
+
+    editAreaString = editAreaString.replace('<strong>', '<b>').replace('</strong>', '</b>').replace('<em>', '<i>').replace('</em>', '</i>');
   });
   editArea.html(editAreaString);
 };
+/*
+* We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
+*/
 
-removeEmptyTags = function removeEmptyTags(editArea) {
-  editArea.children().each(function () {
-    $(this).find('*').each(function () {
-      if (0 === this.childNodes.length) {
-        $(this).remove();
-      } else if (' ' === $(this).html()) {
-        $(this).replaceWith(' ');
-      }
-    });
-  });
+
+replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
+  //Make brand-new range
+  var range = document.createRange(); //Clean up any old selection
+
+  var selection = window.getSelection();
+  selection.removeAllRanges(); //Add new range as selection
+
+  selection.addRange(range); //Set start and end on new range
+
+  range.setStartAfter(editArea.find('#openMarker')[0]);
+  range.setEndBefore(editArea.find('#closeMarker')[0]); //Remove marker tags
+
+  editArea.find('marker').remove();
 }; //Remove HTML (except links) from copy.
 
 
@@ -31433,6 +31290,8 @@ stripTags = function (_stripTags) {
   } else if ('BR' === el.tagName) {
     $(el).remove();
   } else {
+    $(el).text($(el).text() + ' '); //Adds a space to end of each text node so we end up with spaces between paragraphs.
+
     $(el).replaceWith($(el).contents());
   }
 }); //Init on load; include default defined in centa.js as callback.
