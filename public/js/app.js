@@ -30831,7 +30831,6 @@ insertMoreTools = function insertMoreTools(toolbar) {
 
 processToolbarForWidth = function processToolbarForWidth(toolbar) {
   var moreToolsHolder = toolbar.parent().find('.more-tools-holder');
-  var toolbarWidth = toolbar.outerWidth();
   var childrenWidth = 0;
   var children = toolbar.children();
   var childrenIndexMax = children.length - 1;
@@ -31031,7 +31030,7 @@ makeTextEditor = function makeTextEditor(el) {
   return editor;
 };
 /*
-* For basic text formatting only
+* For basic text formatting
 */
 
 
@@ -31063,14 +31062,13 @@ execFormattingTool = function execFormattingTool(tool, editArea) {
     }
   }); //We get a special object representing some key info about the selection for later use
 
-  getSelectionObject(tool, editArea);
-  console.log('AFTER: editArea.html()');
-  console.log(editArea.html());
-  wrapTags(editArea);
-  cleanRedundantCode(editArea);
+  getSelectionObject(tool, editArea); //Go through the logic to apply (or reverse) formatting on selection
+
+  wrapTags(editArea); //Remove any nested instances of formatting
+
+  cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
+
   replaceMarkersWithSelection(editArea);
-  console.log('FINAL: editArea.html()');
-  console.log(editArea.html());
 };
 /**
 * Get some info about the selection in an object we can reference in code later on.
@@ -31081,8 +31079,6 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
   selectionObject = {
     openAncestor: false,
     closeAncestor: false,
-    containsOpenTag: false,
-    containsCloseTag: false,
     allFormatted: false,
     tool: tool,
     openTool: '<' + tool + '>',
@@ -31096,17 +31092,19 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
   var openMarkerAncestor = openMarker.closest(tool);
   var closeMarker = editArea.find('#closeMarker');
   var closeMarkerAncestor = closeMarker.closest(tool);
+  var containsOpenTag = false;
+  var containsCloseTag = false;
 
   if (contentString) {
     selectionObject.contentString = contentString;
   }
 
   if (contentString.indexOf(selectionObject.openTool) > -1) {
-    selectionObject.containsOpenTag = true;
+    containsOpenTag = true;
   }
 
   if (contentString.indexOf(selectionObject.closeTool) > -1) {
-    selectionObject.containsCloseTag = true;
+    containsCloseTag = true;
   }
 
   if (openMarkerAncestor.length) {
@@ -31118,7 +31116,7 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
   } //Determine if all text in contentString is already wrapped in this tool
 
 
-  if (selectionObject.containsOpenTag || selectionObject.containsCloseTag || selectionObject.openAncestor || selectionObject.closeAncestor) {
+  if (containsOpenTag || containsCloseTag || selectionObject.openAncestor || selectionObject.closeAncestor) {
     //Only necessary if we've got an tag inside the selection or either marker has an ancestor of the selected tool
     //We are 'faking' proper HTML by wrapping the (possibly) partial HTML in the selected formatting tool.
     contentString = selectionObject.openTool + contentString + selectionObject.closeTool; //Search for and remove any doubles of tags created by the step above
@@ -31182,11 +31180,9 @@ reverseFormatting = function reverseFormatting(editAreaString) {
   var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
 
   if (selectionObject.openAncestor && !selectionObject.closeAncestor || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
-    console.log('CASE: Open ancestor only or no ancestors.');
     editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~');
   } else {
     //Otherwise, we have formatted conent BEYOND the selection and need to repoen the formatting after reversing it for the selection.
-    console.log('CASE: Close ancestor only or both ancestors');
     editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
   }
 
@@ -31364,8 +31360,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

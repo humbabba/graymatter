@@ -1,6 +1,5 @@
 //Globals
 let currentGeneration,selectionObject;
-
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike'];
@@ -35,89 +34,86 @@ const toolsArray = [
 * Find all hidden inputs with text-editor class and replace them with rich-text editors.
 */
 initTextEdtitors = (callback = false) => {
-  //Turn hidden inputs with 'text-editor' class into rich-text editors
-  $('input[type="hidden"]').each(function(index,item) {
-      if($(item).hasClass('text-editor')) {
+    //Turn hidden inputs with 'text-editor' class into rich-text editors
+    $('input[type="hidden"]').each(function(index,item) {
+        if($(item).hasClass('text-editor')) {
+            //Bail if it's already a text-editor
+            const itemParent = $(item).parent();
+            if(itemParent.hasClass('textEditorMasterDiv')) {
+                return;
+            }
 
-        //Bail if it's already a text-editor
-        let itemParent = $(item).parent();
-        if(itemParent.hasClass('textEditorMasterDiv')) {
-          return;
+            const newElement = $(item).clone();
+            const fancyEditor = makeTextEditor(newElement,callback);
+            const toolbar = fancyEditor.find('.toolbar');
+
+            insertMoreTools(toolbar);
+
+            $(item).replaceWith(fancyEditor);
+            processToolbarForWidth(toolbar);
         }
-
-        let newElement = $(item).clone();
-        let fancyEditor = makeTextEditor(newElement,callback);
-        let toolbar = fancyEditor.find('.toolbar');
-
-        insertMoreTools(toolbar);
-
-        $(item).replaceWith(fancyEditor);
-        processToolbarForWidth(toolbar);
-      }
-  });
-}
+    });
+};
 
 /*
 * Build the container that will hold buttons that don't fit.
 * It's hidden till revealed (if necessary) in processToolbarForWidth.
 */
 insertMoreTools = toolbar => {
-  let moreToolsContainer = $('<span class="more-tools-container">');
-  moreToolsContainer.on('click',function() {
-    $(this).next('.more-tools-holder').fadeToggle();
-  });
-  let moreToolsButton = $('<i class="toolbar-button fas fa-ellipsis-h" title="Show/hide tools">');
-  let moreToolsHolder = $('<div class="more-tools-holder">')
-  moreToolsContainer.append(moreToolsButton);
-  moreToolsContainer.insertAfter(toolbar);
-  moreToolsHolder.insertAfter(moreToolsContainer);
-}
+    const moreToolsContainer = $('<span class="more-tools-container">');
+    moreToolsContainer.on('click',function() {
+        $(this).next('.more-tools-holder').fadeToggle();
+    });
+    const moreToolsButton = $('<i class="toolbar-button fas fa-ellipsis-h" title="Show/hide tools">');
+    const moreToolsHolder = $('<div class="more-tools-holder">')
+    moreToolsContainer.append(moreToolsButton);
+    moreToolsContainer.insertAfter(toolbar);
+    moreToolsHolder.insertAfter(moreToolsContainer);
+};
 
 /*
 * Depending on container width, hide tools that don't fit and display button to toggle them.
 */
 processToolbarForWidth = toolbar => {
-  let moreToolsHolder = toolbar.parent().find('.more-tools-holder');
-  let toolbarWidth = toolbar.outerWidth();
-  let childrenWidth = 0;
-  let children = toolbar.children();
-  let childrenIndexMax = children.length - 1;
-  let moreToolsContainer = toolbar.next('.more-tools-container');
-  let widthModifier = moreToolsContainer.outerWidth(true);
-  children.each(function(index,item) {
-    let child = $(item);
-    childrenWidth += child.outerWidth(true);
+    const moreToolsHolder = toolbar.parent().find('.more-tools-holder');
+    let childrenWidth = 0;
+    const children = toolbar.children();
+    const childrenIndexMax = children.length - 1;
+    const moreToolsContainer = toolbar.next('.more-tools-container');
+    let widthModifier = moreToolsContainer.outerWidth(true);
+    children.each(function(index,item) {
+        let child = $(item);
+        childrenWidth += child.outerWidth(true);
 
-    //We leave room for the moreToolsContainer, unless we're on the last tool.
-    //If it fits, we don't need the "more" button
-    if(index === childrenIndexMax) {
-      widthModifier = 0;
-    }
-    if(childrenWidth > (toolbar.outerWidth() - widthModifier)) {
-      moreToolsHolder.append(child);
-      moreToolsContainer.show();
-    }
-  });
-}
-
+        //We leave room for the moreToolsContainer, unless we're on the last tool.
+        //If it fits, we don't need the "more" button
+        if(index === childrenIndexMax) {
+            widthModifier = 0;
+        }
+        if(childrenWidth > (toolbar.outerWidth() - widthModifier)) {
+            moreToolsHolder.append(child);
+            moreToolsContainer.show();
+        }
+    });
+};
 
 /*
 * Handle window resize events viz. text-editors.
 * This will make sure the toolbars display correctly.
 */
 $(window).resize(function() {
-  //Find them all
-  let textEditors = $('.textEditorMasterDiv');
+    //Find them all
+    const textEditors = $('.textEditorMasterDiv');
 
-  textEditors.each(function(index,el) {
-    //Find the hidden input at the core of each
-    let hiddenInput = $(el).find('input[type="hidden"]').first();
-    //Reset hidden input in DOM instead of text-editor
-    $(el).replaceWith(hiddenInput);
-  });
+    textEditors.each(function(index,el) {
+        //Find the hidden input at the core of each
+        const hiddenInput = $(el).find('input[type="hidden"]').first();
+        //Reset hidden input in DOM instead of text-editor
+        $(el).replaceWith(hiddenInput);
+    });
 
-  //Reinitialize all text editors
-  initTextEdtitors(textEditorDefaultCallback);
+    //Reinitialize all text editors
+    initTextEdtitors(textEditorDefaultCallback);
 });
 
 /*
@@ -258,14 +254,14 @@ makeTextEditor = (el,callback = false) => {
     }
     editor.append(el);
     return editor;
-}
+};
 
 /*
-* For basic text formatting only
+* For basic text formatting
 */
 execFormattingTool = (tool,editArea) => {
     //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
-    let range = window.getSelection().getRangeAt(0);
+    const range = window.getSelection().getRangeAt(0);
 
     //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
     const openMarker = document.createElement('marker');
@@ -295,16 +291,15 @@ execFormattingTool = (tool,editArea) => {
     //We get a special object representing some key info about the selection for later use
     getSelectionObject(tool,editArea);
 
-    console.log('AFTER: editArea.html()');
-    console.log(editArea.html());
-
+    //Go through the logic to apply (or reverse) formatting on selection
     wrapTags(editArea);
 
+    //Remove any nested instances of formatting
     cleanRedundantCode(editArea);
+
+    //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
 
-    console.log('FINAL: editArea.html()');
-    console.log(editArea.html());
 };
 
 /**
@@ -314,31 +309,31 @@ getSelectionObject = (tool,editArea) => {
     selectionObject = {
       openAncestor:false,
       closeAncestor:false,
-      containsOpenTag: false,
-      containsCloseTag: false,
       allFormatted: false,
       tool: tool,
       openTool: '<' + tool + '>',
       closeTool: '</' + tool + '>',
     };
     let editAreaString = editArea.html();
-    let patternString = openMarkerString + '(.*)' + closeMarkerString;
-    let pattern = new RegExp(patternString);
+    const patternString = openMarkerString + '(.*)' + closeMarkerString;
+    const pattern = new RegExp(patternString);
     let contentString = editAreaString.match(pattern)[1];
-    let openMarker = editArea.find('#openMarker');
-    let openMarkerAncestor = openMarker.closest(tool);
-    let closeMarker = editArea.find('#closeMarker');
-    let closeMarkerAncestor = closeMarker.closest(tool);
+    const openMarker = editArea.find('#openMarker');
+    const openMarkerAncestor = openMarker.closest(tool);
+    const closeMarker = editArea.find('#closeMarker');
+    const closeMarkerAncestor = closeMarker.closest(tool);
+    let containsOpenTag = false;
+    let containsCloseTag = false;
 
     if(contentString) {
         selectionObject.contentString = contentString;
     }
     if(contentString.indexOf(selectionObject.openTool) > -1) {
-        selectionObject.containsOpenTag = true;
+        containsOpenTag = true;
     }
 
     if(contentString.indexOf(selectionObject.closeTool) > -1) {
-        selectionObject.containsCloseTag = true;
+        containsCloseTag = true;
     }
     if(openMarkerAncestor.length) {
         selectionObject.openAncestor = openMarkerAncestor;
@@ -348,15 +343,15 @@ getSelectionObject = (tool,editArea) => {
     }
 
     //Determine if all text in contentString is already wrapped in this tool
-    if((selectionObject.containsOpenTag || selectionObject.containsCloseTag) ||
+    if((containsOpenTag || containsCloseTag) ||
       (selectionObject.openAncestor || selectionObject.closeAncestor)) { //Only necessary if we've got an tag inside the selection or either marker has an ancestor of the selected tool
 
       //We are 'faking' proper HTML by wrapping the (possibly) partial HTML in the selected formatting tool.
       contentString = selectionObject.openTool + contentString + selectionObject.closeTool;
 
       //Search for and remove any doubles of tags created by the step above
-      let openTagPattern = new RegExp(selectionObject.openTool + selectionObject.openTool, 'gi');
-      let closeTagPattern = new RegExp(selectionObject.closeTool + selectionObject.closeTool, 'gi');
+      const openTagPattern = new RegExp(selectionObject.openTool + selectionObject.openTool, 'gi');
+      const closeTagPattern = new RegExp(selectionObject.closeTool + selectionObject.closeTool, 'gi');
       contentString = contentString.replace(openTagPattern,selectionObject.openTool).replace(closeTagPattern,selectionObject.closeTool);
 
       //Create new JQuery object containing the cleaned HTML of the selected content
@@ -364,7 +359,7 @@ getSelectionObject = (tool,editArea) => {
       contentStringObj.html(contentString);
 
       //Find any instances of the selected tool as *children* of our JQuery object
-      let tools = contentStringObj.find(tool);
+      const tools = contentStringObj.find(tool);
       let wrappedText = ''; //A placeholder string for all text already wrapped in tool
       tools.each(function() {
         if(0 === $(this).find(tool).length) { //This allows us only to give this treatment to the bottom-most children
@@ -376,7 +371,7 @@ getSelectionObject = (tool,editArea) => {
           selectionObject.allFormatted = true;
       }
     }
-}
+};
 
 /*
 * If selected text is already all formatted, reverse it. Otherwise apply selected tool.
@@ -384,9 +379,9 @@ getSelectionObject = (tool,editArea) => {
 wrapTags = editArea => {
     let editAreaString = editArea.html();
     if(selectionObject.allFormatted) {
-      editAreaString = reverseFormatting(editAreaString);
+        editAreaString = reverseFormatting(editAreaString);
     } else {
-      editAreaString = addFormatting(editAreaString);
+        editAreaString = addFormatting(editAreaString);
     }
     editArea.html(editAreaString);
 };
@@ -395,69 +390,67 @@ wrapTags = editArea => {
 * Simply wrap selected content in tags for tool.
 */
 addFormatting = editAreaString => {
-    let betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+    const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
     return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
-}
+};
 
 /*
 * This is the more-complex case. Sometimes we need to wrap selected content in tags in reverse order,
 * sometimes we need to just close formatting at the beginning of the selection.
 */
 reverseFormatting = editAreaString => {
-  let openMarkerPattern = new RegExp(openMarkerString);
-  let closeMarkerPattern = new RegExp(closeMarkerString);
+    const openMarkerPattern = new RegExp(openMarkerString);
+    const closeMarkerPattern = new RegExp(closeMarkerString);
 
-  //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
-  if((selectionObject.openAncestor && !selectionObject.closeAncestor) || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
-      console.log('CASE: Open ancestor only or no ancestors.');
-      editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~');
-  } else { //Otherwise, we have formatted conent BEYOND the selection and need to repoen the formatting after reversing it for the selection.
-      console.log('CASE: Close ancestor only or both ancestors');
-      editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
-  }
+    //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
+    if((selectionObject.openAncestor && !selectionObject.closeAncestor) || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
+        editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~');
+    } else { //Otherwise, we have formatted conent BEYOND the selection and need to repoen the formatting after reversing it for the selection.
+        editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
+    }
 
-  editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
+    editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
 
-  //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
-  let betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-  cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
+    //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
+    const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+    cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
 
-  return editAreaString.replace(betweenMarkersContent,cleanBetweenMarkersContent);
-}
+    return editAreaString.replace(betweenMarkersContent,cleanBetweenMarkersContent);
+};
 
 /*
 * For selecting the content between the markers for manuplulation.
 */
 getBetweenMarkersContent = editAreaString => {
-  let betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-  return editAreaString.match(betweenMarkersPattern)[1];
-}
+    const betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
+    return editAreaString.match(betweenMarkersPattern)[1];
+};
 
 /*
 * For removing any instances of the tool in a given piece of content
 */
 getCleanContent = content => {
-  let openTagPattern = new RegExp(selectionObject.openTool,'gi');
-  let closeTagPattern = new RegExp(selectionObject.closeTool,'gi');
-  return content.replace(openTagPattern,'').replace(closeTagPattern,'');
-}
+    const openTagPattern = new RegExp(selectionObject.openTool,'gi');
+    const closeTagPattern = new RegExp(selectionObject.closeTool,'gi');
+    return content.replace(openTagPattern,'').replace(closeTagPattern,'');
+};
 
 /*
 * It's possible we've got "redundant" formatting tags left over after the above, as in a B tag with B children. Clean 'em up.'
 */
 cleanRedundantCode = editArea => {
     tags.forEach(function(tag) {
-      let inspectedElements = editArea.find(tag);
-      if(inspectedElements.length) {
-        inspectedElements.each(function() {
-          let inspectedElementsDescendants = $(this).find(tag);
-          if(inspectedElementsDescendants.length) {
-            inspectedElementsDescendants.each(function() {
-              $(this).replaceWith($(this).html());
+        const inspectedElements = editArea.find(tag);
+        if(inspectedElements.length) {
+            inspectedElements.each(function() {
+                const inspectedElementsDescendants = $(this).find(tag);
+                if(inspectedElementsDescendants.length) {
+                    inspectedElementsDescendants.each(function() {
+                        $(this).replaceWith($(this).html());
+                    });
+                }
             });
-          }
-        });
-      }
+        }
     });
 
     //Find specified redundancies we know of due to experience.
@@ -489,22 +482,22 @@ cleanRedundantCode = editArea => {
 * We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
 */
 replaceMarkersWithSelection = editArea => {
-  //Make brand-new range
-  const range = document.createRange();
-  //Clean up any old selection
-  const selection = window.getSelection();
-  selection.removeAllRanges();
+    //Make brand-new range
+    const range = document.createRange();
+    //Clean up any old selection
+    const selection = window.getSelection();
+    selection.removeAllRanges();
 
-  //Add new range as selection
-  selection.addRange(range);
+    //Add new range as selection
+    selection.addRange(range);
 
-  //Set start and end on new range
-  range.setStartAfter(editArea.find('#openMarker')[0]);
-  range.setEndBefore(editArea.find('#closeMarker')[0]);
+    //Set start and end on new range
+    range.setStartAfter(editArea.find('#openMarker')[0]);
+    range.setEndBefore(editArea.find('#closeMarker')[0]);
 
-  //Remove marker tags
-  editArea.find('marker').remove();
-}
+    //Remove marker tags
+    editArea.find('marker').remove();
+};
 
 //Remove HTML (except links) from copy.
 stripTags = el => {
