@@ -30687,11 +30687,17 @@ addSortParams = function addSortParams(el, key) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-//Globals
+/**
+ * Globals
+ */
 var currentGeneration, selectionObject;
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
-var tags = ['b', 'i', 'u', 'strike']; //Define rich-text-editing tools.
+var tags = ['b', 'i', 'u', 'strike'];
+/**
+ * Define rich-text editing tools
+ * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
+ */
 
 var toolsArray = [{
   "class": 'fas fa-bold',
@@ -30782,11 +30788,11 @@ var toolsArray = [{
   tool: 'toggleCode',
   title: 'Toggle code view'
 }];
-/*
+/**
 * Find all hidden inputs with text-editor class and replace them with rich-text editors.
 */
 
-initTextEdtitors = function initTextEdtitors() {
+var initTextEdtitors = function initTextEdtitors() {
   var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function (index, item) {
@@ -30807,13 +30813,13 @@ initTextEdtitors = function initTextEdtitors() {
     }
   });
 };
-/*
+/**
 * Build the container that will hold buttons that don't fit.
 * It's hidden till revealed (if necessary) in processToolbarForWidth.
 */
 
 
-insertMoreTools = function insertMoreTools(toolbar) {
+var insertMoreTools = function insertMoreTools(toolbar) {
   var moreToolsContainer = $('<span class="more-tools-container">');
   moreToolsContainer.on('click', function () {
     $(this).next('.more-tools-holder').fadeToggle();
@@ -30824,12 +30830,12 @@ insertMoreTools = function insertMoreTools(toolbar) {
   moreToolsContainer.insertAfter(toolbar);
   moreToolsHolder.insertAfter(moreToolsContainer);
 };
-/*
+/**
 * Depending on container width, hide tools that don't fit and display button to toggle them.
 */
 
 
-processToolbarForWidth = function processToolbarForWidth(toolbar) {
+var processToolbarForWidth = function processToolbarForWidth(toolbar) {
   var moreToolsHolder = toolbar.parent().find('.more-tools-holder');
   var childrenWidth = 0;
   var children = toolbar.children();
@@ -30851,7 +30857,7 @@ processToolbarForWidth = function processToolbarForWidth(toolbar) {
     }
   });
 };
-/*
+/**
 * Handle window resize events viz. text-editors.
 * This will make sure the toolbars display correctly.
 */
@@ -30869,12 +30875,12 @@ $(window).resize(function () {
 
   initTextEdtitors(textEditorDefaultCallback);
 });
-/*
+/**
 * Build rich-text editors to replace hidden inputs with.
 * Loops through tools defined above and assigns click events.
 */
 
-makeTextEditor = function makeTextEditor(el) {
+var makeTextEditor = function makeTextEditor(el) {
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   //Div to hold editor-input combo
   var editor = $('<div class="textEditorMasterDiv">'); //Toolbar div and tools
@@ -31029,20 +31035,21 @@ makeTextEditor = function makeTextEditor(el) {
   editor.append(el);
   return editor;
 };
-/*
+/**
 * For basic text formatting
 */
 
 
-execFormattingTool = function execFormattingTool(tool, editArea) {
+var execFormattingTool = function execFormattingTool(tool, editArea) {
   //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
-  var range = window.getSelection().getRangeAt(0); //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
+  var range = window.getSelection().getRangeAt(0);
+  var emptySelection = range.collapsed; //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
 
   var openMarker = document.createElement('marker');
   $(openMarker).attr('id', 'openMarker');
   var closeMarker = document.createElement('marker');
   $(closeMarker).attr('id', 'closeMarker');
-  range.insertNode(openMarker); //Collaps the range to the end, so we can insert the closeMarker in the proper spot
+  range.insertNode(openMarker); //Collapse the range to the end, so we can insert the closeMarker in the proper spot
 
   range.collapse(false);
   range.insertNode(closeMarker); //This makes sure markers are *inside* top-level P tags
@@ -31062,7 +31069,7 @@ execFormattingTool = function execFormattingTool(tool, editArea) {
     }
   }); //We get a special object representing some key info about the selection for later use
 
-  getSelectionObject(tool, editArea); //Go through the logic to apply (or reverse) formatting on selection
+  getSelectionObject(tool, editArea, emptySelection); //Go through the logic to apply (or reverse) formatting on selection
 
   wrapTags(editArea); //Remove any nested instances of formatting
 
@@ -31075,14 +31082,15 @@ execFormattingTool = function execFormattingTool(tool, editArea) {
 */
 
 
-getSelectionObject = function getSelectionObject(tool, editArea) {
+var getSelectionObject = function getSelectionObject(tool, editArea, emptySelection) {
   selectionObject = {
     openAncestor: false,
     closeAncestor: false,
     allFormatted: false,
     tool: tool,
     openTool: '<' + tool + '>',
-    closeTool: '</' + tool + '>'
+    closeTool: '</' + tool + '>',
+    emptySelection: emptySelection
   };
   var editAreaString = editArea.html();
   var patternString = openMarkerString + '(.*)' + closeMarkerString;
@@ -31144,12 +31152,12 @@ getSelectionObject = function getSelectionObject(tool, editArea) {
     }
   }
 };
-/*
+/**
 * If selected text is already all formatted, reverse it. Otherwise apply selected tool.
 */
 
 
-wrapTags = function wrapTags(editArea) {
+var wrapTags = function wrapTags(editArea) {
   var editAreaString = editArea.html();
 
   if (selectionObject.allFormatted) {
@@ -31160,22 +31168,26 @@ wrapTags = function wrapTags(editArea) {
 
   editArea.html(editAreaString);
 };
-/*
+/**
 * Simply wrap selected content in tags for tool.
 */
 
 
-addFormatting = function addFormatting(editAreaString) {
-  var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-  return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
+var addFormatting = function addFormatting(editAreaString) {
+  if (selectionObject.emptySelection) {
+    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool).replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
+  } else {
+    var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+    return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
+  }
 };
-/*
+/**
 * This is the more-complex case. Sometimes we need to wrap selected content in tags in reverse order,
 * sometimes we need to just close formatting at the beginning of the selection.
 */
 
 
-reverseFormatting = function reverseFormatting(editAreaString) {
+var reverseFormatting = function reverseFormatting(editAreaString) {
   var openMarkerPattern = new RegExp(openMarkerString);
   var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
 
@@ -31192,31 +31204,31 @@ reverseFormatting = function reverseFormatting(editAreaString) {
   cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
   return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
 };
-/*
+/**
 * For selecting the content between the markers for manuplulation.
 */
 
 
-getBetweenMarkersContent = function getBetweenMarkersContent(editAreaString) {
+var getBetweenMarkersContent = function getBetweenMarkersContent(editAreaString) {
   var betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
   return editAreaString.match(betweenMarkersPattern)[1];
 };
-/*
+/**
 * For removing any instances of the tool in a given piece of content
 */
 
 
-getCleanContent = function getCleanContent(content) {
+var getCleanContent = function getCleanContent(content) {
   var openTagPattern = new RegExp(selectionObject.openTool, 'gi');
   var closeTagPattern = new RegExp(selectionObject.closeTool, 'gi');
   return content.replace(openTagPattern, '').replace(closeTagPattern, '');
 };
-/*
+/**
 * It's possible we've got "redundant" formatting tags left over after the above, as in a B tag with B children. Clean 'em up.'
 */
 
 
-cleanRedundantCode = function cleanRedundantCode(editArea) {
+var cleanRedundantCode = function cleanRedundantCode(editArea) {
   tags.forEach(function (tag) {
     var inspectedElements = editArea.find(tag);
 
@@ -31236,17 +31248,31 @@ cleanRedundantCode = function cleanRedundantCode(editArea) {
   var editAreaString = editArea.html();
   tags.forEach(function (tag) {
     var openTag = '<' + tag + '>';
-    var closeTag = '</' + tag + '>'; //Case: Tag closes and immediately opens again, with or without a marker between.
+    var closeTag = '</' + tag + '>'; //Case: Tag closes and immediately opens again, with a marker between.
 
     var redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag, 'gi');
     editAreaString = editAreaString.replace(redundantCloseOpen, openMarkerString);
     redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString);
-    redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
+    editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString); //The following two cases only need cleaning if we're not specifically doing an empty selection
 
-    redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
+    if (!selectionObject.emptySelection) {
+      console.log('WE GOT ELSE'); //Case: Tag closes and immediately opens again, without a marker in between
+
+      redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
+      editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
+
+      redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
+      editAreaString = editAreaString.replace(redundantCloseOpen, '');
+    } else {
+      console.log('WE GOT EMPTY'); //Case: Tag closes and immediately opens again, without a marker in between
+
+      redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
+      editAreaString = editAreaString.replace(redundantCloseOpen, closeTag + ' ' + openTag); //Case: An empty tag.
+
+      redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
+      editAreaString = editAreaString.replace(redundantCloseOpen, openTag + ' ' + closeTag);
+    } //Case: Firefox sometimes leaves a <br> right before a </p>.
+
 
     editAreaString = editAreaString.replace('<br></p>', '</p>'); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
 
@@ -31254,12 +31280,12 @@ cleanRedundantCode = function cleanRedundantCode(editArea) {
   });
   editArea.html(editAreaString);
 };
-/*
+/**
 * We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
 */
 
 
-replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
+var replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
   //Make brand-new range
   var range = document.createRange(); //Clean up any old selection
 
@@ -31272,20 +31298,14 @@ replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
   range.setEndBefore(editArea.find('#closeMarker')[0]); //Remove marker tags
 
   editArea.find('marker').remove();
-}; //Remove HTML (except links) from copy.
+};
+/**
+ * Remove HTML (except links) from copy.
+ * @param el
+ */
 
 
-stripTags = function (_stripTags) {
-  function stripTags(_x) {
-    return _stripTags.apply(this, arguments);
-  }
-
-  stripTags.toString = function () {
-    return _stripTags.toString();
-  };
-
-  return stripTags;
-}(function (el) {
+var stripTags = function stripTags(el) {
   if ('A' === el.tagName) {
     //Remove style and any data attr
     $(el).removeAttr('style');
@@ -31305,7 +31325,10 @@ stripTags = function (_stripTags) {
 
     $(el).replaceWith($(el).contents());
   }
-}); //Init on load; include default defined in centa.js as callback.
+};
+/**
+ * Init on load; include default defined in centa.js as callback.
+ */
 
 
 initTextEdtitors(textEditorDefaultCallback);
