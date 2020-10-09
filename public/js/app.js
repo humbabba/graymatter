@@ -31188,21 +31188,27 @@ var addFormatting = function addFormatting(editAreaString) {
 
 
 var reverseFormatting = function reverseFormatting(editAreaString) {
-  var openMarkerPattern = new RegExp(openMarkerString);
-  var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
+  console.log('REVERSING');
 
-  if (selectionObject.openAncestor && !selectionObject.closeAncestor || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
-    editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~');
+  if (selectionObject.emptySelection) {
+    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool).replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
   } else {
-    //Otherwise, we have formatted conent BEYOND the selection and need to repoen the formatting after reversing it for the selection.
-    editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
+    var openMarkerPattern = new RegExp(openMarkerString);
+    var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
+
+    if (selectionObject.openAncestor && !selectionObject.closeAncestor || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
+      editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~');
+    } else {
+      //Otherwise, we have formatted content BEYOND the selection and need to repoen the formatting after reversing it for the selection.
+      editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
+    }
+
+    editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
+
+    var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+    cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
+    return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
   }
-
-  editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
-
-  var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-  cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
-  return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
 };
 /**
 * For selecting the content between the markers for manuplulation.
@@ -31256,16 +31262,14 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString); //The following two cases only need cleaning if we're not specifically doing an empty selection
 
     if (!selectionObject.emptySelection) {
-      console.log('WE GOT ELSE'); //Case: Tag closes and immediately opens again, without a marker in between
-
+      //Case: Tag closes and immediately opens again, without a marker in between
       redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
       editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
 
       redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, '');
+      editAreaString = editAreaString.replace(redundantCloseOpen, ''); //If we are doing an empty selection, we leave the code with a space there to select
     } else {
-      console.log('WE GOT EMPTY'); //Case: Tag closes and immediately opens again, without a marker in between
-
+      //Case: Tag closes and immediately opens again, without a marker in between
       redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
       editAreaString = editAreaString.replace(redundantCloseOpen, closeTag + ' ' + openTag); //Case: An empty tag.
 
@@ -31327,9 +31331,23 @@ var stripTags = function stripTags(el) {
   }
 };
 /**
- * Init on load; include default defined in centa.js as callback.
+ * Handle keyboard shortcuts for text editor
  */
 
+
+$(document).on('keydown', function (e) {
+  if (e.metaKey || e.ctrlKey) {
+    var tool = e.key.toLowerCase();
+
+    if (tags.indexOf(tool) > -1) {
+      var editArea = $(':focus');
+      execFormattingTool(tool, editArea);
+    }
+  }
+});
+/**
+ * Init on load; include default defined in centa.js as callback.
+ */
 
 initTextEdtitors(textEditorDefaultCallback);
 
