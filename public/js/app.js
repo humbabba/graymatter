@@ -31271,10 +31271,10 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     } else {
       //Case: Tag closes and immediately opens again, without a marker in between
       redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, closeTag + 'blerg' + openTag); //Case: An empty tag.
+      editAreaString = editAreaString.replace(redundantCloseOpen, closeTag + ' ' + openTag); //Case: An empty tag.
 
       redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, openTag + 'blerg' + closeTag);
+      editAreaString = editAreaString.replace(redundantCloseOpen, openTag + ' ' + closeTag);
     } //Case: Firefox sometimes leaves a <br> right before a </p>.
 
 
@@ -31340,8 +31340,9 @@ $(document).on('keydown', function (e) {
     var tool = e.key.toLowerCase();
 
     if (tags.indexOf(tool) > -1) {
-      var toolButton = $(':focus').parent().find('*[data-tool="' + tool + '"]');
-      toolButton.click();
+      e.preventDefault();
+      var editArea = $(':focus');
+      execFormattingTool(tool, editArea);
     }
   }
 });
