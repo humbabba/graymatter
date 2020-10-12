@@ -297,15 +297,23 @@ const execFormattingTool = (tool,editArea) => {
 
     //We get a special object representing some key info about the selection for later use
     getSelectionObject(tool,editArea,emptySelection);
+    console.log('selectionObject');
+    console.log(selectionObject);
 
     //Go through the logic to apply (or reverse) formatting on selection
     wrapTags(editArea);
+    console.log('AFTER: editArea.html()');
+    console.log(editArea.html());
 
     //Remove any nested instances of formatting
     cleanRedundantCode(editArea);
+    console.log('AFTER CLEAN REDUNDANT: editArea.html()');
+    console.log(editArea.html());
 
     //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
+    console.log('AFTER REPLACE MARKERS: editArea.html()');
+    console.log(editArea.html());
 
 };
 
@@ -493,10 +501,10 @@ const cleanRedundantCode = editArea => {
         } else {
             //Case: Tag closes and immediately opens again, without a marker in between
             redundantCloseOpen = new RegExp(closeTag + openTag,'gi');
-            editAreaString = editAreaString.replace(redundantCloseOpen,closeTag + ' ' + openTag);
+            editAreaString = editAreaString.replace(redundantCloseOpen,closeTag + '<br>' + openTag);
             //Case: An empty tag.
             redundantCloseOpen = new RegExp(openTag + closeTag,'gi');
-            editAreaString = editAreaString.replace(redundantCloseOpen,openTag + ' ' + closeTag);
+            editAreaString = editAreaString.replace(redundantCloseOpen,openTag + '<br>' + closeTag);
         }
         //Case: Firefox sometimes leaves a <br> right before a </p>.
         editAreaString = editAreaString.replace('<br></p>','</p>');
