@@ -31230,7 +31230,7 @@ var getCleanContent = function getCleanContent(content) {
   return content.replace(openTagPattern, '').replace(closeTagPattern, '');
 };
 /**
-* It's possible we've got "redundant" formatting tags left over after the above, as in a B tag with B children. Clean 'em up.'
+* It's possible we've got "redundant" formatting tags left over after the above, as in a B tag with B children. Clean 'em up.
 */
 
 
@@ -31271,10 +31271,10 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     } else {
       //Case: Tag closes and immediately opens again, without a marker in between
       redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, closeTag + ' ' + openTag); //Case: An empty tag.
+      editAreaString = editAreaString.replace(redundantCloseOpen, closeTag + 'blerg' + openTag); //Case: An empty tag.
 
       redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, openTag + ' ' + closeTag);
+      editAreaString = editAreaString.replace(redundantCloseOpen, openTag + 'blerg' + closeTag);
     } //Case: Firefox sometimes leaves a <br> right before a </p>.
 
 
@@ -31340,8 +31340,8 @@ $(document).on('keydown', function (e) {
     var tool = e.key.toLowerCase();
 
     if (tags.indexOf(tool) > -1) {
-      var editArea = $(':focus');
-      execFormattingTool(tool, editArea);
+      var toolButton = $(':focus').parent().find('*[data-tool="' + tool + '"]');
+      toolButton.click();
     }
   }
 });
