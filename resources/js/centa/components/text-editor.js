@@ -267,6 +267,7 @@ const makeTextEditor = (el,callback = false) => {
 * For basic text formatting
 */
 const execFormattingTool = (tool,editArea) => {
+
     //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
     const range = window.getSelection().getRangeAt(0);
 
@@ -399,6 +400,10 @@ const getSelectionObject = (tool,editArea,emptySelection) => {
 * If selected text is already all formatted, reverse it. Otherwise apply selected tool.
 */
 const wrapTags = editArea => {
+    //First we need to remove any lingering empty tags; we don't do this earlier cause it messes with selection to do so on some browsers.
+    const emptyTag = editArea.find('empty');
+    emptyTag.replaceWith(emptyTag.html());
+
     let editAreaString = editArea.html();
     if(selectionObject.allFormatted) {
         editAreaString = reverseFormatting(editAreaString);
@@ -412,8 +417,8 @@ const wrapTags = editArea => {
 * Simply wrap selected content in tags for tool.
 */
 const addFormatting = editAreaString => {
-    if(selectionObject.emptySelection) { //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
-        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '&zwnj;').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
+    if(selectionObject.emptySelection) { //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
+        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
     } else {
         const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
         return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
@@ -426,8 +431,8 @@ const addFormatting = editAreaString => {
 */
 const reverseFormatting = editAreaString => {
     console.log('REVERSING');
-    if(selectionObject.emptySelection) { //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
-        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '&zwnj;').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
+    if(selectionObject.emptySelection) { //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
+        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
     } else {
         const openMarkerPattern = new RegExp(openMarkerString);
         const closeMarkerPattern = new RegExp(closeMarkerString);
@@ -514,26 +519,29 @@ const cleanRedundantCode = editArea => {
     editArea.html(editAreaString);
 };
 
-const handleEmptySelection = (tool,editArea) => {
-    return false;
-};
-
 /**
 * We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
 */
 const replaceMarkersWithSelection = editArea => {
-    //Make brand-new range
-    const range = document.createRange();
-    //Clean up any old selection
-    const selection = window.getSelection();
-    selection.removeAllRanges();
+    //First let's see if we have an empty marker - if so, selection is different
+    const emptyMarker = editArea.find('empty')[0];
+    if('undefined' !== typeof emptyMarker) { //We are dealing with an empty select
+        const range = window.getSelection().getRangeAt(0);
+        range.selectNode(emptyMarker); //We have to select a NODE to get empty selection to work on all browsers; hence the "empty" tag inserted in addFormatting and reverseFormatting above
+    } else {
+        //Make brand-new range
+        const range = document.createRange();
+        //Clean up any old selection
+        const selection = window.getSelection();
+        selection.removeAllRanges();
 
-    //Add new range as selection
-    selection.addRange(range);
+        //Add new range as selection
+        selection.addRange(range);
 
-    //Set start and end on new range
-    range.setStartAfter(editArea.find('#openMarker')[0]);
-    range.setEndBefore(editArea.find('#closeMarker')[0]);
+        //Set start and end on new range
+        range.setStartAfter(editArea.find('#openMarker')[0]);
+        range.setEndBefore(editArea.find('#closeMarker')[0]);
+    }
 
     //Remove marker tags
     editArea.find('marker').remove();

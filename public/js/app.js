@@ -31173,6 +31173,9 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
 
 
 var wrapTags = function wrapTags(editArea) {
+  //First we need to remove any lingering empty tags; we don't do this earlier cause it messes with selection to do so on some browsers.
+  var emptyTag = editArea.find('empty');
+  emptyTag.replaceWith(emptyTag.html());
   var editAreaString = editArea.html();
 
   if (selectionObject.allFormatted) {
@@ -31190,8 +31193,8 @@ var wrapTags = function wrapTags(editArea) {
 
 var addFormatting = function addFormatting(editAreaString) {
   if (selectionObject.emptySelection) {
-    //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
-    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '&zwnj;').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
+    //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
+    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
   } else {
     var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
     return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
@@ -31207,8 +31210,8 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
   console.log('REVERSING');
 
   if (selectionObject.emptySelection) {
-    //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
-    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '&zwnj;').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
+    //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
+    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
   } else {
     var openMarkerPattern = new RegExp(openMarkerString);
     var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
@@ -31290,26 +31293,34 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
   });
   editArea.html(editAreaString);
 };
-
-var handleEmptySelection = function handleEmptySelection(tool, editArea) {
-  return false;
-};
 /**
 * We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
 */
 
 
 var replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
-  //Make brand-new range
-  var range = document.createRange(); //Clean up any old selection
+  //First let's see if we have an empty marker - if so, selection is different
+  var emptyMarker = editArea.find('empty')[0];
 
-  var selection = window.getSelection();
-  selection.removeAllRanges(); //Add new range as selection
+  if ('undefined' !== typeof emptyMarker) {
+    //We are dealing with an empty select
+    var range = window.getSelection().getRangeAt(0);
+    range.selectNode(emptyMarker); //We have to select a NODE to get empty selection to work on all browsers; hence the "empty" tag inserted in addFormatting and reverseFormatting above
+  } else {
+    //Make brand-new range
+    var _range = document.createRange(); //Clean up any old selection
 
-  selection.addRange(range); //Set start and end on new range
 
-  range.setStartAfter(editArea.find('#openMarker')[0]);
-  range.setEndBefore(editArea.find('#closeMarker')[0]); //Remove marker tags
+    var selection = window.getSelection();
+    selection.removeAllRanges(); //Add new range as selection
+
+    selection.addRange(_range); //Set start and end on new range
+
+    _range.setStartAfter(editArea.find('#openMarker')[0]);
+
+    _range.setEndBefore(editArea.find('#closeMarker')[0]);
+  } //Remove marker tags
+
 
   editArea.find('marker').remove();
 };
