@@ -30691,6 +30691,8 @@ addSortParams = function addSortParams(el, key) {
  * Globals
  */
 var currentGeneration, selectionObject;
+var selectionPointer = false;
+var toolInWaiting = false;
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike'];
@@ -31071,7 +31073,12 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
 
   getSelectionObject(tool, editArea, emptySelection);
   console.log('selectionObject');
-  console.log(selectionObject); //Go through the logic to apply (or reverse) formatting on selection
+  console.log(selectionObject);
+
+  if (selectionObject.emptySelection) {
+    toolInWaiting = selectionObject.tool;
+  } //Go through the logic to apply (or reverse) formatting on selection
+
 
   wrapTags(editArea);
   console.log('AFTER: editArea.html()');
@@ -31183,7 +31190,8 @@ var wrapTags = function wrapTags(editArea) {
 
 var addFormatting = function addFormatting(editAreaString) {
   if (selectionObject.emptySelection) {
-    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool).replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
+    //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
+    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '&zwnj;').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
   } else {
     var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
     return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
@@ -31199,7 +31207,8 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
   console.log('REVERSING');
 
   if (selectionObject.emptySelection) {
-    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool).replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
+    //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
+    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '&zwnj;').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
   } else {
     var openMarkerPattern = new RegExp(openMarkerString);
     var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
@@ -31214,7 +31223,7 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
     editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
 
     var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-    cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
+    var cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
     return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
   }
 };
@@ -31267,30 +31276,23 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     var redundantCloseOpen = new RegExp(closeTag + openMarkerString + openTag, 'gi');
     editAreaString = editAreaString.replace(redundantCloseOpen, openMarkerString);
     redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString); //The following two cases only need cleaning if we're not specifically doing an empty selection
+    editAreaString = editAreaString.replace(redundantCloseOpen, closeMarkerString); //Case: Tag closes and immediately opens again, without a marker in between
 
-    if (!selectionObject.emptySelection) {
-      //Case: Tag closes and immediately opens again, without a marker in between
-      redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
+    redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
+    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
 
-      redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, ''); //If we are doing an empty selection, we leave the code with a space there to select
-    } else {
-      //Case: Tag closes and immediately opens again, without a marker in between
-      redundantCloseOpen = new RegExp(closeTag + openTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, closeTag + '<br>' + openTag); //Case: An empty tag.
-
-      redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-      editAreaString = editAreaString.replace(redundantCloseOpen, openTag + '<br>' + closeTag);
-    } //Case: Firefox sometimes leaves a <br> right before a </p>.
-
+    redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
+    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
 
     editAreaString = editAreaString.replace('<br></p>', '</p>'); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
 
     editAreaString = editAreaString.replace('<strong>', '<b>').replace('</strong>', '</b>').replace('<em>', '<i>').replace('</em>', '</i>');
   });
   editArea.html(editAreaString);
+};
+
+var handleEmptySelection = function handleEmptySelection(tool, editArea) {
+  return false;
 };
 /**
 * We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
@@ -31348,9 +31350,12 @@ $(document).on('keydown', function (e) {
     var tool = e.key.toLowerCase();
 
     if (tags.indexOf(tool) > -1) {
-      e.preventDefault();
       var editArea = $(':focus');
-      execFormattingTool(tool, editArea);
+
+      if (editArea.hasClass('fancy-text-div')) {
+        e.preventDefault();
+        execFormattingTool(tool, editArea);
+      }
     }
   }
 });

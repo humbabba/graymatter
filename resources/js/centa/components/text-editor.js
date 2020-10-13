@@ -2,6 +2,8 @@
  * Globals
  */
 let currentGeneration,selectionObject;
+let selectionPointer = false;
+let toolInWaiting = false;
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike'];
@@ -300,6 +302,10 @@ const execFormattingTool = (tool,editArea) => {
     console.log('selectionObject');
     console.log(selectionObject);
 
+    if(selectionObject.emptySelection) {
+        toolInWaiting = selectionObject.tool;
+    }
+
     //Go through the logic to apply (or reverse) formatting on selection
     wrapTags(editArea);
     console.log('AFTER: editArea.html()');
@@ -406,8 +412,8 @@ const wrapTags = editArea => {
 * Simply wrap selected content in tags for tool.
 */
 const addFormatting = editAreaString => {
-    if(selectionObject.emptySelection) {
-        return editAreaString.replace(openMarkerString,openMarkerString + selectionObject.openTool).replace(closeMarkerString,selectionObject.closeTool + closeMarkerString);
+    if(selectionObject.emptySelection) { //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
+        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '&zwnj;').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
     } else {
         const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
         return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
@@ -420,8 +426,8 @@ const addFormatting = editAreaString => {
 */
 const reverseFormatting = editAreaString => {
     console.log('REVERSING');
-    if(selectionObject.emptySelection) {
-        return editAreaString.replace(openMarkerString,openMarkerString + selectionObject.closeTool).replace(closeMarkerString,selectionObject.openTool + closeMarkerString);
+    if(selectionObject.emptySelection) { //In this case, in order for selection to work, we need some content between tage; we use the "zero-width non-joiner" HTML entity
+        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '&zwnj;').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
     } else {
         const openMarkerPattern = new RegExp(openMarkerString);
         const closeMarkerPattern = new RegExp(closeMarkerString);
@@ -437,7 +443,7 @@ const reverseFormatting = editAreaString => {
 
         //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
         const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-        cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
+        const cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
 
         return editAreaString.replace(betweenMarkersContent,cleanBetweenMarkersContent);
     }
@@ -489,23 +495,15 @@ const cleanRedundantCode = editArea => {
         editAreaString = editAreaString.replace(redundantCloseOpen,openMarkerString);
         redundantCloseOpen = new RegExp(closeTag + closeMarkerString + openTag,'gi');
         editAreaString = editAreaString.replace(redundantCloseOpen,closeMarkerString);
-        //The following two cases only need cleaning if we're not specifically doing an empty selection
-        if(!selectionObject.emptySelection) {
-            //Case: Tag closes and immediately opens again, without a marker in between
-            redundantCloseOpen = new RegExp(closeTag + openTag,'gi');
-            editAreaString = editAreaString.replace(redundantCloseOpen,'');
-            //Case: An empty tag.
-            redundantCloseOpen = new RegExp(openTag + closeTag,'gi');
-            editAreaString = editAreaString.replace(redundantCloseOpen,'');
-        //If we are doing an empty selection, we leave the code with a space there to select
-        } else {
-            //Case: Tag closes and immediately opens again, without a marker in between
-            redundantCloseOpen = new RegExp(closeTag + openTag,'gi');
-            editAreaString = editAreaString.replace(redundantCloseOpen,closeTag + '<br>' + openTag);
-            //Case: An empty tag.
-            redundantCloseOpen = new RegExp(openTag + closeTag,'gi');
-            editAreaString = editAreaString.replace(redundantCloseOpen,openTag + '<br>' + closeTag);
-        }
+
+        //Case: Tag closes and immediately opens again, without a marker in between
+        redundantCloseOpen = new RegExp(closeTag + openTag,'gi');
+        editAreaString = editAreaString.replace(redundantCloseOpen,'');
+
+        //Case: An empty tag.
+        redundantCloseOpen = new RegExp(openTag + closeTag,'gi');
+        editAreaString = editAreaString.replace(redundantCloseOpen,'');
+
         //Case: Firefox sometimes leaves a <br> right before a </p>.
         editAreaString = editAreaString.replace('<br></p>','</p>');
         //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
@@ -514,6 +512,10 @@ const cleanRedundantCode = editArea => {
 
     });
     editArea.html(editAreaString);
+};
+
+const handleEmptySelection = (tool,editArea) => {
+    return false;
 };
 
 /**
@@ -568,9 +570,11 @@ $(document).on('keydown', function (e) {
     if ((e.metaKey || e.ctrlKey)) {
         const tool = e.key.toLowerCase();
         if(tags.indexOf(tool) > -1) {
-            e.preventDefault();
             const editArea = $(':focus');
-            execFormattingTool(tool,editArea);
+            if(editArea.hasClass('fancy-text-div')) {
+                e.preventDefault();
+                execFormattingTool(tool,editArea);
+            }
         }
     }
 });
