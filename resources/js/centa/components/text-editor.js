@@ -192,7 +192,7 @@ const makeTextEditor = (el,callback = false) => {
                     codeDiv.toggle();
                     break;
                 default:
-                    execFormattingTool(item.tool,editArea);
+                    execFormattingTool(item.tool,editArea,codeEditArea);
                     break;
             }
         });
@@ -266,7 +266,7 @@ const makeTextEditor = (el,callback = false) => {
 /**
 * For basic text formatting
 */
-const execFormattingTool = (tool,editArea) => {
+const execFormattingTool = (tool,editArea,codeEditArea) => {
 
     //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
     const range = window.getSelection().getRangeAt(0);
@@ -300,8 +300,6 @@ const execFormattingTool = (tool,editArea) => {
 
     //We get a special object representing some key info about the selection for later use
     getSelectionObject(tool,editArea,emptySelection);
-    console.log('selectionObject');
-    console.log(selectionObject);
 
     if(selectionObject.emptySelection) {
         toolInWaiting = selectionObject.tool;
@@ -309,18 +307,15 @@ const execFormattingTool = (tool,editArea) => {
 
     //Go through the logic to apply (or reverse) formatting on selection
     wrapTags(editArea);
-    console.log('AFTER: editArea.html()');
-    console.log(editArea.html());
 
     //Remove any nested instances of formatting
     cleanRedundantCode(editArea);
-    console.log('AFTER CLEAN REDUNDANT: editArea.html()');
-    console.log(editArea.html());
 
     //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
-    console.log('AFTER REPLACE MARKERS: editArea.html()');
-    console.log(editArea.html());
+
+    //Make sure codeEditArea is updated
+    codeEditArea.val(editArea.html());
 
 };
 
@@ -580,8 +575,9 @@ $(document).on('keydown', function (e) {
         if(tags.indexOf(tool) > -1) {
             const editArea = $(':focus');
             if(editArea.hasClass('fancy-text-div')) {
+                const codeEditArea = editArea.parent().find('.code-editor');
                 e.preventDefault();
-                execFormattingTool(tool,editArea);
+                execFormattingTool(tool,editArea,codeEditArea);
             }
         }
     }

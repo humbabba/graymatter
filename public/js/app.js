@@ -30964,7 +30964,7 @@ var makeTextEditor = function makeTextEditor(el) {
           break;
 
         default:
-          execFormattingTool(item.tool, editArea);
+          execFormattingTool(item.tool, editArea, codeEditArea);
           break;
       }
     });
@@ -31042,7 +31042,7 @@ var makeTextEditor = function makeTextEditor(el) {
 */
 
 
-var execFormattingTool = function execFormattingTool(tool, editArea) {
+var execFormattingTool = function execFormattingTool(tool, editArea, codeEditArea) {
   //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
   var range = window.getSelection().getRangeAt(0);
   var emptySelection = range.collapsed; //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
@@ -31072,25 +31072,19 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
   }); //We get a special object representing some key info about the selection for later use
 
   getSelectionObject(tool, editArea, emptySelection);
-  console.log('selectionObject');
-  console.log(selectionObject);
 
   if (selectionObject.emptySelection) {
     toolInWaiting = selectionObject.tool;
   } //Go through the logic to apply (or reverse) formatting on selection
 
 
-  wrapTags(editArea);
-  console.log('AFTER: editArea.html()');
-  console.log(editArea.html()); //Remove any nested instances of formatting
+  wrapTags(editArea); //Remove any nested instances of formatting
 
-  cleanRedundantCode(editArea);
-  console.log('AFTER CLEAN REDUNDANT: editArea.html()');
-  console.log(editArea.html()); //Reset the selection since the above will destroy the original selection
+  cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
 
-  replaceMarkersWithSelection(editArea);
-  console.log('AFTER REPLACE MARKERS: editArea.html()');
-  console.log(editArea.html());
+  replaceMarkersWithSelection(editArea); //Make sure codeEditArea is updated
+
+  codeEditArea.val(editArea.html());
 };
 /**
 * Get some info about the selection in an object we can reference in code later on.
@@ -31364,8 +31358,9 @@ $(document).on('keydown', function (e) {
       var editArea = $(':focus');
 
       if (editArea.hasClass('fancy-text-div')) {
+        var codeEditArea = editArea.parent().find('.code-editor');
         e.preventDefault();
-        execFormattingTool(tool, editArea);
+        execFormattingTool(tool, editArea, codeEditArea);
       }
     }
   }
