@@ -30704,15 +30704,15 @@ var tags = ['b', 'i', 'u', 'strike'];
 var toolsArray = [{
   "class": 'fas fa-bold',
   tool: 'b',
-  title: 'Bold'
+  title: 'Bold (ctrl-b)'
 }, {
   "class": 'fas fa-italic',
   tool: 'i',
-  title: 'Italic'
+  title: 'Italic (ctrl-i)'
 }, {
   "class": 'fas fa-underline',
   tool: 'u',
-  title: 'Underline'
+  title: 'Underline (ctrl-u)'
 }, {
   "class": 'fas fa-strikethrough toolbar-spacer',
   tool: 'strike',
@@ -30775,11 +30775,11 @@ var toolsArray = [{
   title: 'Align right'
 }, {
   "class": 'fas fa-subscript',
-  tool: 'subscript',
+  tool: 'sub',
   title: 'Subscript'
 }, {
   "class": 'fas fa-superscript toolbar-spacer',
-  tool: 'superscript',
+  tool: 'sup',
   title: 'Superscript'
 }, {
   "class": 'fas fa-minus-circle',

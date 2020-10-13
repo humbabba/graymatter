@@ -13,9 +13,9 @@ const tags = ['b','i','u','strike'];
  * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
  */
 const toolsArray = [
-    {class:'fas fa-bold',tool: 'b',title: 'Bold'},
-    {class:'fas fa-italic',tool: 'i',title: 'Italic'},
-    {class:'fas fa-underline',tool: 'u',title: 'Underline'},
+    {class:'fas fa-bold',tool: 'b',title: 'Bold (ctrl-b)'},
+    {class:'fas fa-italic',tool: 'i',title: 'Italic (ctrl-i)'},
+    {class:'fas fa-underline',tool: 'u',title: 'Underline (ctrl-u)'},
     {class:'fas fa-strikethrough toolbar-spacer',tool: 'strike',title: 'Strikethrough'},
     {class:'fas fa-image toolbar-spacer',tool: 'inserImage',title: 'Insert image'},
     {class:'fas fa-minus toolbar-spacer',tool: 'insertHorizontalRule',title: 'Horizontal rule'},
@@ -31,8 +31,8 @@ const toolsArray = [
     {class:'fas fa-align-justify',tool: 'justifyFull',title: 'Justify'},
     {class:'fas fa-align-left',tool: 'justifyLeft',title: 'Aling left'},
     {class:'fas fa-align-right toolbar-spacer',tool: 'justifyRight',title: 'Align right'},
-    {class:'fas fa-subscript',tool: 'subscript',title: 'Subscript'},
-    {class:'fas fa-superscript toolbar-spacer',tool: 'superscript',title: 'Superscript'},
+    {class:'fas fa-subscript',tool: 'sub',title: 'Subscript'},
+    {class:'fas fa-superscript toolbar-spacer',tool: 'sup',title: 'Superscript'},
     {class:'fas fa-minus-circle',tool: 'clearFormat',title: 'Clear all formatting'},
     {class:'fas fa-code',tool: 'toggleCode',title: 'Toggle code view'},
 ];
