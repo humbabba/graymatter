@@ -243,9 +243,10 @@ const makeTextEditor = (el,callback = false) => {
         editArea.html($('<p><br></p>'));
     }
     //Make it so updates to the editArea affect the original el's value
-    editArea.on('input',function() {
-        el.val($(this).html());
-        codeEditArea.val($(this).html());
+    editArea.on('input keyup',function() {
+        const updatedCode = $(this).html().replace('<empty>','').replace('</empty>',''); //This is to make sure we get rid of "empty" tags used for cross-browser selection in formatting tools; they cannot be immediately removed or selection fails on some browsers in the case of collapsed/empty selection ranges
+        el.val(updatedCode);
+        codeEditArea.val(updatedCode);
     });
 
     //Only check for changes in editArea if we have a callback.
@@ -313,9 +314,6 @@ const execFormattingTool = (tool,editArea,codeEditArea) => {
 
     //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
-
-    //Make sure codeEditArea is updated
-    codeEditArea.val(editArea.html());
 
 };
 

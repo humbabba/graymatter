@@ -31016,9 +31016,11 @@ var makeTextEditor = function makeTextEditor(el) {
   } //Make it so updates to the editArea affect the original el's value
 
 
-  editArea.on('input', function () {
-    el.val($(this).html());
-    codeEditArea.val($(this).html());
+  editArea.on('input keyup', function () {
+    var updatedCode = $(this).html().replace('<empty>', '').replace('</empty>', ''); //This is to make sure we get rid of "empty" tags used for cross-browser selection in formatting tools; they cannot be immediately removed or selection fails on some browsers in the case of collapsed/empty selection ranges
+
+    el.val(updatedCode);
+    codeEditArea.val(updatedCode);
   }); //Only check for changes in editArea if we have a callback.
 
   if (callback) {
@@ -31082,9 +31084,7 @@ var execFormattingTool = function execFormattingTool(tool, editArea, codeEditAre
 
   cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
 
-  replaceMarkersWithSelection(editArea); //Make sure codeEditArea is updated
-
-  codeEditArea.val(editArea.html());
+  replaceMarkersWithSelection(editArea);
 };
 /**
 * Get some info about the selection in an object we can reference in code later on.
