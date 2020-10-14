@@ -40,7 +40,7 @@ const toolsArray = [
 /**
 * Find all hidden inputs with text-editor class and replace them with rich-text editors.
 */
-const initTextEdtitors = (callback = false) => {
+export const initTextEditors = () => {
     //Turn hidden inputs with 'text-editor' class into rich-text editors
     $('input[type="hidden"]').each(function(index,item) {
         if($(item).hasClass('text-editor')) {
@@ -51,13 +51,28 @@ const initTextEdtitors = (callback = false) => {
             }
 
             const newElement = $(item).clone();
-            const fancyEditor = makeTextEditor(newElement,callback);
+            const fancyEditor = makeTextEditor(newElement);
+            console.log('fancyEditor');
+            console.log(fancyEditor);
             const toolbar = fancyEditor.find('.toolbar');
-
+            console.log('toolbar');
+            console.log(toolbar);
+            console.log('toolbar[0].offsetWidth');
+            console.log(toolbar[0].offsetWidth);
             insertMoreTools(toolbar);
 
             $(item).replaceWith(fancyEditor);
-            processToolbarForWidth(toolbar);
+
+            const editors = $('.textEditorMasterDiv');
+            editors.each(function() {
+                let bar = $(this).find('.toolbar')[0];
+                console.log('bar');
+                console.log(bar);
+                console.log('bar.clientWidth');
+                console.log(bar.clientWidth);
+            });
+
+            // processToolbarForWidth(toolbar);
         }
     });
 };
@@ -120,21 +135,21 @@ $(window).resize(function() {
     });
 
     //Reinitialize all text editors
-    initTextEdtitors(textEditorDefaultCallback);
+    initTextEditors();
 });
 
 /**
 * Build rich-text editors to replace hidden inputs with.
 * Loops through tools defined above and assigns click events.
 */
-const makeTextEditor = (el,callback = false) => {
+const makeTextEditor = el => {
     //Div to hold editor-input combo
-    let editor = $('<div class="textEditorMasterDiv">');
+    const editor = $('<div class="textEditorMasterDiv">');
 
     //Toolbar div and tools
-    let toolbar = $('<div class="toolbar">');
+    const toolbar = $('<div class="toolbar">');
     $(toolsArray).each(function(index,item) {
-        let tool = $('<i class="toolbar-button">');
+        const tool = $('<i class="toolbar-button">');
         tool.addClass(item.class);
         tool.attr('data-tool',item.tool);
         tool.prop('title',item.title);
@@ -143,6 +158,9 @@ const makeTextEditor = (el,callback = false) => {
             let input = null;
             let copyDiv,codeDiv;
             switch(item.tool) {
+                case 'inserImage':
+                    insertImage(editArea);
+                    break;
                 case 'createLink':
                     input = prompt('Enter URL:');
                     if(input) {
@@ -192,7 +210,7 @@ const makeTextEditor = (el,callback = false) => {
                     codeDiv.toggle();
                     break;
                 default:
-                    execFormattingTool(item.tool,editArea,codeEditArea);
+                    execFormattingTool(item.tool,editArea);
                     break;
             }
         });
@@ -223,13 +241,13 @@ const makeTextEditor = (el,callback = false) => {
     });
 
     //Only check for changes in codeEditArea if we have a callback.
-    if(callback) {
+    if(textEditorOnChangeCallback) {
         codeEditArea.on('keydown',function() {
           this.editAreaContent = $(this).val();
         }).on('keyup',function() {
           this.newEditAreaContent = $(this).val();
           if(this.editAreaContent != this.newEditAreaContent) { //We have changes to content, so run the callback
-            callback();
+              textEditorOnChangeCallback();
           }
         });
     }
@@ -250,13 +268,13 @@ const makeTextEditor = (el,callback = false) => {
     });
 
     //Only check for changes in editArea if we have a callback.
-    if(callback) {
+    if(textEditorOnChangeCallback) {
         editArea.on('keydown',function() {
           this.editAreaContent = $(this).html();
         }).on('keyup',function() {
           this.newEditAreaContent = $(this).html();
           if(this.editAreaContent != this.newEditAreaContent) { //We have changes to content, so run the callback
-            callback();
+              textEditorOnChangeCallback();
           }
         });
     }
@@ -264,10 +282,16 @@ const makeTextEditor = (el,callback = false) => {
     return editor;
 };
 
+const insertImage = (editArea) => {
+    console.log('callback');
+    console.log(textEditorInsertImageCallback);
+  return false;
+};
+
 /**
 * For basic text formatting
 */
-const execFormattingTool = (tool,editArea,codeEditArea) => {
+const execFormattingTool = (tool,editArea) => {
 
     //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
     const range = window.getSelection().getRangeAt(0);
@@ -573,15 +597,14 @@ $(document).on('keydown', function (e) {
         if(tags.indexOf(tool) > -1) {
             const editArea = $(':focus');
             if(editArea.hasClass('fancy-text-div')) {
-                const codeEditArea = editArea.parent().find('.code-editor');
                 e.preventDefault();
-                execFormattingTool(tool,editArea,codeEditArea);
+                execFormattingTool(tool,editArea);
             }
         }
     }
 });
 
 /**
- * Init on load; include default defined in centa.js as callback.
+ * Init on load
  */
-initTextEdtitors(textEditorDefaultCallback);
+initTextEditors();

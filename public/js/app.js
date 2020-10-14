@@ -30254,11 +30254,20 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /***/ (function(module, exports, __webpack_require__) {
 
 //Define path to modal configs
-window.modalConfigsPath = '/centa/modal.json'; //Define the default callback for changes in text-editor
+window.modalConfigsPath = '/centa/modal.json'; //Define the callback for changes in text-editor
 //Set to false for no callback
 
-window.textEditorDefaultCallback = function () {
-  return console.log('showUnsavedFlag(documentForm)');
+window.textEditorOnChangeCallback = function () {
+  if ('none' === $('.modal-background').css('display')) {
+    //We don't want this running when the modal is visible
+    console.log('showUnsavedFlag(documentForm)');
+  }
+}; //Define the callback for insertImage command in text-editor. Callback should return image URL.
+//Set to false for no callback
+
+
+window.textEditorInsertImageCallback = function () {
+  return console.log('Inserting!');
 }; //Included components
 
 
@@ -30302,9 +30311,12 @@ alerts.each(function (index, el) {
 /*!************************************************!*\
   !*** ./resources/js/centa/components/modal.js ***!
   \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _text_editor_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./text-editor.js */ "./resources/js/centa/components/text-editor.js");
 var modalBackground = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
 
 var modalTriggers = $('[class*="modal+"]');
@@ -30316,14 +30328,12 @@ var modalCloser = modalBackground.find('.modal-closer');
 var modalContent = modalBackground.find('.modal-content');
 var modalCancel = modalBackground.find('.modal-cancel');
 var modalConfirm = modalBackground.find('.modal-confirm');
+
 $.ajaxSetup({
   cache: false
-}); //Init
+});
 
-checkForModalTriggers();
-addModalClickHandlers();
-
-function checkForModalTriggers() {
+var checkForModalTriggers = function checkForModalTriggers() {
   //Confirm elements are Centa modalBackground triggers, then process
   if (modalTriggers.length) {
     modalTriggers.each(function (index, element) {
@@ -30344,24 +30354,27 @@ function checkForModalTriggers() {
       });
     });
   }
-} //Click handlers
+}; //Click handlers
 
 
-function addModalClickHandlers() {
+var addModalClickHandlers = function addModalClickHandlers() {
   modalContainer.on('click', function (e) {
     e.stopPropagation();
   });
   modalBackground.add(modalCloser).add(modalCancel).on('click', function () {
     hideModal();
   });
-} //Show or hide
+}; //Init
 
 
-showModal = function showModal() {
+checkForModalTriggers();
+addModalClickHandlers(); //Show or hide
+
+var showModal = function showModal() {
   return modalBackground.addClass('fade-in').css('display', '');
 };
 
-hideModal = function hideModal() {
+var hideModal = function hideModal() {
   return modalBackground.removeClass('fade-in').fadeOut(400, function () {
     modalCancel.css('display', 'inline-block');
   });
@@ -30369,7 +30382,7 @@ hideModal = function hideModal() {
 //Configure this specific instance
 
 
-configureModal = function configureModal(defines) {
+var configureModal = function configureModal(defines) {
   var params = '';
   var configName = defines.replace(/\(.*\)/, '');
   params = defines.match(/\((.*)\)/)[1].split(','); //Remove URL encoding
@@ -30390,7 +30403,7 @@ configureModal = function configureModal(defines) {
   });
 };
 
-renderModal = function renderModal(configs, params) {
+var renderModal = function renderModal(configs, params) {
   if (configs) {
     //Make sure all configs are present
     var neededValues = ['title', 'content', 'paramDisplay', 'paramInput', 'confirmFunction', 'confirmText', 'cancelText'];
@@ -30446,7 +30459,7 @@ renderModal = function renderModal(configs, params) {
 
     showModal(); //Init text editors in case there's one in the modal
 
-    initTextEdtitors();
+    Object(_text_editor_js__WEBPACK_IMPORTED_MODULE_0__["initTextEditors"])();
   } else {
     console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
   }
@@ -30684,9 +30697,12 @@ addSortParams = function addSortParams(el, key) {
 /*!******************************************************!*\
   !*** ./resources/js/centa/components/text-editor.js ***!
   \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: initTextEditors */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initTextEditors", function() { return initTextEditors; });
 /**
  * Globals
  */
@@ -30794,8 +30810,7 @@ var toolsArray = [{
 * Find all hidden inputs with text-editor class and replace them with rich-text editors.
 */
 
-var initTextEdtitors = function initTextEdtitors() {
-  var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+var initTextEditors = function initTextEditors() {
   //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function (index, item) {
     if ($(item).hasClass('text-editor')) {
@@ -30807,11 +30822,24 @@ var initTextEdtitors = function initTextEdtitors() {
       }
 
       var newElement = $(item).clone();
-      var fancyEditor = makeTextEditor(newElement, callback);
+      var fancyEditor = makeTextEditor(newElement);
+      console.log('fancyEditor');
+      console.log(fancyEditor);
       var toolbar = fancyEditor.find('.toolbar');
+      console.log('toolbar');
+      console.log(toolbar);
+      console.log('toolbar[0].offsetWidth');
+      console.log(toolbar[0].offsetWidth);
       insertMoreTools(toolbar);
       $(item).replaceWith(fancyEditor);
-      processToolbarForWidth(toolbar);
+      var editors = $('.textEditorMasterDiv');
+      editors.each(function () {
+        var bar = $(this).find('.toolbar')[0];
+        console.log('bar');
+        console.log(bar);
+        console.log('bar.clientWidth');
+        console.log(bar.clientWidth);
+      }); // processToolbarForWidth(toolbar);
     }
   });
 };
@@ -30819,7 +30847,6 @@ var initTextEdtitors = function initTextEdtitors() {
 * Build the container that will hold buttons that don't fit.
 * It's hidden till revealed (if necessary) in processToolbarForWidth.
 */
-
 
 var insertMoreTools = function insertMoreTools(toolbar) {
   var moreToolsContainer = $('<span class="more-tools-container">');
@@ -30875,7 +30902,7 @@ $(window).resize(function () {
     $(el).replaceWith(hiddenInput);
   }); //Reinitialize all text editors
 
-  initTextEdtitors(textEditorDefaultCallback);
+  initTextEditors();
 });
 /**
 * Build rich-text editors to replace hidden inputs with.
@@ -30883,7 +30910,6 @@ $(window).resize(function () {
 */
 
 var makeTextEditor = function makeTextEditor(el) {
-  var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   //Div to hold editor-input combo
   var editor = $('<div class="textEditorMasterDiv">'); //Toolbar div and tools
 
@@ -30899,6 +30925,10 @@ var makeTextEditor = function makeTextEditor(el) {
       var copyDiv, codeDiv;
 
       switch (item.tool) {
+        case 'inserImage':
+          insertImage(editArea);
+          break;
+
         case 'createLink':
           input = prompt('Enter URL:');
 
@@ -30964,7 +30994,7 @@ var makeTextEditor = function makeTextEditor(el) {
           break;
 
         default:
-          execFormattingTool(item.tool, editArea, codeEditArea);
+          execFormattingTool(item.tool, editArea);
           break;
       }
     });
@@ -30993,7 +31023,7 @@ var makeTextEditor = function makeTextEditor(el) {
     editArea.html($(this).val());
   }); //Only check for changes in codeEditArea if we have a callback.
 
-  if (callback) {
+  if (textEditorOnChangeCallback) {
     codeEditArea.on('keydown', function () {
       this.editAreaContent = $(this).val();
     }).on('keyup', function () {
@@ -31001,7 +31031,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        callback();
+        textEditorOnChangeCallback();
       }
     });
   } //The editable area
@@ -31023,7 +31053,7 @@ var makeTextEditor = function makeTextEditor(el) {
     codeEditArea.val(updatedCode);
   }); //Only check for changes in editArea if we have a callback.
 
-  if (callback) {
+  if (textEditorOnChangeCallback) {
     editArea.on('keydown', function () {
       this.editAreaContent = $(this).html();
     }).on('keyup', function () {
@@ -31031,7 +31061,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        callback();
+        textEditorOnChangeCallback();
       }
     });
   }
@@ -31039,12 +31069,18 @@ var makeTextEditor = function makeTextEditor(el) {
   editor.append(el);
   return editor;
 };
+
+var insertImage = function insertImage(editArea) {
+  console.log('callback');
+  console.log(textEditorInsertImageCallback);
+  return false;
+};
 /**
 * For basic text formatting
 */
 
 
-var execFormattingTool = function execFormattingTool(tool, editArea, codeEditArea) {
+var execFormattingTool = function execFormattingTool(tool, editArea) {
   //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
   var range = window.getSelection().getRangeAt(0);
   var emptySelection = range.collapsed; //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
@@ -31358,18 +31394,17 @@ $(document).on('keydown', function (e) {
       var editArea = $(':focus');
 
       if (editArea.hasClass('fancy-text-div')) {
-        var codeEditArea = editArea.parent().find('.code-editor');
         e.preventDefault();
-        execFormattingTool(tool, editArea, codeEditArea);
+        execFormattingTool(tool, editArea);
       }
     }
   }
 });
 /**
- * Init on load; include default defined in centa.js as callback.
+ * Init on load
  */
 
-initTextEdtitors(textEditorDefaultCallback);
+initTextEditors();
 
 /***/ }),
 

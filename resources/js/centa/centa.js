@@ -1,9 +1,17 @@
 //Define path to modal configs
 window.modalConfigsPath = '/centa/modal.json';
 
-//Define the default callback for changes in text-editor
+//Define the callback for changes in text-editor
 //Set to false for no callback
-window.textEditorDefaultCallback = () => console.log('showUnsavedFlag(documentForm)');
+window.textEditorOnChangeCallback = () => {
+    if('none' === $('.modal-background').css('display')) { //We don't want this running when the modal is visible
+        console.log('showUnsavedFlag(documentForm)');
+    }
+};
+
+//Define the callback for insertImage command in text-editor. Callback should return image URL.
+//Set to false for no callback
+window.textEditorInsertImageCallback = () => console.log('Inserting!');
 
 //Included components
 require('./components/alerts');

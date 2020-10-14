@@ -8,13 +8,11 @@ let modalContent = modalBackground.find('.modal-content');
 let modalCancel = modalBackground.find('.modal-cancel');
 let modalConfirm = modalBackground.find('.modal-confirm');
 
+import { initTextEditors } from './text-editor.js';
+
 $.ajaxSetup({ cache: false });
 
-//Init
-checkForModalTriggers();
-addModalClickHandlers();
-
-function checkForModalTriggers() {
+const checkForModalTriggers = () => {
   //Confirm elements are Centa modalBackground triggers, then process
   if(modalTriggers.length) {
     modalTriggers.each(function(index,element) {
@@ -33,25 +31,29 @@ function checkForModalTriggers() {
         });
     });
   }
-}
+};
 
 //Click handlers
-function addModalClickHandlers() {
+const addModalClickHandlers = () => {
   modalContainer.on('click',function(e) {
     e.stopPropagation();
   });
   modalBackground.add(modalCloser).add(modalCancel).on('click',function() {
     hideModal();
   });
-}
+};
+
+//Init
+checkForModalTriggers();
+addModalClickHandlers();
 
 //Show or hide
-showModal = () => modalBackground.addClass('fade-in').css('display','');
+const showModal = () => modalBackground.addClass('fade-in').css('display','');
 
-hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() { modalCancel.css('display','inline-block'); }); //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
+const hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() { modalCancel.css('display','inline-block'); }); //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
 
 //Configure this specific instance
-configureModal = (defines) => {
+const configureModal = (defines) => {
   let params = '';
   let configName = defines.replace(/\(.*\)/,'');
 
@@ -74,7 +76,7 @@ configureModal = (defines) => {
   });
 }
 
-renderModal = (configs,params) => {
+const renderModal = (configs,params) => {
   if(configs) {
     //Make sure all configs are present
     let neededValues = ['title','content','paramDisplay','paramInput','confirmFunction','confirmText','cancelText'];
@@ -126,7 +128,7 @@ renderModal = (configs,params) => {
     showModal();
 
     //Init text editors in case there's one in the modal
-    initTextEdtitors();
+    initTextEditors();
 
   } else {
     console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
