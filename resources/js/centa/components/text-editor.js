@@ -40,7 +40,7 @@ const toolsArray = [
 /**
 * Find all hidden inputs with text-editor class and replace them with rich-text editors.
 */
-export const initTextEditors = () => {
+export const initTextEditors = (timeout = 0) => {
     //Turn hidden inputs with 'text-editor' class into rich-text editors
     $('input[type="hidden"]').each(function(index,item) {
         if($(item).hasClass('text-editor')) {
@@ -52,27 +52,19 @@ export const initTextEditors = () => {
 
             const newElement = $(item).clone();
             const fancyEditor = makeTextEditor(newElement);
-            console.log('fancyEditor');
-            console.log(fancyEditor);
             const toolbar = fancyEditor.find('.toolbar');
-            console.log('toolbar');
-            console.log(toolbar);
-            console.log('toolbar[0].offsetWidth');
-            console.log(toolbar[0].offsetWidth);
-            insertMoreTools(toolbar);
 
+            insertMoreTools(toolbar);
             $(item).replaceWith(fancyEditor);
 
-            const editors = $('.textEditorMasterDiv');
-            editors.each(function() {
-                let bar = $(this).find('.toolbar')[0];
-                console.log('bar');
-                console.log(bar);
-                console.log('bar.clientWidth');
-                console.log(bar.clientWidth);
-            });
-
-            // processToolbarForWidth(toolbar);
+            //Optional timeout fives makeTextEditor a few milliseconds to be completely added to DOM on first load
+            if (timeout) {
+                setTimeout(function() {
+                    processToolbarForWidth(toolbar);
+                    },timeout);
+            } else {
+                processToolbarForWidth(toolbar);
+            }
         }
     });
 };
@@ -97,6 +89,7 @@ const insertMoreTools = toolbar => {
 * Depending on container width, hide tools that don't fit and display button to toggle them.
 */
 const processToolbarForWidth = toolbar => {
+    console.log('processToolbarForWidth');
     const moreToolsHolder = toolbar.parent().find('.more-tools-holder');
     let childrenWidth = 0;
     const children = toolbar.children();
@@ -607,4 +600,4 @@ $(document).on('keydown', function (e) {
 /**
  * Init on load
  */
-initTextEditors();
+initTextEditors(50);

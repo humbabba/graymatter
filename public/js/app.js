@@ -30811,6 +30811,7 @@ var toolsArray = [{
 */
 
 var initTextEditors = function initTextEditors() {
+  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   //Turn hidden inputs with 'text-editor' class into rich-text editors
   $('input[type="hidden"]').each(function (index, item) {
     if ($(item).hasClass('text-editor')) {
@@ -30823,23 +30824,17 @@ var initTextEditors = function initTextEditors() {
 
       var newElement = $(item).clone();
       var fancyEditor = makeTextEditor(newElement);
-      console.log('fancyEditor');
-      console.log(fancyEditor);
       var toolbar = fancyEditor.find('.toolbar');
-      console.log('toolbar');
-      console.log(toolbar);
-      console.log('toolbar[0].offsetWidth');
-      console.log(toolbar[0].offsetWidth);
       insertMoreTools(toolbar);
-      $(item).replaceWith(fancyEditor);
-      var editors = $('.textEditorMasterDiv');
-      editors.each(function () {
-        var bar = $(this).find('.toolbar')[0];
-        console.log('bar');
-        console.log(bar);
-        console.log('bar.clientWidth');
-        console.log(bar.clientWidth);
-      }); // processToolbarForWidth(toolbar);
+      $(item).replaceWith(fancyEditor); //Optional timeout fives makeTextEditor a few milliseconds to be completely added to DOM on first load
+
+      if (timeout) {
+        setTimeout(function () {
+          processToolbarForWidth(toolbar);
+        }, timeout);
+      } else {
+        processToolbarForWidth(toolbar);
+      }
     }
   });
 };
@@ -30865,6 +30860,7 @@ var insertMoreTools = function insertMoreTools(toolbar) {
 
 
 var processToolbarForWidth = function processToolbarForWidth(toolbar) {
+  console.log('processToolbarForWidth');
   var moreToolsHolder = toolbar.parent().find('.more-tools-holder');
   var childrenWidth = 0;
   var children = toolbar.children();
@@ -31404,7 +31400,7 @@ $(document).on('keydown', function (e) {
  * Init on load
  */
 
-initTextEditors();
+initTextEditors(50);
 
 /***/ }),
 
