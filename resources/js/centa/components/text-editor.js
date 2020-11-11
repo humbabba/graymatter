@@ -3,7 +3,8 @@
  */
 let currentGeneration,selectionObject;
 let selectionPointer = false;
-let toolInWaiting = false;
+let ancestorTools = [];
+let selectedTools = [];
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike'];
@@ -57,7 +58,7 @@ export const initTextEditors = (timeout = 0) => {
             insertMoreTools(toolbar);
             $(item).replaceWith(fancyEditor);
 
-            //Optional timeout fives makeTextEditor a few milliseconds to be completely added to DOM on first load
+            //Optional timeout gives makeTextEditor a few milliseconds to be completely added to DOM on first load
             if (timeout) {
                 setTimeout(function() {
                     processToolbarForWidth(toolbar);
@@ -271,6 +272,12 @@ const makeTextEditor = el => {
           }
         });
     }
+
+    //Deal with keystrokes re: formatting
+    editArea.on('click keydown',function(e) {
+      evaluateFormatting($(this));
+    });
+
     editor.append(el);
     return editor;
 };
@@ -316,15 +323,19 @@ const execFormattingTool = (tool,editArea) => {
         }
     });
 
+    editArea.on('focusout',function() {
+      inactivateAllTools($(this));
+    });
+
     //We get a special object representing some key info about the selection for later use
     getSelectionObject(tool,editArea,emptySelection);
 
     if(selectionObject.emptySelection) {
-        toolInWaiting = selectionObject.tool;
+        toggleSelectedTools(selectionObject.tool);
+    } else {
+      //Go through the logic to apply (or reverse) formatting on selection
+      wrapTags(editArea);
     }
-
-    //Go through the logic to apply (or reverse) formatting on selection
-    wrapTags(editArea);
 
     //Remove any nested instances of formatting
     cleanRedundantCode(editArea);
@@ -332,6 +343,17 @@ const execFormattingTool = (tool,editArea) => {
     //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
 
+};
+
+const toggleSelectedTools = tool => {
+  const targetToolIndex = selectedTools.indexOf(tool);
+  if(targetToolIndex > -1) {
+    selectedTools.splice(targetToolIndex,1);
+  } else {
+    selectedTools.push(tool);
+  }
+  console.log('selectedTools');
+  console.log(selectedTools);
 };
 
 /**
@@ -417,8 +439,10 @@ const wrapTags = editArea => {
     let editAreaString = editArea.html();
     if(selectionObject.allFormatted) {
         editAreaString = reverseFormatting(editAreaString);
+        inactivateTool(editArea);
     } else {
         editAreaString = addFormatting(editAreaString);
+        activateTool(editArea);
     }
     editArea.html(editAreaString);
 };
@@ -462,6 +486,50 @@ const reverseFormatting = editAreaString => {
 
         return editAreaString.replace(betweenMarkersContent,cleanBetweenMarkersContent);
     }
+};
+
+/**
+* On each click or keydown, we check the formatting of the selection
+*/
+const evaluateFormatting = editArea => {
+  setTimeout(function() {
+    const range = window.getSelection().getRangeAt(0);
+    const emptySelection = range.collapsed;
+    if(emptySelection) {
+      const emptyMarker = $('<empty>');
+      range.surroundContents(emptyMarker[0]);
+      ancestorTools = [];
+      tags.forEach(function(tag,index) {
+        const ancestor = emptyMarker.closest(tag);
+        if(ancestor.length) {
+          ancestorTools.push(tag);
+        }
+      });
+      emptyMarker.remove();
+      inactivateAllTools(editArea);
+      if(ancestorTools.length) {
+        console.log('ancestorTools');
+        console.log(ancestorTools);
+        reconcileTools(editArea);
+      }
+    } else {
+      return;
+    }
+  },5);
+}
+
+/**
+* Toggle tool-active display
+*/
+const activateTool = editArea => editArea.closest('.textEditorMasterDiv').find(`[data-tool='${selectionObject.tool}']`).addClass('active');
+const inactivateTool = editArea => editArea.closest('.textEditorMasterDiv').find(`[data-tool='${selectionObject.tool}']`).removeClass('active');
+const inactivateAllTools = editArea => editArea.closest('.textEditorMasterDiv').find('.active').removeClass('active');
+
+const reconcileTools = editArea => {
+  ancestorTools.forEach(function(tool,index) {
+    const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
+    toolButton.addClass('active');
+  });
 };
 
 /**

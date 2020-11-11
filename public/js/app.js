@@ -30708,7 +30708,8 @@ __webpack_require__.r(__webpack_exports__);
  */
 var currentGeneration, selectionObject;
 var selectionPointer = false;
-var toolInWaiting = false;
+var ancestorTools = [];
+var selectedTools = [];
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike'];
@@ -30826,7 +30827,7 @@ var initTextEditors = function initTextEditors() {
       var fancyEditor = makeTextEditor(newElement);
       var toolbar = fancyEditor.find('.toolbar');
       insertMoreTools(toolbar);
-      $(item).replaceWith(fancyEditor); //Optional timeout fives makeTextEditor a few milliseconds to be completely added to DOM on first load
+      $(item).replaceWith(fancyEditor); //Optional timeout gives makeTextEditor a few milliseconds to be completely added to DOM on first load
 
       if (timeout) {
         setTimeout(function () {
@@ -31060,8 +31061,12 @@ var makeTextEditor = function makeTextEditor(el) {
         textEditorOnChangeCallback();
       }
     });
-  }
+  } //Deal with keystrokes re: formatting
 
+
+  editArea.on('click keydown', function (e) {
+    evaluateFormatting($(this));
+  });
   editor.append(el);
   return editor;
 };
@@ -31103,20 +31108,37 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
         _that.append($(this));
       }
     }
+  });
+  editArea.on('focusout', function () {
+    inactivateAllTools($(this));
   }); //We get a special object representing some key info about the selection for later use
 
   getSelectionObject(tool, editArea, emptySelection);
 
   if (selectionObject.emptySelection) {
-    toolInWaiting = selectionObject.tool;
-  } //Go through the logic to apply (or reverse) formatting on selection
+    toggleSelectedTools(selectionObject.tool);
+  } else {
+    //Go through the logic to apply (or reverse) formatting on selection
+    wrapTags(editArea);
+  } //Remove any nested instances of formatting
 
-
-  wrapTags(editArea); //Remove any nested instances of formatting
 
   cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
 
   replaceMarkersWithSelection(editArea);
+};
+
+var toggleSelectedTools = function toggleSelectedTools(tool) {
+  var targetToolIndex = selectedTools.indexOf(tool);
+
+  if (targetToolIndex > -1) {
+    selectedTools.splice(targetToolIndex, 1);
+  } else {
+    selectedTools.push(tool);
+  }
+
+  console.log('selectedTools');
+  console.log(selectedTools);
 };
 /**
 * Get some info about the selection in an object we can reference in code later on.
@@ -31206,8 +31228,10 @@ var wrapTags = function wrapTags(editArea) {
 
   if (selectionObject.allFormatted) {
     editAreaString = reverseFormatting(editAreaString);
+    inactivateTool(editArea);
   } else {
     editAreaString = addFormatting(editAreaString);
+    activateTool(editArea);
   }
 
   editArea.html(editAreaString);
@@ -31255,6 +31279,63 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
     var cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
     return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
   }
+};
+/**
+* On each click or keydown, we check the formatting of the selection
+*/
+
+
+var evaluateFormatting = function evaluateFormatting(editArea) {
+  setTimeout(function () {
+    var range = window.getSelection().getRangeAt(0);
+    var emptySelection = range.collapsed;
+
+    if (emptySelection) {
+      var emptyMarker = $('<empty>');
+      range.surroundContents(emptyMarker[0]);
+      ancestorTools = [];
+      tags.forEach(function (tag, index) {
+        var ancestor = emptyMarker.closest(tag);
+
+        if (ancestor.length) {
+          ancestorTools.push(tag);
+        }
+      });
+      emptyMarker.remove();
+      inactivateAllTools(editArea);
+
+      if (ancestorTools.length) {
+        console.log('ancestorTools');
+        console.log(ancestorTools);
+        reconcileTools(editArea);
+      }
+    } else {
+      return;
+    }
+  }, 5);
+};
+/**
+* Toggle tool-active display
+*/
+
+
+var activateTool = function activateTool(editArea) {
+  return editArea.closest('.textEditorMasterDiv').find("[data-tool='".concat(selectionObject.tool, "']")).addClass('active');
+};
+
+var inactivateTool = function inactivateTool(editArea) {
+  return editArea.closest('.textEditorMasterDiv').find("[data-tool='".concat(selectionObject.tool, "']")).removeClass('active');
+};
+
+var inactivateAllTools = function inactivateAllTools(editArea) {
+  return editArea.closest('.textEditorMasterDiv').find('.active').removeClass('active');
+};
+
+var reconcileTools = function reconcileTools(editArea) {
+  ancestorTools.forEach(function (tool, index) {
+    var toolButton = editArea.closest('.textEditorMasterDiv').find("[data-tool='".concat(tool, "']"));
+    toolButton.addClass('active');
+  });
 };
 /**
 * For selecting the content between the markers for manuplulation.
@@ -31452,8 +31533,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

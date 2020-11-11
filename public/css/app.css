@@ -1149,12 +1149,20 @@ span.striped-odd:nth-child(odd) {
 .more-tools-holder .toolbar-button,
 .toolbar .toolbar-button {
   background-color: #595959;
+  border: 1px solid #595959;
   border-radius: 5px;
   color: #e6e6e6;
   cursor: pointer;
   font-size: 0.8rem;
   margin-right: 2px;
   padding: 5px;
+}
+
+.more-tools-container .toolbar-button.active,
+.more-tools-holder .toolbar-button.active,
+.toolbar .toolbar-button.active {
+  background-color: #999999;
+  color: #fff;
 }
 
 .more-tools-container .toolbar-spacer,

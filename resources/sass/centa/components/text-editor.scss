@@ -5,12 +5,17 @@
   margin-bottom: $margin-base;
   .toolbar-button {
     background-color: $primary;
+    border: 1px solid $primary;
     border-radius: $border-radius-base;
     color: $fc-light;
     cursor: pointer;
     font-size: $fs-small;
     margin-right: $margin-tiny;
     padding: $padding-small;
+    &.active {
+      background-color: $secondary;
+      color: $white;
+    }
   }
   .toolbar-spacer {
     margin-right: $margin-base;
