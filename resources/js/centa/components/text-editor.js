@@ -256,6 +256,7 @@ const makeTextEditor = el => {
     }
     //Make it so updates to the editArea affect the original el's value
     editArea.on('input keyup',function() {
+        const updatedCode = $(this).html();
         el.val(updatedCode);
         codeEditArea.val(updatedCode);
     });

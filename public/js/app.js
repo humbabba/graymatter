@@ -31044,6 +31044,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
 
   editArea.on('input keyup', function () {
+    var updatedCode = $(this).html();
     el.val(updatedCode);
     codeEditArea.val(updatedCode);
   }); //Only check for changes in editArea if we have a callback.
