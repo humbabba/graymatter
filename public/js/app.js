@@ -31044,8 +31044,6 @@ var makeTextEditor = function makeTextEditor(el) {
 
 
   editArea.on('input keyup', function () {
-    var updatedCode = $(this).html().replace('<empty>', '').replace('</empty>', ''); //This is to make sure we get rid of "empty" tags used for cross-browser selection in formatting tools; they cannot be immediately removed or selection fails on some browsers in the case of collapsed/empty selection ranges
-
     el.val(updatedCode);
     codeEditArea.val(updatedCode);
   }); //Only check for changes in editArea if we have a callback.
@@ -31123,12 +31121,13 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
     }
   }); //We get a special object representing some key info about the selection for later use
 
-  getSelectionObject(tool, editArea, emptySelection);
+  getSelectionObject(tool, editArea, emptySelection); //For empty selects, we need to update active tools display
 
   if (selectionObject.emptySelection) {
     toggleSelectedTools(selectionObject.tool);
     reconcileToolsDisplay(editArea);
   } else if (format) {
+    //Format may be false in the case of evaluateFormatting, where we just want to get a selectionObject based on mere selection, not a formatting button click
     //Go through the logic to apply (or reverse) formatting on selection
     wrapTags(editArea);
   } //Remove any nested instances of formatting
@@ -31138,6 +31137,10 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
 
   replaceMarkersWithSelection(editArea);
 };
+/**
+* Turn tools on or off based on button click for empty selection
+*/
+
 
 var toggleSelectedTools = function toggleSelectedTools(tool) {
   var targetToolIndex = selectedTools.indexOf(tool);
@@ -31250,13 +31253,8 @@ var wrapTags = function wrapTags(editArea) {
 
 
 var addFormatting = function addFormatting(editAreaString) {
-  if (selectionObject.emptySelection) {
-    //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
-    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
-  } else {
-    var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-    return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
-  }
+  var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
 };
 /**
 * This is the more-complex case. Sometimes we need to wrap selected content in tags in reverse order,
@@ -31265,29 +31263,24 @@ var addFormatting = function addFormatting(editAreaString) {
 
 
 var reverseFormatting = function reverseFormatting(editAreaString) {
-  if (selectionObject.emptySelection) {
-    //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
-    return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
+  var openMarkerPattern = new RegExp(openMarkerString);
+  var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
+
+  if (selectionObject.openAncestor && !selectionObject.closeAncestor || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
+    editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~');
   } else {
-    var openMarkerPattern = new RegExp(openMarkerString);
-    var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
-
-    if (selectionObject.openAncestor && !selectionObject.closeAncestor || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
-      editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~');
-    } else {
-      //Otherwise, we have formatted content BEYOND the selection and need to repoen the formatting after reversing it for the selection.
-      editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
-    }
-
-    editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
-
-    var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-    var cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
-    return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
+    //Otherwise, we have formatted content BEYOND the selection and need to repoen the formatting after reversing it for the selection.
+    editAreaString = editAreaString.replace(openMarkerPattern, '~~makeClose~~').replace(closeMarkerPattern, '~~makeOpen~~');
   }
+
+  editAreaString = editAreaString.replace('~~makeClose~~', selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~', closeMarkerString + selectionObject.openTool); //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
+
+  var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  var cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
+  return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
 };
 /**
-* On each click or keydown, we check the formatting of the selection
+* On each click or keydown, we check the formatting of the selection and adjust active tools accordingly
 */
 
 
@@ -31297,7 +31290,8 @@ var evaluateFormatting = function evaluateFormatting(editArea) {
     var emptySelection = range.collapsed;
 
     if (emptySelection) {
-      var emptyMarker = $('<empty>');
+      var emptyMarker = $('<empty>'); //A fake element for the purposes finding ancestor elements with jQuery
+
       range.surroundContents(emptyMarker[0]);
       ancestorTools = [];
       tags.forEach(function (tag, index) {
@@ -31338,9 +31332,6 @@ var activateToolDisplay = function activateToolDisplay(editArea, tool) {
   if (targetToolIndex === -1) {
     activeTools.push(tool);
   }
-
-  console.log('activeTools');
-  console.log(activeTools);
 };
 
 var inactivateToolDisplay = function inactivateToolDisplay(editArea, tool) {
@@ -31350,9 +31341,6 @@ var inactivateToolDisplay = function inactivateToolDisplay(editArea, tool) {
   if (targetToolIndex > -1) {
     activeTools.splice(targetToolIndex, 1);
   }
-
-  console.log('activeTools');
-  console.log(activeTools);
 };
 
 var inactivateAllToolsDisplay = function inactivateAllToolsDisplay(editArea) {

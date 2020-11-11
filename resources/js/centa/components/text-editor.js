@@ -256,7 +256,6 @@ const makeTextEditor = el => {
     }
     //Make it so updates to the editArea affect the original el's value
     editArea.on('input keyup',function() {
-        const updatedCode = $(this).html().replace('<empty>','').replace('</empty>',''); //This is to make sure we get rid of "empty" tags used for cross-browser selection in formatting tools; they cannot be immediately removed or selection fails on some browsers in the case of collapsed/empty selection ranges
         el.val(updatedCode);
         codeEditArea.val(updatedCode);
     });
@@ -345,10 +344,11 @@ const execFormattingTool = (tool,editArea,format = true) => {
     //We get a special object representing some key info about the selection for later use
     getSelectionObject(tool,editArea,emptySelection);
 
+    //For empty selects, we need to update active tools display
     if(selectionObject.emptySelection) {
         toggleSelectedTools(selectionObject.tool);
         reconcileToolsDisplay(editArea);
-    } else if(format) {
+    } else if(format) { //Format may be false in the case of evaluateFormatting, where we just want to get a selectionObject based on mere selection, not a formatting button click
       //Go through the logic to apply (or reverse) formatting on selection
       wrapTags(editArea);
     }
@@ -361,7 +361,9 @@ const execFormattingTool = (tool,editArea,format = true) => {
 
 };
 
-
+/**
+* Turn tools on or off based on button click for empty selection
+*/
 const toggleSelectedTools = tool => {
   const targetToolIndex = selectedTools.indexOf(tool);
   if(targetToolIndex > -1) {
@@ -466,12 +468,8 @@ const wrapTags = editArea => {
 * Simply wrap selected content in tags for tool.
 */
 const addFormatting = editAreaString => {
-    if(selectionObject.emptySelection) { //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
-        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.openTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.closeTool + closeMarkerString);
-    } else {
-        const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-        return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
-    }
+  const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
 };
 
 /**
@@ -479,38 +477,34 @@ const addFormatting = editAreaString => {
 * sometimes we need to just close formatting at the beginning of the selection.
 */
 const reverseFormatting = editAreaString => {
-    if(selectionObject.emptySelection) { //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
-        return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
-    } else {
-        const openMarkerPattern = new RegExp(openMarkerString);
-        const closeMarkerPattern = new RegExp(closeMarkerString);
+  const openMarkerPattern = new RegExp(openMarkerString);
+  const closeMarkerPattern = new RegExp(closeMarkerString);
 
-        //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
-        if((selectionObject.openAncestor && !selectionObject.closeAncestor) || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
-            editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~');
-        } else { //Otherwise, we have formatted content BEYOND the selection and need to repoen the formatting after reversing it for the selection.
-            editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
-        }
+  //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
+  if((selectionObject.openAncestor && !selectionObject.closeAncestor) || !selectionObject.openAncestor && !selectionObject.closeAncestor) {
+      editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~');
+  } else { //Otherwise, we have formatted content BEYOND the selection and need to repoen the formatting after reversing it for the selection.
+      editAreaString = editAreaString.replace(openMarkerPattern,'~~makeClose~~').replace(closeMarkerPattern,'~~makeOpen~~');
+  }
 
-        editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
+  editAreaString = editAreaString.replace('~~makeClose~~',selectionObject.closeTool + openMarkerString).replace('~~makeOpen~~',closeMarkerString + selectionObject.openTool);
 
-        //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
-        const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-        const cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
+  //Get rid of any tools in between markers that survived the above, so we're just left with the close-then-open or simply close tag.
+  const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  const cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
 
-        return editAreaString.replace(betweenMarkersContent,cleanBetweenMarkersContent);
-    }
+  return editAreaString.replace(betweenMarkersContent,cleanBetweenMarkersContent);
 };
 
 /**
-* On each click or keydown, we check the formatting of the selection
+* On each click or keydown, we check the formatting of the selection and adjust active tools accordingly
 */
 const evaluateFormatting = editArea => {
   setTimeout(function() {
     const range = window.getSelection().getRangeAt(0);
     const emptySelection = range.collapsed;
     if(emptySelection) {
-      const emptyMarker = $('<empty>');
+      const emptyMarker = $('<empty>'); //A fake element for the purposes finding ancestor elements with jQuery
       range.surroundContents(emptyMarker[0]);
       ancestorTools = [];
       tags.forEach(function(tag,index) {
@@ -546,8 +540,6 @@ const activateToolDisplay = (editArea,tool) => {
     if(targetToolIndex === -1) {
       activeTools.push(tool);
     }
-    console.log('activeTools');
-    console.log(activeTools);
 };
 const inactivateToolDisplay = (editArea,tool) => {
   editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`).removeClass('active');
@@ -555,8 +547,6 @@ const inactivateToolDisplay = (editArea,tool) => {
   if(targetToolIndex > -1) {
     activeTools.splice(targetToolIndex,1);
   }
-  console.log('activeTools');
-  console.log(activeTools);
 };
 const inactivateAllToolsDisplay = editArea => editArea.closest('.textEditorMasterDiv').find('.active').removeClass('active');
 const inactivateNonSelectedToolsDisplay = editArea => {
