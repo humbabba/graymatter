@@ -5,6 +5,7 @@ let currentGeneration,selectionObject;
 let selectionPointer = false;
 let ancestorTools = [];
 let selectedTools = [];
+let activeTools = [];
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike'];
@@ -90,7 +91,6 @@ const insertMoreTools = toolbar => {
 * Depending on container width, hide tools that don't fit and display button to toggle them.
 */
 const processToolbarForWidth = toolbar => {
-    console.log('processToolbarForWidth');
     const moreToolsHolder = toolbar.parent().find('.more-tools-holder');
     let childrenWidth = 0;
     const children = toolbar.children();
@@ -275,7 +275,23 @@ const makeTextEditor = el => {
 
     //Make sure we inactivate tools when exiting editArea
     editArea.on('focusout',function() {
-      inactivateAllTools($(this));
+      inactivateAllToolsDisplay($(this));
+    });
+
+    //Reset selected tools on click
+    editArea.on('click',function() {
+      selectedTools = [];
+    });
+
+    //Reset selected tools on arrow keys
+    editArea.on('keydown',function(e) {
+      if('ArrowLeft' === e.key ||
+       'ArrowRight' === e.key ||
+       'ArrowUp' === e.key ||
+       'ArrowDown' === e.key
+     ) {
+      selectedTools = [];
+     }
     });
 
     //Deal with keystrokes and clicks re: formatting
@@ -288,8 +304,6 @@ const makeTextEditor = el => {
 };
 
 const insertImage = (editArea) => {
-    console.log('callback');
-    console.log(textEditorInsertImageCallback);
   return false;
 };
 
@@ -333,6 +347,7 @@ const execFormattingTool = (tool,editArea,format = true) => {
 
     if(selectionObject.emptySelection) {
         toggleSelectedTools(selectionObject.tool);
+        reconcileToolsDisplay(editArea);
     } else if(format) {
       //Go through the logic to apply (or reverse) formatting on selection
       wrapTags(editArea);
@@ -346,6 +361,7 @@ const execFormattingTool = (tool,editArea,format = true) => {
 
 };
 
+
 const toggleSelectedTools = tool => {
   const targetToolIndex = selectedTools.indexOf(tool);
   if(targetToolIndex > -1) {
@@ -353,8 +369,6 @@ const toggleSelectedTools = tool => {
   } else {
     selectedTools.push(tool);
   }
-  console.log('selectedTools');
-  console.log(selectedTools);
 };
 
 /**
@@ -440,10 +454,10 @@ const wrapTags = editArea => {
     let editAreaString = editArea.html();
     if(selectionObject.allFormatted) {
         editAreaString = reverseFormatting(editAreaString);
-        inactivateTool(editArea);
+        inactivateToolDisplay(editArea,selectionObject.tool);
     } else {
         editAreaString = addFormatting(editAreaString);
-        activateTool(editArea);
+        activateToolDisplay(editArea,selectionObject.tool);
     }
     editArea.html(editAreaString);
 };
@@ -465,7 +479,6 @@ const addFormatting = editAreaString => {
 * sometimes we need to just close formatting at the beginning of the selection.
 */
 const reverseFormatting = editAreaString => {
-    console.log('REVERSING');
     if(selectionObject.emptySelection) { //In this case, in order for selection to work across browsers, we need some content in a node between tags; we use the "zero-width non-joiner" HTML entity in the "empty" tag, which we remove later
         return editAreaString.replace(openMarkerString, openMarkerString + selectionObject.closeTool + '<empty>&zwnj;</empty>').replace(closeMarkerString, selectionObject.openTool + closeMarkerString);
     } else {
@@ -507,19 +520,17 @@ const evaluateFormatting = editArea => {
         }
       });
       emptyMarker.remove();
-      inactivateAllTools(editArea);
+      inactivateNonSelectedToolsDisplay(editArea);
       if(ancestorTools.length) {
-        console.log('ancestorTools');
-        console.log(ancestorTools);
-        reconcileTools(editArea);
+        reconcileToolsDisplay(editArea);
       }
     } else {
-      tags.forEach(function(tag,index) {
-        execFormattingTool(tag,editArea,false);
+      tags.forEach(function(tool,index) {
+        execFormattingTool(tool,editArea,false);
         if(selectionObject.allFormatted) {
-          activateTool(editArea);
+          activateToolDisplay(editArea,tool);
         } else {
-          inactivateTool(editArea);
+          inactivateToolDisplay(editArea,tool);
         }
       });
     }
@@ -529,14 +540,51 @@ const evaluateFormatting = editArea => {
 /**
 * Toggle tool-active display
 */
-const activateTool = editArea => editArea.closest('.textEditorMasterDiv').find(`[data-tool='${selectionObject.tool}']`).addClass('active');
-const inactivateTool = editArea => editArea.closest('.textEditorMasterDiv').find(`[data-tool='${selectionObject.tool}']`).removeClass('active');
-const inactivateAllTools = editArea => editArea.closest('.textEditorMasterDiv').find('.active').removeClass('active');
+const activateToolDisplay = (editArea,tool) => {
+    editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`).addClass('active');
+    const targetToolIndex = activeTools.indexOf(tool);
+    if(targetToolIndex === -1) {
+      activeTools.push(tool);
+    }
+    console.log('activeTools');
+    console.log(activeTools);
+};
+const inactivateToolDisplay = (editArea,tool) => {
+  editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`).removeClass('active');
+  const targetToolIndex = activeTools.indexOf(tool);
+  if(targetToolIndex > -1) {
+    activeTools.splice(targetToolIndex,1);
+  }
+  console.log('activeTools');
+  console.log(activeTools);
+};
+const inactivateAllToolsDisplay = editArea => editArea.closest('.textEditorMasterDiv').find('.active').removeClass('active');
+const inactivateNonSelectedToolsDisplay = editArea => {
+  tags.forEach(function(tool,index) {
+      if(selectedTools.indexOf(tool) === -1) {
+        inactivateToolDisplay(editArea,tool);
+      }
+  });
+};
 
-const reconcileTools = editArea => {
+/**
+* Reconcile user intention for tool-button status based on existing formatting and formatting commands from  clicks or ctrl-command
+*/
+const reconcileToolsDisplay = editArea => {
+  //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
   ancestorTools.forEach(function(tool,index) {
+    inactivateToolDisplay(editArea,tool);
+    if(selectedTools.indexOf(tool) === -1) {
+      activateToolDisplay(editArea,tool);
+    }
+  });
+  //For all formatting commands, we activate that the corresponding button unless reversed by ancestor formatting
+  selectedTools.forEach(function(tool,index) {
     const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
-    toolButton.addClass('active');
+      inactivateToolDisplay(editArea,tool);
+    if(ancestorTools.indexOf(tool) === -1) {
+      activateToolDisplay(editArea,tool);
+    }
   });
 };
 
