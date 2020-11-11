@@ -273,8 +273,13 @@ const makeTextEditor = el => {
         });
     }
 
-    //Deal with keystrokes re: formatting
-    editArea.on('click keydown',function(e) {
+    //Make sure we inactivate tools when exiting editArea
+    editArea.on('focusout',function() {
+      inactivateAllTools($(this));
+    });
+
+    //Deal with keystrokes and clicks re: formatting
+    editArea.on('click keydown mouseup keyup',function(e) {
       evaluateFormatting($(this));
     });
 
@@ -291,7 +296,7 @@ const insertImage = (editArea) => {
 /**
 * For basic text formatting
 */
-const execFormattingTool = (tool,editArea) => {
+const execFormattingTool = (tool,editArea,format = true) => {
 
     //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
     const range = window.getSelection().getRangeAt(0);
@@ -323,16 +328,12 @@ const execFormattingTool = (tool,editArea) => {
         }
     });
 
-    editArea.on('focusout',function() {
-      inactivateAllTools($(this));
-    });
-
     //We get a special object representing some key info about the selection for later use
     getSelectionObject(tool,editArea,emptySelection);
 
     if(selectionObject.emptySelection) {
         toggleSelectedTools(selectionObject.tool);
-    } else {
+    } else if(format) {
       //Go through the logic to apply (or reverse) formatting on selection
       wrapTags(editArea);
     }
@@ -513,7 +514,14 @@ const evaluateFormatting = editArea => {
         reconcileTools(editArea);
       }
     } else {
-      return;
+      tags.forEach(function(tag,index) {
+        execFormattingTool(tag,editArea,false);
+        if(selectionObject.allFormatted) {
+          activateTool(editArea);
+        } else {
+          inactivateTool(editArea);
+        }
+      });
     }
   },5);
 }

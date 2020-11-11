@@ -31061,10 +31061,14 @@ var makeTextEditor = function makeTextEditor(el) {
         textEditorOnChangeCallback();
       }
     });
-  } //Deal with keystrokes re: formatting
+  } //Make sure we inactivate tools when exiting editArea
 
 
-  editArea.on('click keydown', function (e) {
+  editArea.on('focusout', function () {
+    inactivateAllTools($(this));
+  }); //Deal with keystrokes and clicks re: formatting
+
+  editArea.on('click keydown mouseup keyup', function (e) {
     evaluateFormatting($(this));
   });
   editor.append(el);
@@ -31082,6 +31086,7 @@ var insertImage = function insertImage(editArea) {
 
 
 var execFormattingTool = function execFormattingTool(tool, editArea) {
+  var format = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
   //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
   var range = window.getSelection().getRangeAt(0);
   var emptySelection = range.collapsed; //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
@@ -31108,16 +31113,13 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
         _that.append($(this));
       }
     }
-  });
-  editArea.on('focusout', function () {
-    inactivateAllTools($(this));
   }); //We get a special object representing some key info about the selection for later use
 
   getSelectionObject(tool, editArea, emptySelection);
 
   if (selectionObject.emptySelection) {
     toggleSelectedTools(selectionObject.tool);
-  } else {
+  } else if (format) {
     //Go through the logic to apply (or reverse) formatting on selection
     wrapTags(editArea);
   } //Remove any nested instances of formatting
@@ -31310,7 +31312,15 @@ var evaluateFormatting = function evaluateFormatting(editArea) {
         reconcileTools(editArea);
       }
     } else {
-      return;
+      tags.forEach(function (tag, index) {
+        execFormattingTool(tag, editArea, false);
+
+        if (selectionObject.allFormatted) {
+          activateTool(editArea);
+        } else {
+          inactivateTool(editArea);
+        }
+      });
     }
   }, 5);
 };
