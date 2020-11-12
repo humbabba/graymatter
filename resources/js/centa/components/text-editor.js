@@ -296,7 +296,7 @@ const makeTextEditor = el => {
 
     //Deal with keystrokes and clicks re: formatting
     editArea.on('click keydown mouseup keyup',function(e) {
-      evaluateFormatting($(this));
+      evaluateFormatting($(this),e);
     });
 
     editor.append(el);
@@ -500,7 +500,7 @@ const reverseFormatting = editAreaString => {
 /**
 * On each click or keydown, we check the formatting of the selection and adjust active tools accordingly
 */
-const evaluateFormatting = editArea => {
+const evaluateFormatting = (editArea,e) => {
   setTimeout(function() {
     const range = window.getSelection().getRangeAt(0);
     const emptySelection = range.collapsed;
@@ -521,7 +521,11 @@ const evaluateFormatting = editArea => {
       }
     } else {
       tags.forEach(function(tool,index) {
-        execFormattingTool(tool,editArea,false);
+        if(e.shiftKey && 'ArrowLeft' === e.key) { //This prevents weird selection behavior on this key combo
+          return;
+        } else {
+          execFormattingTool(tool,editArea,false);
+        }
         if(selectionObject.allFormatted) {
           activateToolDisplay(editArea,tool);
         } else {

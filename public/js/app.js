@@ -31078,7 +31078,7 @@ var makeTextEditor = function makeTextEditor(el) {
   }); //Deal with keystrokes and clicks re: formatting
 
   editArea.on('click keydown mouseup keyup', function (e) {
-    evaluateFormatting($(this));
+    evaluateFormatting($(this), e);
   });
   editor.append(el);
   return editor;
@@ -31285,7 +31285,7 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
 */
 
 
-var evaluateFormatting = function evaluateFormatting(editArea) {
+var evaluateFormatting = function evaluateFormatting(editArea, e) {
   setTimeout(function () {
     var range = window.getSelection().getRangeAt(0);
     var emptySelection = range.collapsed;
@@ -31310,7 +31310,12 @@ var evaluateFormatting = function evaluateFormatting(editArea) {
       }
     } else {
       tags.forEach(function (tool, index) {
-        execFormattingTool(tool, editArea, false);
+        if (e.shiftKey && 'ArrowLeft' === e.key) {
+          //This prevents weird selection behavior on this key combo
+          return;
+        } else {
+          execFormattingTool(tool, editArea, false);
+        }
 
         if (selectionObject.allFormatted) {
           activateToolDisplay(editArea, tool);
