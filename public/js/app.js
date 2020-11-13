@@ -31073,20 +31073,17 @@ var makeTextEditor = function makeTextEditor(el) {
     if (toAdd.length || toReverse.length) {
       var range = window.getSelection().getRangeAt(0);
 
-      try {
+      if (range.startOffset > 0) {
+        //We have room to go back a character
         range.setStart(range.startContainer, range.startOffset - 1);
-      } catch (e) {
-        console.log('OOPS:');
-        console.log(e);
-        return; //Fail silently
-      } //We concat both those waiting and those
+      } //We concat both those waiting to add and to reverse
 
 
       var tools = toAdd.concat(toReverse.filter(function (item) {
         return toAdd.indexOf(item) < 0;
       }));
       tools.forEach(function (tool, index) {
-        execFormattingTool(tool, editArea); //Foo
+        execFormattingTool(tool, editArea);
       });
       range = window.getSelection().getRangeAt(0);
       range.collapse(false);
@@ -31218,7 +31215,7 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
   var contentString = '';
   var matches = editAreaString.match(pattern);
 
-  if (matches && matches.length) {
+  if (matches && matches.length > 1) {
     contentString = matches[1];
   }
 
@@ -31441,7 +31438,7 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
   });
   reverseOrAddOnEmpty();
 
-  if (toAdd.length || toReverse.length) {
+  if (toAdd.length || toReverse.length || selectedTools.length || activeTools.length || ancestorTools.length) {
     console.log('----------------------');
   }
 
@@ -31464,6 +31461,11 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
     console.log('activeTools');
     console.log(activeTools);
   }
+
+  if (ancestorTools.length) {
+    console.log('ancestorTools');
+    console.log(ancestorTools);
+  }
 };
 /**
 * For selecting the content between the markers for manuplulation.
@@ -31472,7 +31474,13 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
 
 var getBetweenMarkersContent = function getBetweenMarkersContent(editAreaString) {
   var betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-  return editAreaString.match(betweenMarkersPattern)[1];
+  var matches = editAreaString.match(betweenMarkersPattern);
+
+  if (matches && matches.length > 1) {
+    return matches[1];
+  } else {
+    return '';
+  }
 };
 /**
 * For removing any instances of the tool in a given piece of content
@@ -31520,7 +31528,9 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
 
     redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
+    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Empty paragraphs.
+
+    editAreaString = editAreaString.replace('<p></p>', ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
 
     editAreaString = editAreaString.replace('<br></p>', '</p>'); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
 
