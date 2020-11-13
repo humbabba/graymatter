@@ -30711,6 +30711,8 @@ var selectionPointer = false;
 var ancestorTools = [];
 var selectedTools = [];
 var activeTools = [];
+var toReverse = [];
+var toAdd = [];
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike'];
@@ -31072,12 +31074,35 @@ var makeTextEditor = function makeTextEditor(el) {
   }); //Reset selected tools on arrow keys
 
   editArea.on('keydown', function (e) {
-    if ('ArrowLeft' === e.key || 'ArrowRight' === e.key || 'ArrowUp' === e.key || 'ArrowDown' === e.key) {
+    if (37 === e.which || //Left
+    39 === e.which || //Right
+    38 === e.which || //Up
+    40 === e.which //Down
+    ) {
+        selectedTools = [];
+      }
+  });
+  editArea.on('input', function (e) {
+    if (toAdd.length || toReverse.length) {
+      var range = window.getSelection().getRangeAt(0);
+      range.setStart(range.startContainer, range.startOffset - 1);
+      var tools = toAdd.concat(toReverse.filter(function (item) {
+        return toAdd.indexOf(item) < 0;
+      }));
+      console.log('tools');
+      console.log(tools);
+      tools.forEach(function (tool, index) {
+        execFormattingTool(tool, editArea); //Foo
+      });
+      range = window.getSelection().getRangeAt(0);
+      range.collapse(false);
+      toAdd = [];
+      toReverse = [];
       selectedTools = [];
     }
   }); //Deal with keystrokes and clicks re: formatting
 
-  editArea.on('click keydown mouseup keyup', function (e) {
+  editArea.on('mouseup keyup', function (e) {
     evaluateFormatting($(this), e);
   });
   editor.append(el);
@@ -31137,6 +31162,19 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
   cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
 
   replaceMarkersWithSelection(editArea);
+};
+/**
+* Tool clicked on empty selection - decide whether we need to add formatting or reverse it for next character typed
+*/
+
+
+var reverseOrAddOnEmpty = function reverseOrAddOnEmpty() {
+  toReverse = ancestorTools.filter(function (x) {
+    return !activeTools.includes(x);
+  });
+  toAdd = activeTools.filter(function (x) {
+    return !ancestorTools.includes(x);
+  });
 };
 /**
 * Turn tools on or off based on button click for empty selection
@@ -31233,9 +31271,6 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
 
 
 var wrapTags = function wrapTags(editArea) {
-  //First we need to remove any lingering empty tags; we don't do this earlier cause it messes with selection to do so on some browsers.
-  var emptyTag = editArea.find('empty');
-  emptyTag.replaceWith(emptyTag.html());
   var editAreaString = editArea.html();
 
   if (selectionObject.allFormatted) {
@@ -31255,7 +31290,7 @@ var wrapTags = function wrapTags(editArea) {
 
 var addFormatting = function addFormatting(editAreaString) {
   var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-  return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
+  return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
 };
 /**
 * This is the more-complex case. Sometimes we need to wrap selected content in tags in reverse order,
@@ -31310,8 +31345,9 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
       }
     } else {
       tags.forEach(function (tool, index) {
-        if (e.shiftKey && 'ArrowLeft' === e.key) {
+        if (e.shiftKey && 37 === e.which) {
           //This prevents weird selection behavior on this key combo
+          console.log('Yeas');
           return;
         } else {
           execFormattingTool(tool, editArea, false);
@@ -31382,7 +31418,30 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
     if (ancestorTools.indexOf(tool) === -1) {
       activateToolDisplay(editArea, tool);
     }
+  }); //For all active buttons, we inactivate 'em if they've been selected as the formatting action
+
+  activeTools.forEach(function (tool, index) {
+    var toolButton = editArea.closest('.textEditorMasterDiv').find("[data-tool='".concat(tool, "']"));
+
+    if (selectedTools.indexOf(tool) === -1 && ancestorTools.indexOf(tool) === -1) {
+      inactivateToolDisplay(editArea, tool);
+    }
   });
+  reverseOrAddOnEmpty();
+
+  if (toAdd.length || toReverse.length) {
+    console.log('----------------------');
+  }
+
+  if (toAdd.length) {
+    console.log('toAdd');
+    console.log(toAdd);
+  }
+
+  if (toReverse.length) {
+    console.log('toReverse');
+    console.log(toReverse);
+  }
 };
 /**
 * For selecting the content between the markers for manuplulation.
@@ -31512,14 +31571,34 @@ var stripTags = function stripTags(el) {
 
 $(document).on('keydown', function (e) {
   if (e.metaKey || e.ctrlKey) {
-    var tool = e.key.toLowerCase();
+    var tool = false;
 
-    if (tags.indexOf(tool) > -1) {
-      var editArea = $(':focus');
+    switch (e.which) {
+      case 17:
+        return;
+        break;
 
-      if (editArea.hasClass('fancy-text-div')) {
-        e.preventDefault();
-        execFormattingTool(tool, editArea);
+      case 66:
+        tool = 'b';
+        break;
+
+      case 73:
+        tool = 'i';
+        break;
+
+      case 85:
+        tool = 'u';
+        break;
+    }
+
+    if (tool) {
+      if (tags.indexOf(tool) > -1) {
+        var editArea = $(':focus');
+
+        if (editArea.hasClass('fancy-text-div')) {
+          e.preventDefault();
+          execFormattingTool(tool, editArea);
+        }
       }
     }
   }

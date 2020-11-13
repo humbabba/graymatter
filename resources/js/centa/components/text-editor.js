@@ -6,6 +6,8 @@ let selectionPointer = false;
 let ancestorTools = [];
 let selectedTools = [];
 let activeTools = [];
+let toReverse = [];
+let toAdd = [];
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike'];
@@ -285,17 +287,35 @@ const makeTextEditor = el => {
 
     //Reset selected tools on arrow keys
     editArea.on('keydown',function(e) {
-      if('ArrowLeft' === e.key ||
-       'ArrowRight' === e.key ||
-       'ArrowUp' === e.key ||
-       'ArrowDown' === e.key
+      if(37 === e.which || //Left
+       39 === e.which || //Right
+       38 === e.which || //Up
+       40 === e.which //Down
      ) {
       selectedTools = [];
-     }
+    }
+    });
+
+    editArea.on('input',function(e) {
+      if(toAdd.length || toReverse.length) {
+        let range = window.getSelection().getRangeAt(0);
+        range.setStart(range.startContainer, range.startOffset - 1);
+        const tools = toAdd.concat(toReverse.filter((item) => toAdd.indexOf(item) < 0));
+        console.log('tools');
+        console.log(tools);
+        tools.forEach(function(tool,index) {
+          execFormattingTool(tool,editArea); //Foo
+        });
+        range = window.getSelection().getRangeAt(0);
+        range.collapse(false);
+        toAdd = [];
+        toReverse = [];
+        selectedTools = [];
+      }
     });
 
     //Deal with keystrokes and clicks re: formatting
-    editArea.on('click keydown mouseup keyup',function(e) {
+    editArea.on('mouseup keyup',function(e) {
       evaluateFormatting($(this),e);
     });
 
@@ -360,6 +380,14 @@ const execFormattingTool = (tool,editArea,format = true) => {
     //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
 
+};
+
+/**
+* Tool clicked on empty selection - decide whether we need to add formatting or reverse it for next character typed
+*/
+const reverseOrAddOnEmpty = () => {
+  toReverse = ancestorTools.filter(x => !activeTools.includes(x));
+  toAdd = activeTools.filter(x => !ancestorTools.includes(x));
 };
 
 /**
@@ -450,10 +478,6 @@ const getSelectionObject = (tool,editArea,emptySelection) => {
 * If selected text is already all formatted, reverse it. Otherwise apply selected tool.
 */
 const wrapTags = editArea => {
-    //First we need to remove any lingering empty tags; we don't do this earlier cause it messes with selection to do so on some browsers.
-    const emptyTag = editArea.find('empty');
-    emptyTag.replaceWith(emptyTag.html());
-
     let editAreaString = editArea.html();
     if(selectionObject.allFormatted) {
         editAreaString = reverseFormatting(editAreaString);
@@ -470,7 +494,7 @@ const wrapTags = editArea => {
 */
 const addFormatting = editAreaString => {
   const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-  return editAreaString.replace(betweenMarkersContent, selectionObject.openTool + betweenMarkersContent + selectionObject.closeTool);
+  return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
 };
 
 /**
@@ -521,7 +545,8 @@ const evaluateFormatting = (editArea,e) => {
       }
     } else {
       tags.forEach(function(tool,index) {
-        if(e.shiftKey && 'ArrowLeft' === e.key) { //This prevents weird selection behavior on this key combo
+        if(e.shiftKey && 37 === e.which) { //This prevents weird selection behavior on this key combo
+          console.log('Yeas');
           return;
         } else {
           execFormattingTool(tool,editArea,false);
@@ -576,11 +601,30 @@ const reconcileToolsDisplay = editArea => {
   //For all formatting commands, we activate that the corresponding button unless reversed by ancestor formatting
   selectedTools.forEach(function(tool,index) {
     const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
-      inactivateToolDisplay(editArea,tool);
+    inactivateToolDisplay(editArea,tool);
     if(ancestorTools.indexOf(tool) === -1) {
       activateToolDisplay(editArea,tool);
     }
   });
+  //For all active buttons, we inactivate 'em if they've been selected as the formatting action
+  activeTools.forEach(function(tool,index) {
+    const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
+    if(selectedTools.indexOf(tool) === -1 && ancestorTools.indexOf(tool) === -1) {
+      inactivateToolDisplay(editArea,tool);
+    }
+  });
+  reverseOrAddOnEmpty();
+  if(toAdd.length || toReverse.length) {
+    console.log('----------------------');
+  }
+  if(toAdd.length) {
+    console.log('toAdd');
+    console.log(toAdd);
+  }
+  if(toReverse.length) {
+    console.log('toReverse');
+    console.log(toReverse);
+  }
 };
 
 /**
@@ -705,13 +749,29 @@ const stripTags = el => {
  */
 $(document).on('keydown', function (e) {
     if ((e.metaKey || e.ctrlKey)) {
-        const tool = e.key.toLowerCase();
-        if(tags.indexOf(tool) > -1) {
-            const editArea = $(':focus');
-            if(editArea.hasClass('fancy-text-div')) {
-                e.preventDefault();
-                execFormattingTool(tool,editArea);
-            }
+        let tool = false;
+        switch(e.which) {
+          case 17:
+            return;
+            break;
+          case 66:
+            tool = 'b';
+            break;
+          case 73:
+            tool = 'i';
+            break;
+          case 85:
+            tool = 'u';
+            break;
+        }
+        if(tool) {
+          if(tags.indexOf(tool) > -1) {
+              const editArea = $(':focus');
+              if(editArea.hasClass('fancy-text-div')) {
+                  e.preventDefault();
+                  execFormattingTool(tool,editArea);
+              }
+          }
         }
     }
 });
