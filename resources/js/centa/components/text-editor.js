@@ -10,7 +10,7 @@ let toReverse = [];
 let toAdd = [];
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
-const tags = ['b','i','u','strike'];
+const tags = ['b','i','u','strike','sub','sup'];
 
 /**
  * Define rich-text editing tools
@@ -280,29 +280,20 @@ const makeTextEditor = el => {
       inactivateAllToolsDisplay($(this));
     });
 
-    //Reset selected tools on click
-    editArea.on('click',function() {
-      selectedTools = [];
-    });
-
-    //Reset selected tools on arrow keys
-    editArea.on('keydown',function(e) {
-      if(37 === e.which || //Left
-       39 === e.which || //Right
-       38 === e.which || //Up
-       40 === e.which //Down
-     ) {
-      selectedTools = [];
-    }
-    });
-
+    //If we've got a selected tool waiting to execute, run it on first input
     editArea.on('input',function(e) {
       if(toAdd.length || toReverse.length) {
         let range = window.getSelection().getRangeAt(0);
-        range.setStart(range.startContainer, range.startOffset - 1);
+        try {
+          range.setStart(range.startContainer, range.startOffset - 1);
+        } catch(e) {
+          console.log('OOPS:');
+          console.log(e);
+          return;
+          //Fail silently
+        }
+        //We concat both those waiting and those
         const tools = toAdd.concat(toReverse.filter((item) => toAdd.indexOf(item) < 0));
-        console.log('tools');
-        console.log(tools);
         tools.forEach(function(tool,index) {
           execFormattingTool(tool,editArea); //Foo
         });
@@ -314,8 +305,22 @@ const makeTextEditor = el => {
       }
     });
 
-    //Deal with keystrokes and clicks re: formatting
-    editArea.on('mouseup keyup',function(e) {
+    //Reset selected tools, evaluate formatting on arrow keys
+    editArea.on('keydown',function(e) {
+      if(37 === e.which || //Left
+       39 === e.which || //Right
+       38 === e.which || //Up
+       40 === e.which || //Down
+       13 === e.which //Enter
+     ) {
+      selectedTools = [];
+      evaluateFormatting($(this),e);
+    }
+    });
+
+    //Reset selected tools, evaluate formatting on mouseup, presumably following click or selection
+    editArea.on('mouseup',function(e) {
+      selectedTools = [];
       evaluateFormatting($(this),e);
     });
 
@@ -418,7 +423,11 @@ const getSelectionObject = (tool,editArea,emptySelection) => {
     let editAreaString = editArea.html();
     const patternString = openMarkerString + '(.*)' + closeMarkerString;
     const pattern = new RegExp(patternString);
-    let contentString = editAreaString.match(pattern)[1];
+    let contentString = '';
+    const matches = editAreaString.match(pattern);
+    if(matches && matches.length) {
+      contentString = matches[1];
+    }
     const openMarker = editArea.find('#openMarker');
     const openMarkerAncestor = openMarker.closest(tool);
     const closeMarker = editArea.find('#closeMarker');
@@ -546,7 +555,6 @@ const evaluateFormatting = (editArea,e) => {
     } else {
       tags.forEach(function(tool,index) {
         if(e.shiftKey && 37 === e.which) { //This prevents weird selection behavior on this key combo
-          console.log('Yeas');
           return;
         } else {
           execFormattingTool(tool,editArea,false);
@@ -624,6 +632,14 @@ const reconcileToolsDisplay = editArea => {
   if(toReverse.length) {
     console.log('toReverse');
     console.log(toReverse);
+  }
+  if(selectedTools.length) {
+    console.log('selectedTools');
+    console.log(selectedTools);
+  }
+  if(activeTools.length) {
+    console.log('activeTools');
+    console.log(activeTools);
   }
 };
 

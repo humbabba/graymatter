@@ -30715,7 +30715,7 @@ var toReverse = [];
 var toAdd = [];
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
-var tags = ['b', 'i', 'u', 'strike'];
+var tags = ['b', 'i', 'u', 'strike', 'sub', 'sup'];
 /**
  * Define rich-text editing tools
  * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
@@ -31067,30 +31067,24 @@ var makeTextEditor = function makeTextEditor(el) {
 
   editArea.on('focusout', function () {
     inactivateAllToolsDisplay($(this));
-  }); //Reset selected tools on click
+  }); //If we've got a selected tool waiting to execute, run it on first input
 
-  editArea.on('click', function () {
-    selectedTools = [];
-  }); //Reset selected tools on arrow keys
-
-  editArea.on('keydown', function (e) {
-    if (37 === e.which || //Left
-    39 === e.which || //Right
-    38 === e.which || //Up
-    40 === e.which //Down
-    ) {
-        selectedTools = [];
-      }
-  });
   editArea.on('input', function (e) {
     if (toAdd.length || toReverse.length) {
       var range = window.getSelection().getRangeAt(0);
-      range.setStart(range.startContainer, range.startOffset - 1);
+
+      try {
+        range.setStart(range.startContainer, range.startOffset - 1);
+      } catch (e) {
+        console.log('OOPS:');
+        console.log(e);
+        return; //Fail silently
+      } //We concat both those waiting and those
+
+
       var tools = toAdd.concat(toReverse.filter(function (item) {
         return toAdd.indexOf(item) < 0;
       }));
-      console.log('tools');
-      console.log(tools);
       tools.forEach(function (tool, index) {
         execFormattingTool(tool, editArea); //Foo
       });
@@ -31100,9 +31094,22 @@ var makeTextEditor = function makeTextEditor(el) {
       toReverse = [];
       selectedTools = [];
     }
-  }); //Deal with keystrokes and clicks re: formatting
+  }); //Reset selected tools, evaluate formatting on arrow keys
 
-  editArea.on('mouseup keyup', function (e) {
+  editArea.on('keydown', function (e) {
+    if (37 === e.which || //Left
+    39 === e.which || //Right
+    38 === e.which || //Up
+    40 === e.which || //Down
+    13 === e.which //Enter
+    ) {
+        selectedTools = [];
+        evaluateFormatting($(this), e);
+      }
+  }); //Reset selected tools, evaluate formatting on mouseup, presumably following click or selection
+
+  editArea.on('mouseup', function (e) {
+    selectedTools = [];
     evaluateFormatting($(this), e);
   });
   editor.append(el);
@@ -31208,7 +31215,13 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
   var editAreaString = editArea.html();
   var patternString = openMarkerString + '(.*)' + closeMarkerString;
   var pattern = new RegExp(patternString);
-  var contentString = editAreaString.match(pattern)[1];
+  var contentString = '';
+  var matches = editAreaString.match(pattern);
+
+  if (matches && matches.length) {
+    contentString = matches[1];
+  }
+
   var openMarker = editArea.find('#openMarker');
   var openMarkerAncestor = openMarker.closest(tool);
   var closeMarker = editArea.find('#closeMarker');
@@ -31347,7 +31360,6 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
       tags.forEach(function (tool, index) {
         if (e.shiftKey && 37 === e.which) {
           //This prevents weird selection behavior on this key combo
-          console.log('Yeas');
           return;
         } else {
           execFormattingTool(tool, editArea, false);
@@ -31441,6 +31453,16 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
   if (toReverse.length) {
     console.log('toReverse');
     console.log(toReverse);
+  }
+
+  if (selectedTools.length) {
+    console.log('selectedTools');
+    console.log(selectedTools);
+  }
+
+  if (activeTools.length) {
+    console.log('activeTools');
+    console.log(activeTools);
   }
 };
 /**
