@@ -571,11 +571,6 @@ const evaluateFormatting = (editArea,e) => {
 
   logVitals('evaluateFormatting');
 
-  // let editAreaString = editArea.html();
-  // const pattern = new RegExp('<p></p>', 'gi');
-  // editAreaString = editAreaString.replace(pattern,'<p>&zwnj;</p>');
-  // editArea.html(editAreaString);
-
   setTimeout(function() {
     const range = window.getSelection().getRangeAt(0);
     const emptySelection = range.collapsed;

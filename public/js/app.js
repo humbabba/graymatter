@@ -31351,11 +31351,7 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
 
 
 var evaluateFormatting = function evaluateFormatting(editArea, e) {
-  logVitals('evaluateFormatting'); // let editAreaString = editArea.html();
-  // const pattern = new RegExp('<p></p>', 'gi');
-  // editAreaString = editAreaString.replace(pattern,'<p>&zwnj;</p>');
-  // editArea.html(editAreaString);
-
+  logVitals('evaluateFormatting');
   setTimeout(function () {
     var range = window.getSelection().getRangeAt(0);
     var emptySelection = range.collapsed;
