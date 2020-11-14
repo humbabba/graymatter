@@ -31108,6 +31108,10 @@ var makeTextEditor = function makeTextEditor(el) {
   editArea.on('mouseup', function (e) {
     selectedTools = [];
     evaluateFormatting($(this), e);
+  }); //Evaluate formatting on keyup, to catch deletions and so forth
+
+  editArea.on('keyup', function (e) {
+    evaluateFormatting($(this), e);
   });
   editor.append(el);
   return editor;
@@ -31123,7 +31127,8 @@ var insertImage = function insertImage(editArea) {
 
 var execFormattingTool = function execFormattingTool(tool, editArea) {
   var format = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
+  logVitals('execFormattingTool'); //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
+
   var range = window.getSelection().getRangeAt(0);
   var emptySelection = range.collapsed; //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
 
@@ -31166,6 +31171,7 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
   cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
 
   replaceMarkersWithSelection(editArea);
+  logVitals('execFormattingTool', true);
 };
 /**
 * Tool clicked on empty selection - decide whether we need to add formatting or reverse it for next character typed
@@ -31173,12 +31179,14 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
 
 
 var reverseOrAddOnEmpty = function reverseOrAddOnEmpty() {
+  logVitals('reverseOrAddOnEmpty');
   toReverse = ancestorTools.filter(function (x) {
     return !activeTools.includes(x);
   });
   toAdd = activeTools.filter(function (x) {
     return !ancestorTools.includes(x);
   });
+  logVitals('reverseOrAddOnEmpty', true);
 };
 /**
 * Turn tools on or off based on button click for empty selection
@@ -31186,6 +31194,7 @@ var reverseOrAddOnEmpty = function reverseOrAddOnEmpty() {
 
 
 var toggleSelectedTools = function toggleSelectedTools(tool) {
+  logVitals('toggleSelectedTools');
   var targetToolIndex = selectedTools.indexOf(tool);
 
   if (targetToolIndex > -1) {
@@ -31193,6 +31202,8 @@ var toggleSelectedTools = function toggleSelectedTools(tool) {
   } else {
     selectedTools.push(tool);
   }
+
+  logVitals('toggleSelectedTools', true);
 };
 /**
 * Get some info about the selection in an object we can reference in code later on.
@@ -31200,6 +31211,7 @@ var toggleSelectedTools = function toggleSelectedTools(tool) {
 
 
 var getSelectionObject = function getSelectionObject(tool, editArea, emptySelection) {
+  logVitals('getSelectionObject');
   selectionObject = {
     openAncestor: false,
     closeAncestor: false,
@@ -31274,6 +31286,8 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
       selectionObject.allFormatted = true;
     }
   }
+
+  logVitals('getSelectionObject', true);
 };
 /**
 * If selected text is already all formatted, reverse it. Otherwise apply selected tool.
@@ -31281,6 +31295,7 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
 
 
 var wrapTags = function wrapTags(editArea) {
+  logVitals('wrapTags');
   var editAreaString = editArea.html();
 
   if (selectionObject.allFormatted) {
@@ -31292,6 +31307,7 @@ var wrapTags = function wrapTags(editArea) {
   }
 
   editArea.html(editAreaString);
+  logVitals('wrapTags', true);
 };
 /**
 * Simply wrap selected content in tags for tool.
@@ -31299,8 +31315,10 @@ var wrapTags = function wrapTags(editArea) {
 
 
 var addFormatting = function addFormatting(editAreaString) {
+  logVitals('addFormatting');
   var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
   return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
+  logVitals('addFormatting', true);
 };
 /**
 * This is the more-complex case. Sometimes we need to wrap selected content in tags in reverse order,
@@ -31309,6 +31327,7 @@ var addFormatting = function addFormatting(editAreaString) {
 
 
 var reverseFormatting = function reverseFormatting(editAreaString) {
+  logVitals('reverseFormatting');
   var openMarkerPattern = new RegExp(openMarkerString);
   var closeMarkerPattern = new RegExp(closeMarkerString); //In the case of no ancestor elements of the markers for the selected tool, or only one for the open marker, we just close the formatting early.
 
@@ -31324,6 +31343,7 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
   var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
   var cleanBetweenMarkersContent = getCleanContent(betweenMarkersContent);
   return editAreaString.replace(betweenMarkersContent, cleanBetweenMarkersContent);
+  logVitals('reverseFormatting', true);
 };
 /**
 * On each click or keydown, we check the formatting of the selection and adjust active tools accordingly
@@ -31331,6 +31351,11 @@ var reverseFormatting = function reverseFormatting(editAreaString) {
 
 
 var evaluateFormatting = function evaluateFormatting(editArea, e) {
+  logVitals('evaluateFormatting'); // let editAreaString = editArea.html();
+  // const pattern = new RegExp('<p></p>', 'gi');
+  // editAreaString = editAreaString.replace(pattern,'<p>&zwnj;</p>');
+  // editArea.html(editAreaString);
+
   setTimeout(function () {
     var range = window.getSelection().getRangeAt(0);
     var emptySelection = range.collapsed;
@@ -31370,6 +31395,7 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
       });
     }
   }, 5);
+  logVitals('evaluateFormatting', true);
 };
 /**
 * Toggle tool-active display
@@ -31377,21 +31403,27 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
 
 
 var activateToolDisplay = function activateToolDisplay(editArea, tool) {
+  logVitals('activateToolDisplay');
   editArea.closest('.textEditorMasterDiv').find("[data-tool='".concat(tool, "']")).addClass('active');
   var targetToolIndex = activeTools.indexOf(tool);
 
   if (targetToolIndex === -1) {
     activeTools.push(tool);
   }
+
+  logVitals('activateToolDisplay', true);
 };
 
 var inactivateToolDisplay = function inactivateToolDisplay(editArea, tool) {
+  logVitals('inactivateToolDisplay');
   editArea.closest('.textEditorMasterDiv').find("[data-tool='".concat(tool, "']")).removeClass('active');
   var targetToolIndex = activeTools.indexOf(tool);
 
   if (targetToolIndex > -1) {
     activeTools.splice(targetToolIndex, 1);
   }
+
+  logVitals('inactivateToolDisplay', true);
 };
 
 var inactivateAllToolsDisplay = function inactivateAllToolsDisplay(editArea) {
@@ -31399,11 +31431,13 @@ var inactivateAllToolsDisplay = function inactivateAllToolsDisplay(editArea) {
 };
 
 var inactivateNonSelectedToolsDisplay = function inactivateNonSelectedToolsDisplay(editArea) {
+  logVitals('inactivateNonSelectedToolsDisplay');
   tags.forEach(function (tool, index) {
     if (selectedTools.indexOf(tool) === -1) {
       inactivateToolDisplay(editArea, tool);
     }
   });
+  logVitals('inactivateNonSelectedToolsDisplay', true);
 };
 /**
 * Reconcile user intention for tool-button status based on existing formatting and formatting commands from  clicks or ctrl-command
@@ -31411,7 +31445,8 @@ var inactivateNonSelectedToolsDisplay = function inactivateNonSelectedToolsDispl
 
 
 var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
-  //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
+  logVitals('reconcileToolsDisplay'); //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
+
   ancestorTools.forEach(function (tool, index) {
     inactivateToolDisplay(editArea, tool);
 
@@ -31437,35 +31472,7 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
     }
   });
   reverseOrAddOnEmpty();
-
-  if (toAdd.length || toReverse.length || selectedTools.length || activeTools.length || ancestorTools.length) {
-    console.log('----------------------');
-  }
-
-  if (toAdd.length) {
-    console.log('toAdd');
-    console.log(toAdd);
-  }
-
-  if (toReverse.length) {
-    console.log('toReverse');
-    console.log(toReverse);
-  }
-
-  if (selectedTools.length) {
-    console.log('selectedTools');
-    console.log(selectedTools);
-  }
-
-  if (activeTools.length) {
-    console.log('activeTools');
-    console.log(activeTools);
-  }
-
-  if (ancestorTools.length) {
-    console.log('ancestorTools');
-    console.log(ancestorTools);
-  }
+  logVitals('reconcileToolsDisplay', true);
 };
 /**
 * For selecting the content between the markers for manuplulation.
@@ -31473,14 +31480,10 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
 
 
 var getBetweenMarkersContent = function getBetweenMarkersContent(editAreaString) {
+  logVitals('getBetweenMarkersContent');
   var betweenMarkersPattern = new RegExp(openMarkerString + '(.*)' + closeMarkerString);
-  var matches = editAreaString.match(betweenMarkersPattern);
-
-  if (matches && matches.length > 1) {
-    return matches[1];
-  } else {
-    return '';
-  }
+  return editAreaString.match(betweenMarkersPattern)[1];
+  logVitals('getBetweenMarkersContent', true);
 };
 /**
 * For removing any instances of the tool in a given piece of content
@@ -31488,9 +31491,11 @@ var getBetweenMarkersContent = function getBetweenMarkersContent(editAreaString)
 
 
 var getCleanContent = function getCleanContent(content) {
+  logVitals('getCleanContent');
   var openTagPattern = new RegExp(selectionObject.openTool, 'gi');
   var closeTagPattern = new RegExp(selectionObject.closeTool, 'gi');
   return content.replace(openTagPattern, '').replace(closeTagPattern, '');
+  logVitals('getCleanContent', true);
 };
 /**
 * It's possible we've got "redundant" formatting tags left over after the above, as in a B tag with B children. Clean 'em up.
@@ -31498,6 +31503,7 @@ var getCleanContent = function getCleanContent(content) {
 
 
 var cleanRedundantCode = function cleanRedundantCode(editArea) {
+  logVitals('cleanRedundantCode');
   tags.forEach(function (tag) {
     var inspectedElements = editArea.find(tag);
 
@@ -31528,15 +31534,14 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
 
     redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Empty paragraphs.
-
-    editAreaString = editAreaString.replace('<p></p>', ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
+    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
 
     editAreaString = editAreaString.replace('<br></p>', '</p>'); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
 
     editAreaString = editAreaString.replace('<strong>', '<b>').replace('</strong>', '</b>').replace('<em>', '<i>').replace('</em>', '</i>');
   });
   editArea.html(editAreaString);
+  logVitals('cleanRedundantCode', true);
 };
 /**
 * We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
@@ -31544,30 +31549,28 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
 
 
 var replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea) {
-  //First let's see if we have an empty marker - if so, selection is different
-  var emptyMarker = editArea.find('empty')[0];
+  //First we deal with empty paragraph tags without ancestors, which can confound selection
+  if (!ancestorTools.length) {
+    var editAreaString = editArea.html();
+    var pattern = new RegExp('<p>' + openMarkerString + closeMarkerString + '</p>', 'gi');
+    editAreaString = editAreaString.replace(pattern, '<p>' + openMarkerString + '&zwnj;' + closeMarkerString + '</p>');
+    editArea.html(editAreaString);
+  }
 
-  if ('undefined' !== typeof emptyMarker) {
-    //We are dealing with an empty select
-    var range = window.getSelection().getRangeAt(0);
-    range.selectNode(emptyMarker); //We have to select a NODE to get empty selection to work on all browsers; hence the "empty" tag inserted in addFormatting and reverseFormatting above
-  } else {
-    //Make brand-new range
-    var _range = document.createRange(); //Clean up any old selection
+  logVitals('replaceMarkersWithSelection'); //Make brand-new range
 
+  var range = document.createRange(); //Clean up any old selection
 
-    var selection = window.getSelection();
-    selection.removeAllRanges(); //Add new range as selection
+  var selection = window.getSelection();
+  selection.removeAllRanges(); //Add new range as selection
 
-    selection.addRange(_range); //Set start and end on new range
+  selection.addRange(range); //Set start and end on new range
 
-    _range.setStartAfter(editArea.find('#openMarker')[0]);
-
-    _range.setEndBefore(editArea.find('#closeMarker')[0]);
-  } //Remove marker tags
-
+  range.setStartAfter(editArea.find('#openMarker')[0]);
+  range.setEndBefore(editArea.find('#closeMarker')[0]); //Remove marker tags
 
   editArea.find('marker').remove();
+  logVitals('replaceMarkersWithSelection', true);
 };
 /**
  * Remove HTML (except links) from copy.
@@ -31640,6 +31643,49 @@ $(document).on('keydown', function (e) {
  */
 
 initTextEditors(50);
+
+var logVitals = function logVitals(func) {
+  var leaving = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  console.log('----------------------');
+
+  if (leaving) {
+    console.log('LEAVING FUNCTION: ' + func);
+  } else {
+    console.log('ENTERING FUNCTION: ' + func);
+  }
+
+  if (toAdd.length) {
+    console.log('toAdd');
+    console.log(toAdd);
+  }
+
+  if (toReverse.length) {
+    console.log('toReverse');
+    console.log(toReverse);
+  }
+
+  if (selectedTools.length) {
+    console.log('selectedTools');
+    console.log(selectedTools);
+  }
+
+  if (activeTools.length) {
+    console.log('activeTools');
+    console.log(activeTools);
+  }
+
+  if (ancestorTools.length) {
+    console.log('ancestorTools');
+    console.log(ancestorTools);
+  }
+
+  var editArea = $(':focus');
+
+  if (editArea.hasClass('fancy-text-div')) {
+    console.log('editArea.html()');
+    console.log(editArea.html());
+  }
+};
 
 /***/ }),
 
