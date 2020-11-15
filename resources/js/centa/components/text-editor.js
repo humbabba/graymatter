@@ -305,8 +305,7 @@ const makeTextEditor = el => {
       if(37 === e.which || //Left
        39 === e.which || //Right
        38 === e.which || //Up
-       40 === e.which || //Down
-       13 === e.which //Enter
+       40 === e.which  //Down
      ) {
       selectedTools = [];
       evaluateFormatting($(this),e);
@@ -338,6 +337,9 @@ const insertImage = (editArea) => {
 const execFormattingTool = (tool,editArea,format = true) => {
 
     logVitals('execFormattingTool');
+
+    console.log('format:');
+    console.log(format);
 
     //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
     const range = window.getSelection().getRangeAt(0);
@@ -604,6 +606,7 @@ const evaluateFormatting = (editArea,e) => {
       });
     }
   },5);
+
   logVitals('evaluateFormatting',true);
 }
 
@@ -644,6 +647,7 @@ const inactivateNonSelectedToolsDisplay = editArea => {
 */
 const reconcileToolsDisplay = editArea => {
   logVitals('reconcileToolsDisplay');
+  $('.toolbar-button').removeClass('active');
   //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
   ancestorTools.forEach(function(tool,index) {
     inactivateToolDisplay(editArea,tool);
@@ -729,8 +733,6 @@ const cleanRedundantCode = editArea => {
         redundantCloseOpen = new RegExp(openTag + closeTag,'gi');
         editAreaString = editAreaString.replace(redundantCloseOpen,'');
 
-        //Case: Firefox sometimes leaves a <br> right before a </p>.
-        editAreaString = editAreaString.replace('<br></p>','</p>');
         //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
         editAreaString = editAreaString.replace('<strong>','<b>').replace('</strong>','</b>')
           .replace('<em>','<i>').replace('</em>','</i>');
@@ -748,7 +750,7 @@ const replaceMarkersWithSelection = editArea => {
     if(!ancestorTools.length) {
       let editAreaString = editArea.html();
       const pattern = new RegExp('<p>' + openMarkerString + closeMarkerString + '</p>', 'gi');
-      editAreaString = editAreaString.replace(pattern,'<p>' + openMarkerString + '&zwnj;' + closeMarkerString + '</p>');
+      editAreaString = editAreaString.replace(pattern,'<p>' + openMarkerString + '<br>' + closeMarkerString + '</p>');
       editArea.html(editAreaString);
     }
 
@@ -793,6 +795,15 @@ const stripTags = el => {
         $(el).text($(el).text() + ' '); //Adds a space to end of each text node so we end up with spaces between paragraphs.
         $(el).replaceWith($(el).contents());
     }
+
+    activeTools = [];
+    selectedTools = [];
+    ancestorTools = [];
+    const editArea = $(':focus');
+    if(editArea.hasClass('fancy-text-div')) {
+        reconcileToolsDisplay(editArea);
+    }
+
 };
 
 /**

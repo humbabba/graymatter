@@ -31097,8 +31097,7 @@ var makeTextEditor = function makeTextEditor(el) {
     if (37 === e.which || //Left
     39 === e.which || //Right
     38 === e.which || //Up
-    40 === e.which || //Down
-    13 === e.which //Enter
+    40 === e.which //Down
     ) {
         selectedTools = [];
         evaluateFormatting($(this), e);
@@ -31127,7 +31126,9 @@ var insertImage = function insertImage(editArea) {
 
 var execFormattingTool = function execFormattingTool(tool, editArea) {
   var format = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  logVitals('execFormattingTool'); //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
+  logVitals('execFormattingTool');
+  console.log('format:');
+  console.log(format); //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
 
   var range = window.getSelection().getRangeAt(0);
   var emptySelection = range.collapsed; //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
@@ -31441,7 +31442,8 @@ var inactivateNonSelectedToolsDisplay = function inactivateNonSelectedToolsDispl
 
 
 var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
-  logVitals('reconcileToolsDisplay'); //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
+  logVitals('reconcileToolsDisplay');
+  $('.toolbar-button').removeClass('active'); //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
 
   ancestorTools.forEach(function (tool, index) {
     inactivateToolDisplay(editArea, tool);
@@ -31530,9 +31532,7 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: An empty tag.
 
     redundantCloseOpen = new RegExp(openTag + closeTag, 'gi');
-    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: Firefox sometimes leaves a <br> right before a </p>.
-
-    editAreaString = editAreaString.replace('<br></p>', '</p>'); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
+    editAreaString = editAreaString.replace(redundantCloseOpen, ''); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
 
     editAreaString = editAreaString.replace('<strong>', '<b>').replace('</strong>', '</b>').replace('<em>', '<i>').replace('</em>', '</i>');
   });
@@ -31549,7 +31549,7 @@ var replaceMarkersWithSelection = function replaceMarkersWithSelection(editArea)
   if (!ancestorTools.length) {
     var editAreaString = editArea.html();
     var pattern = new RegExp('<p>' + openMarkerString + closeMarkerString + '</p>', 'gi');
-    editAreaString = editAreaString.replace(pattern, '<p>' + openMarkerString + '&zwnj;' + closeMarkerString + '</p>');
+    editAreaString = editAreaString.replace(pattern, '<p>' + openMarkerString + '<br>' + closeMarkerString + '</p>');
     editArea.html(editAreaString);
   }
 
@@ -31593,6 +31593,15 @@ var stripTags = function stripTags(el) {
     $(el).text($(el).text() + ' '); //Adds a space to end of each text node so we end up with spaces between paragraphs.
 
     $(el).replaceWith($(el).contents());
+  }
+
+  activeTools = [];
+  selectedTools = [];
+  ancestorTools = [];
+  var editArea = $(':focus');
+
+  if (editArea.hasClass('fancy-text-div')) {
+    reconcileToolsDisplay(editArea);
   }
 };
 /**
