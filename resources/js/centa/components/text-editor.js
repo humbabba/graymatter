@@ -21,7 +21,7 @@ const toolsArray = [
     {class:'fas fa-italic',tool: 'i',title: 'Italic (ctrl-i)'},
     {class:'fas fa-underline',tool: 'u',title: 'Underline (ctrl-u)'},
     {class:'fas fa-strikethrough toolbar-spacer',tool: 'strike',title: 'Strikethrough'},
-    {class:'fas fa-image toolbar-spacer',tool: 'inserImage',title: 'Insert image'},
+    {class:'fas fa-image toolbar-spacer',tool: 'insertImage',title: 'Insert image'},
     {class:'fas fa-minus toolbar-spacer',tool: 'insertHorizontalRule',title: 'Horizontal rule'},
     {class:'fas fa-link',tool: 'createLink',title: 'Link'},
     {class:'fas fa-unlink toolbar-spacer',tool: 'unlink',title: 'Unlink'},
@@ -154,14 +154,26 @@ const makeTextEditor = el => {
             let input = null;
             let copyDiv,codeDiv;
             switch(item.tool) {
-                case 'inserImage':
+                case 'insertImage':
                     insertImage(editArea);
                     break;
                 case 'createLink':
                     input = prompt('Enter URL:');
                     if(input) {
-                      document.execCommand(item.tool,false,input);
+                        copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
+                        codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
+                        unlinkSelection(copyDiv,codeDiv,el);
+                        const props = {
+                          "href":input,
+                          "target":"_blank"
+                        };
+                        execFormattingTool('a',editArea,true,props);
                     }
+                    break;
+                case 'unlink':
+                    copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
+                    codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
+                    unlinkSelection(copyDiv,codeDiv,el);
                     break;
                 case 'fontSize':
                     input = prompt('Text size:','(Integer from 1 to 7)');
@@ -176,8 +188,8 @@ const makeTextEditor = el => {
                     }
                     break;
                 case 'clearFormat':
-                    copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
-                    codeDiv = $(this).parent().parent().find('.code-editor').first();
+                    copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
+                    codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
                     let numberOfLinks = copyDiv.find('a').length;
                     let targetInput = copyDiv.next('.text-editor');
                     let x = 0;
@@ -196,10 +208,10 @@ const makeTextEditor = el => {
                     showUnsavedFlag();
                     break;
                 case 'toggleCode':
-                    copyDiv = $(this).parent().parent().find('.fancy-text-div').first();
-                    codeDiv = $(this).parent().parent().find('.code-editor').first();
-                    let buttonsToToggle = $(this).parent().parent().find('.toolbar-button').not('.fa-code');
-                    let spacersToToggle = $(this).parent().parent().find('.spacer');
+                    copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
+                    codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
+                    let buttonsToToggle = $(this).closest('.textEditorMasterDiv').find('.toolbar-button').not('.fa-code');
+                    let spacersToToggle = $(this).closest('.textEditorMasterDiv').find('.spacer');
                     buttonsToToggle.toggle();
                     spacersToToggle.toggle();
                     copyDiv.toggle();
@@ -222,19 +234,8 @@ const makeTextEditor = el => {
     editor.append(codeEditArea);
     editor.append(editArea);
 
-    //The code-editable area
-    if(el.val()) {
-        //Get the existing value in there
-        codeEditArea.val(el.val());
-    } else {
-        //Start editArea with a P element so the first line gets wrapped
-        codeEditArea.val('<p><br></p>');
-    }
-    //Make it so updates to the editArea affect the original el's value
-    codeEditArea.on('input',function() {
-        el.val($(this).val());
-        editArea.html($(this).val());
-    });
+    //Start codeEditArea with a P element so the first line gets wrapped
+    codeEditArea.val(paragraphize(el.val()));
 
     //Only check for changes in codeEditArea if we have a callback.
     if(textEditorOnChangeCallback) {
@@ -248,19 +249,14 @@ const makeTextEditor = el => {
         });
     }
 
-    //The editable area
-    if(el.val()) {
-        //Get the existing value in there
-        editArea.html(el.val());
-    } else {
-        //Start editArea with a P element so the first line gets wrapped
-        editArea.html($('<p><br></p>'));
-    }
+    //Start editArea with a P element so the first line gets wrapped
+    editArea.html(paragraphize(el.val()));
+
     //Make it so updates to the editArea affect the original el's value
-    editArea.on('input keyup',function() {
+    editArea.add(codeEditArea).on('input keyup',function() {
         const updatedCode = $(this).html();
-        el.val(updatedCode);
-        codeEditArea.val(updatedCode);
+        editArea.val(paragraphize(updatedCode));
+        codeEditArea.val(paragraphize(updatedCode));
     });
 
     //Only check for changes in editArea if we have a callback.
@@ -332,30 +328,97 @@ const insertImage = (editArea) => {
 };
 
 /**
-* For basic text formatting
-*/
-const execFormattingTool = (tool,editArea,format = true) => {
+ * Remove all links in the selection
+ * @param copyDiv
+ * @param codeDiv
+ * @param hiddenInput
+ */
+const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
+    const originalCode = copyDiv.html();
 
-    logVitals('execFormattingTool');
+    //Get the selection range
+    let range = window.getSelection().getRangeAt(0);
+    if(range.collapsed) {
+        return;
+    }
 
-    console.log('format:');
-    console.log(format);
+    const unlinkWrapper = jQuery('<unlink>');
+    range.surroundContents(unlinkWrapper[0]);
 
-    //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
-    const range = window.getSelection().getRangeAt(0);
+    range = insertOpenAndCloseMarkers(range);
 
-    let emptySelection = range.collapsed;
+    let unlinkElement = copyDiv.find('unlink').first();
 
+    let inside = unlinkElement.find('a').closest('a');
+    let outside = unlinkElement.closest('a');
+
+    //Merge together tags in the selection and those in the ancestry
+    let allAnchors = inside.add(outside);
+
+    allAnchors.each(function() {
+        jQuery(this).replaceWith(jQuery(this).html());
+    });
+
+    //Have to reset unlinkElement case the above replacement hoses it in Chrome
+    unlinkElement = copyDiv.find('unlink').first();
+    unlinkElement.replaceWith(unlinkElement.html());
+    replaceMarkersWithSelection(copyDiv);
+
+    const updatedCode = copyDiv.html();
+    codeDiv.val(updatedCode);
+    hiddenInput.val(updatedCode);
+
+    if(updatedCode !== originalCode) {
+      if(textEditorOnChangeCallback) {
+          textEditorOnChangeCallback();
+      }
+    }
+};
+
+/**
+ * Add the custom "marker" tags for selection-setting purposes
+ * @param range
+ * @returns {*}
+ */
+const insertOpenAndCloseMarkers = (range) => {
     //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
     const openMarker = document.createElement('marker');
-    $(openMarker).attr('id','openMarker');
+    jQuery(openMarker).attr('id','openMarker');
     const closeMarker = document.createElement('marker');
-    $(closeMarker).attr('id','closeMarker');
+    jQuery(closeMarker).attr('id','closeMarker');
     range.insertNode(openMarker);
 
     //Collapse the range to the end, so we can insert the closeMarker in the proper spot
     range.collapse(false);
     range.insertNode(closeMarker);
+    return range;
+};
+
+/**
+* For basic text formatting
+*/
+const execFormattingTool = (tool,editArea,format = true,props = false) => {
+
+  console.log('tool');
+  console.log(tool);
+
+  console.log('editArea');
+  console.log(editArea);
+
+  console.log('emptySelection');
+  console.log(emptySelection);
+
+  console.log('props');
+  console.log(props);
+
+    logVitals('execFormattingTool');
+
+    //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
+    let range = window.getSelection().getRangeAt(0);
+
+    let emptySelection = range.collapsed;
+
+    range = insertOpenAndCloseMarkers(range);
 
     //This makes sure markers are *inside* top-level P tags
     editArea.children().each(function() {
@@ -372,7 +435,7 @@ const execFormattingTool = (tool,editArea,format = true) => {
     });
 
     //We get a special object representing some key info about the selection for later use
-    getSelectionObject(tool,editArea,emptySelection);
+    getSelectionObject(tool,editArea,emptySelection,props);
 
     //For empty selects, we need to update active tools display
     if(selectionObject.emptySelection) {
@@ -385,6 +448,9 @@ const execFormattingTool = (tool,editArea,format = true) => {
 
     //Remove any nested instances of formatting
     cleanRedundantCode(editArea);
+
+    //Make sure we've got paragraphs in there
+    editArea.html(paragraphize(editArea.html()));
 
     //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
@@ -428,7 +494,19 @@ const toggleSelectedTools = tool => {
 /**
 * Get some info about the selection in an object we can reference in code later on.
 */
-const getSelectionObject = (tool,editArea,emptySelection) => {
+const getSelectionObject = (tool,editArea,emptySelection,props) => {
+
+  console.log('tool');
+  console.log(tool);
+
+  console.log('editArea');
+  console.log(editArea);
+
+  console.log('emptySelection');
+  console.log(emptySelection);
+
+  console.log('props');
+  console.log(props);
 
   logVitals('getSelectionObject');
 
@@ -471,6 +549,17 @@ const getSelectionObject = (tool,editArea,emptySelection) => {
     }
     if(closeMarkerAncestor.length) {
         selectionObject.closeAncestor = closeMarkerAncestor;
+    }
+
+    //See whether any props have been passed and add them to the open tool
+    if(props) {
+      let toolWithProps = '<' + tool;
+      const keys = Object.keys(props);
+      keys.forEach((key, index) => {
+        toolWithProps += ` ${key}="${props[key]}"`;
+      });
+      toolWithProps += '>';
+      selectionObject.openTool = toolWithProps;
     }
 
     //Determine if all text in contentString is already wrapped in this tool
@@ -743,6 +832,23 @@ const cleanRedundantCode = editArea => {
 };
 
 /**
+* Make sure our editorDiv and codeDiv have P tags
+*/
+const paragraphize = text => {
+    if(text && '' !== text) {
+        const openTagPattern = new RegExp('<div', 'gi');
+        const closeTagPattern = new RegExp('</div>', 'gi');
+        text = text.replace(openTagPattern,'<p').replace(closeTagPattern,'</p>');
+        if(0 !== text.indexOf('<p>')) {
+            text = '<p>' + text + '</p>';
+        }
+    } else {
+        text = '<p><br></p>';
+    }
+    return text;
+};
+
+/**
 * We've kept our marker tags throughout all the manipulation above, so we can reset the selection in a way that will be visually identical to what the user originally selected.
 */
 const replaceMarkersWithSelection = editArea => {
@@ -844,6 +950,7 @@ $(document).on('keydown', function (e) {
 initTextEditors(50);
 
 const logVitals = (func,leaving = false) => {
+  return;
   console.log('----------------------');
   if(leaving) {
     console.log('LEAVING FUNCTION: ' + func);
