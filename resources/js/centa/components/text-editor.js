@@ -335,6 +335,8 @@ const insertImage = (editArea) => {
  */
 const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
     const originalCode = copyDiv.html();
+    console.log('originalCode');
+    console.log(originalCode);
 
     //Get the selection range
     let range = window.getSelection().getRangeAt(0);
@@ -343,9 +345,17 @@ const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
     }
 
     const unlinkWrapper = jQuery('<unlink>');
-    range.surroundContents(unlinkWrapper[0]);
 
     range = insertOpenAndCloseMarkers(range);
+
+    // Manually wrap code inside selection with temp 'unlink' element
+    const openMarkerPattern = new RegExp(openMarkerString);
+    const closeMarkerPattern = new RegExp(closeMarkerString);
+    let codeToWrap = copyDiv.html();
+    codeToWrap = codeToWrap.replace(openMarkerPattern,openMarkerString + '<unlink>').replace(closeMarkerPattern,'</unlink>' + closeMarkerString);
+    copyDiv.html(codeToWrap);
+    console.log('codeToWrap');
+    console.log(codeToWrap);
 
     let unlinkElement = copyDiv.find('unlink').first();
 
@@ -369,9 +379,7 @@ const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
     hiddenInput.val(updatedCode);
 
     if(updatedCode !== originalCode) {
-      if(textEditorOnChangeCallback) {
-          textEditorOnChangeCallback();
-      }
+        showFlag();
     }
 };
 
@@ -399,17 +407,17 @@ const insertOpenAndCloseMarkers = (range) => {
 */
 const execFormattingTool = (tool,editArea,format = true,props = false) => {
 
-  console.log('tool');
-  console.log(tool);
+    console.log('tool');
+    console.log(tool);
 
-  console.log('editArea');
-  console.log(editArea);
+    console.log('editArea');
+    console.log(editArea);
 
-  console.log('emptySelection');
-  console.log(emptySelection);
+    console.log('emptySelection');
+    console.log(emptySelection);
 
-  console.log('props');
-  console.log(props);
+    console.log('props');
+    console.log(props);
 
     logVitals('execFormattingTool');
 
@@ -624,6 +632,12 @@ const addFormatting = editAreaString => {
   logVitals('addFormatting');
 
   const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+    console.log('editAreaString');
+    console.log(editAreaString);
+    console.log('betweenMarkersContent');
+    console.log(betweenMarkersContent);
+    console.log('editAreaString');
+    console.log(editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool));
   return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
 
   logVitals('addFormatting',true);
@@ -950,7 +964,6 @@ $(document).on('keydown', function (e) {
 initTextEditors(50);
 
 const logVitals = (func,leaving = false) => {
-  return;
   console.log('----------------------');
   if(leaving) {
     console.log('LEAVING FUNCTION: ' + func);

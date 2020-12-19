@@ -31122,7 +31122,9 @@ var insertImage = function insertImage(editArea) {
 
 
 var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
-  var originalCode = copyDiv.html(); //Get the selection range
+  var originalCode = copyDiv.html();
+  console.log('originalCode');
+  console.log(originalCode); //Get the selection range
 
   var range = window.getSelection().getRangeAt(0);
 
@@ -31131,8 +31133,15 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
   }
 
   var unlinkWrapper = jQuery('<unlink>');
-  range.surroundContents(unlinkWrapper[0]);
-  range = insertOpenAndCloseMarkers(range);
+  range = insertOpenAndCloseMarkers(range); // Manually wrap code inside selection with temp 'unlink' element
+
+  var openMarkerPattern = new RegExp(openMarkerString);
+  var closeMarkerPattern = new RegExp(closeMarkerString);
+  var codeToWrap = copyDiv.html();
+  codeToWrap = codeToWrap.replace(openMarkerPattern, openMarkerString + '<unlink>').replace(closeMarkerPattern, '</unlink>' + closeMarkerString);
+  copyDiv.html(codeToWrap);
+  console.log('codeToWrap');
+  console.log(codeToWrap);
   var unlinkElement = copyDiv.find('unlink').first();
   var inside = unlinkElement.find('a').closest('a');
   var outside = unlinkElement.closest('a'); //Merge together tags in the selection and those in the ancestry
@@ -31150,9 +31159,7 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
   hiddenInput.val(updatedCode);
 
   if (updatedCode !== originalCode) {
-    if (textEditorOnChangeCallback) {
-      textEditorOnChangeCallback();
-    }
+    showFlag();
   }
 };
 /**
@@ -31393,6 +31400,12 @@ var wrapTags = function wrapTags(editArea) {
 var addFormatting = function addFormatting(editAreaString) {
   logVitals('addFormatting');
   var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  console.log('editAreaString');
+  console.log(editAreaString);
+  console.log('betweenMarkersContent');
+  console.log(betweenMarkersContent);
+  console.log('editAreaString');
+  console.log(editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool));
   return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
   logVitals('addFormatting', true);
 };
@@ -31746,7 +31759,6 @@ initTextEditors(50);
 
 var logVitals = function logVitals(func) {
   var leaving = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  return;
   console.log('----------------------');
 
   if (leaving) {
@@ -31838,8 +31850,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
