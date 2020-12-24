@@ -335,8 +335,6 @@ const insertImage = (editArea) => {
  */
 const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
     const originalCode = copyDiv.html();
-    console.log('originalCode');
-    console.log(originalCode);
 
     //Get the selection range
     let range = window.getSelection().getRangeAt(0);
@@ -354,8 +352,6 @@ const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
     let codeToWrap = copyDiv.html();
     codeToWrap = codeToWrap.replace(openMarkerPattern,openMarkerString + '<unlink>').replace(closeMarkerPattern,'</unlink>' + closeMarkerString);
     copyDiv.html(codeToWrap);
-    console.log('codeToWrap');
-    console.log(codeToWrap);
 
     let unlinkElement = copyDiv.find('unlink').first();
 
@@ -379,7 +375,7 @@ const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
     hiddenInput.val(updatedCode);
 
     if(updatedCode !== originalCode) {
-        showFlag();
+        console.log('showFlag()');
     }
 };
 
@@ -406,18 +402,6 @@ const insertOpenAndCloseMarkers = (range) => {
 * For basic text formatting
 */
 const execFormattingTool = (tool,editArea,format = true,props = false) => {
-
-    console.log('tool');
-    console.log(tool);
-
-    console.log('editArea');
-    console.log(editArea);
-
-    console.log('emptySelection');
-    console.log(emptySelection);
-
-    console.log('props');
-    console.log(props);
 
     logVitals('execFormattingTool');
 
@@ -503,18 +487,6 @@ const toggleSelectedTools = tool => {
 * Get some info about the selection in an object we can reference in code later on.
 */
 const getSelectionObject = (tool,editArea,emptySelection,props) => {
-
-  console.log('tool');
-  console.log(tool);
-
-  console.log('editArea');
-  console.log(editArea);
-
-  console.log('emptySelection');
-  console.log(emptySelection);
-
-  console.log('props');
-  console.log(props);
 
   logVitals('getSelectionObject');
 
@@ -632,12 +604,6 @@ const addFormatting = editAreaString => {
   logVitals('addFormatting');
 
   const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-    console.log('editAreaString');
-    console.log(editAreaString);
-    console.log('betweenMarkersContent');
-    console.log(betweenMarkersContent);
-    console.log('editAreaString');
-    console.log(editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool));
   return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
 
   logVitals('addFormatting',true);
@@ -942,16 +908,32 @@ $(document).on('keydown', function (e) {
           case 73:
             tool = 'i';
             break;
+          case 75:
+            tool = 'a'; //Link
+            break;
           case 85:
             tool = 'u';
             break;
         }
         if(tool) {
+          const editArea = $(':focus');
           if(tags.indexOf(tool) > -1) {
-              const editArea = $(':focus');
               if(editArea.hasClass('fancy-text-div')) {
                   e.preventDefault();
                   execFormattingTool(tool,editArea);
+              }
+          } else if('a' === tool) {
+              e.preventDefault();
+              let input = prompt('Enter URL:');
+              if(input) {
+                  const codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
+                  const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
+                  unlinkSelection(editArea,codeEditArea,hiddenInput);
+                  const props = {
+                      "href":input,
+                      "target":"_blank"
+                  };
+                  execFormattingTool('a',editArea,true,props);
               }
           }
         }

@@ -31122,9 +31122,7 @@ var insertImage = function insertImage(editArea) {
 
 
 var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
-  var originalCode = copyDiv.html();
-  console.log('originalCode');
-  console.log(originalCode); //Get the selection range
+  var originalCode = copyDiv.html(); //Get the selection range
 
   var range = window.getSelection().getRangeAt(0);
 
@@ -31140,8 +31138,6 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
   var codeToWrap = copyDiv.html();
   codeToWrap = codeToWrap.replace(openMarkerPattern, openMarkerString + '<unlink>').replace(closeMarkerPattern, '</unlink>' + closeMarkerString);
   copyDiv.html(codeToWrap);
-  console.log('codeToWrap');
-  console.log(codeToWrap);
   var unlinkElement = copyDiv.find('unlink').first();
   var inside = unlinkElement.find('a').closest('a');
   var outside = unlinkElement.closest('a'); //Merge together tags in the selection and those in the ancestry
@@ -31159,7 +31155,7 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
   hiddenInput.val(updatedCode);
 
   if (updatedCode !== originalCode) {
-    showFlag();
+    console.log('showFlag()');
   }
 };
 /**
@@ -31189,14 +31185,6 @@ var insertOpenAndCloseMarkers = function insertOpenAndCloseMarkers(range) {
 var execFormattingTool = function execFormattingTool(tool, editArea) {
   var format = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
   var props = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  console.log('tool');
-  console.log(tool);
-  console.log('editArea');
-  console.log(editArea);
-  console.log('emptySelection');
-  console.log(emptySelection);
-  console.log('props');
-  console.log(props);
   logVitals('execFormattingTool'); //Get the selection range - since this varies browser to browser, we're going to have to do some normalizing
 
   var range = window.getSelection().getRangeAt(0);
@@ -31275,14 +31263,6 @@ var toggleSelectedTools = function toggleSelectedTools(tool) {
 
 
 var getSelectionObject = function getSelectionObject(tool, editArea, emptySelection, props) {
-  console.log('tool');
-  console.log(tool);
-  console.log('editArea');
-  console.log(editArea);
-  console.log('emptySelection');
-  console.log(emptySelection);
-  console.log('props');
-  console.log(props);
   logVitals('getSelectionObject');
   selectionObject = {
     openAncestor: false,
@@ -31400,12 +31380,6 @@ var wrapTags = function wrapTags(editArea) {
 var addFormatting = function addFormatting(editAreaString) {
   logVitals('addFormatting');
   var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-  console.log('editAreaString');
-  console.log(editAreaString);
-  console.log('betweenMarkersContent');
-  console.log(betweenMarkersContent);
-  console.log('editAreaString');
-  console.log(editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool));
   return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
   logVitals('addFormatting', true);
 };
@@ -31734,18 +31708,37 @@ $(document).on('keydown', function (e) {
         tool = 'i';
         break;
 
+      case 75:
+        tool = 'a'; //Link
+
+        break;
+
       case 85:
         tool = 'u';
         break;
     }
 
     if (tool) {
-      if (tags.indexOf(tool) > -1) {
-        var editArea = $(':focus');
+      var editArea = $(':focus');
 
+      if (tags.indexOf(tool) > -1) {
         if (editArea.hasClass('fancy-text-div')) {
           e.preventDefault();
           execFormattingTool(tool, editArea);
+        }
+      } else if ('a' === tool) {
+        e.preventDefault();
+        var input = prompt('Enter URL:');
+
+        if (input) {
+          var codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
+          var hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
+          unlinkSelection(editArea, codeEditArea, hiddenInput);
+          var props = {
+            "href": input,
+            "target": "_blank"
+          };
+          execFormattingTool('a', editArea, true, props);
         }
       }
     }
