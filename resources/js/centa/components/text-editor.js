@@ -601,12 +601,43 @@ const wrapTags = editArea => {
 */
 const addFormatting = editAreaString => {
 
-  logVitals('addFormatting');
+    logVitals('addFormatting');
 
-  const betweenMarkersContent = getBetweenMarkersContent(editAreaString);
-  return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
+    let betweenMarkersContent = getBetweenMarkersContent(editAreaString);
 
-  logVitals('addFormatting',true);
+    //In the case of links, check for unbalanced formatting tags
+    if('a' === selectionObject.tool) {
+        editAreaString = correctTagBalance(editAreaString,betweenMarkersContent);
+        //Have to rest betweenMarkersContent since it will have changed due to tag balancing
+        betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+    }
+
+    return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
+
+    logVitals('addFormatting',true);
+};
+
+/**
+ * An anchor tag spanning part of a formatting tag will be broken in two unless we manually a balance the formatting tag
+ * @param editAreaString
+ * @param betweenMarkersContent
+ * @returns {*}
+ */
+const correctTagBalance = (editAreaString,betweenMarkersContent) => {
+    //See if we have any close tags w/o open tags between the markers
+    tags.forEach((tag) => {
+       const openTool = '<' + tag + '>';
+       const closeTool = '</' + tag + '>';
+       const openToolIndex = betweenMarkersContent.indexOf(openTool);
+       const closeToolIndex = betweenMarkersContent.indexOf(closeTool);
+       if(-1 < closeToolIndex) {
+           if(-1 === openToolIndex || closeToolIndex < openToolIndex) {
+               editAreaString = editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString,closeTool + openMarkerString + openTool + betweenMarkersContent + closeMarkerString);
+               betweenMarkersContent = openTool + betweenMarkersContent;
+           }
+       }
+    });
+    return editAreaString;
 };
 
 /**
@@ -946,6 +977,7 @@ $(document).on('keydown', function (e) {
 initTextEditors(50);
 
 const logVitals = (func,leaving = false) => {
+    return;
   console.log('----------------------');
   if(leaving) {
     console.log('LEAVING FUNCTION: ' + func);

@@ -31379,9 +31379,41 @@ var wrapTags = function wrapTags(editArea) {
 
 var addFormatting = function addFormatting(editAreaString) {
   logVitals('addFormatting');
-  var betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  var betweenMarkersContent = getBetweenMarkersContent(editAreaString); //In the case of links, check for unbalanced formatting tags
+
+  if ('a' === selectionObject.tool) {
+    editAreaString = correctTagBalance(editAreaString, betweenMarkersContent); //Have to rest betweenMarkersContent since it will have changed due to tag balancing
+
+    betweenMarkersContent = getBetweenMarkersContent(editAreaString);
+  }
+
   return editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, selectionObject.openTool + openMarkerString + betweenMarkersContent + closeMarkerString + selectionObject.closeTool);
   logVitals('addFormatting', true);
+};
+/**
+ * An anchor tag spanning part of a formatting tag will be broken in two unless we manually a balance the formatting tag
+ * @param editAreaString
+ * @param betweenMarkersContent
+ * @returns {*}
+ */
+
+
+var correctTagBalance = function correctTagBalance(editAreaString, betweenMarkersContent) {
+  //See if we have any close tags w/o open tags between the markers
+  tags.forEach(function (tag) {
+    var openTool = '<' + tag + '>';
+    var closeTool = '</' + tag + '>';
+    var openToolIndex = betweenMarkersContent.indexOf(openTool);
+    var closeToolIndex = betweenMarkersContent.indexOf(closeTool);
+
+    if (-1 < closeToolIndex) {
+      if (-1 === openToolIndex || closeToolIndex < openToolIndex) {
+        editAreaString = editAreaString.replace(openMarkerString + betweenMarkersContent + closeMarkerString, closeTool + openMarkerString + openTool + betweenMarkersContent + closeMarkerString);
+        betweenMarkersContent = openTool + betweenMarkersContent;
+      }
+    }
+  });
+  return editAreaString;
 };
 /**
 * This is the more-complex case. Sometimes we need to wrap selected content in tags in reverse order,
@@ -31752,6 +31784,7 @@ initTextEditors(50);
 
 var logVitals = function logVitals(func) {
   var leaving = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  return;
   console.log('----------------------');
 
   if (leaving) {
