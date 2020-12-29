@@ -31760,7 +31760,8 @@ var listifySelectedElement = function listifySelectedElement() {
     newOrderedList.html(openMarkerGrandparent.html());
     openMarkerGrandparent.replaceWith(newOrderedList);
     return;
-  }
+  } //Let us gather all the elements that need listifying
+
 
   if ('LI' === openMarkerParentNodeName) {
     var prevSibling = openMarkerParent.prev();
@@ -31779,23 +31780,44 @@ var listifySelectedElement = function listifySelectedElement() {
       openMarkerParent.remove();
       openMarkerGrandparent.after(_newOrderedList).after(newParagraph);
     } else if (prevSibling.length && !nextSibling.length) {
+      //We're at the end of the list
       openMarkerParent.remove();
       openMarkerGrandparent.after(newParagraph);
     } else if (!prevSibling.length && nextSibling.length) {
+      //We're at the beginning of the list
       openMarkerParent.remove();
       openMarkerGrandparent.before(newParagraph);
     } else {
+      //We are a list of one item
       openMarkerGrandparent.replaceWith(newParagraph);
     }
   } else {
-    var _newOrderedList2 = jQuery(listTag);
-
     var newListItem = jQuery('<li>');
     newListItem.html(openMarkerParent.html());
 
-    _newOrderedList2.append(newListItem);
+    var _prevSibling = openMarkerParent.prev();
 
-    openMarkerParent.replaceWith(_newOrderedList2);
+    var _nextSibling = openMarkerParent.next(); //Check whether we should add item to neighboring list
+
+
+    if (_prevSibling.length && listNodeName === _prevSibling[0].nodeName) {
+      //Append to previous list
+      openMarkerParent.remove();
+
+      _prevSibling.append(newListItem);
+    } else if (_nextSibling.length && listNodeName === _nextSibling[0].nodeName) {
+      //Prepend to following list
+      openMarkerParent.remove();
+
+      _nextSibling.prepend(newListItem);
+    } else {
+      //Start new list
+      var _newOrderedList2 = jQuery(listTag);
+
+      _newOrderedList2.append(newListItem);
+
+      openMarkerParent.replaceWith(_newOrderedList2);
+    }
   }
 };
 /**

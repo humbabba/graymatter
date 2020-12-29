@@ -947,6 +947,7 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
         listTag = '<ul>';
         listNodeName = 'UL';
     }
+
     const openMarker = editArea.find('#openMarker');
     const openMarkerParent = openMarker.parent();
     const openMarkerParentNodeName = openMarkerParent[0].nodeName;
@@ -959,6 +960,10 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
         openMarkerGrandparent.replaceWith(newOrderedList);
         return;
     }
+
+    //Let us gather all the elements that need listifying
+    
+
     if('LI' === openMarkerParentNodeName) {
         const prevSibling = openMarkerParent.prev();
         const nextSibling = openMarkerParent.next();
@@ -970,21 +975,33 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
             newOrderedList.append(afterSiblings);
             openMarkerParent.remove();
             openMarkerGrandparent.after(newOrderedList).after(newParagraph);
-        } else if(prevSibling.length && !nextSibling.length) {
+        } else if(prevSibling.length && !nextSibling.length) { //We're at the end of the list
             openMarkerParent.remove();
             openMarkerGrandparent.after(newParagraph);
-        } else if(!prevSibling.length && nextSibling.length) {
+        } else if(!prevSibling.length && nextSibling.length) { //We're at the beginning of the list
             openMarkerParent.remove();
             openMarkerGrandparent.before(newParagraph);
-        } else {
+        } else { //We are a list of one item
             openMarkerGrandparent.replaceWith(newParagraph);
         }
     } else {
-        const newOrderedList = jQuery(listTag);
         const newListItem = jQuery('<li>');
         newListItem.html(openMarkerParent.html());
-        newOrderedList.append(newListItem);
-        openMarkerParent.replaceWith(newOrderedList);
+        const prevSibling = openMarkerParent.prev();
+        const nextSibling = openMarkerParent.next();
+
+        //Check whether we should add item to neighboring list
+        if(prevSibling.length && listNodeName === prevSibling[0].nodeName) { //Append to previous list
+            openMarkerParent.remove();
+            prevSibling.append(newListItem);
+        } else if(nextSibling.length && listNodeName === nextSibling[0].nodeName) { //Prepend to following list
+            openMarkerParent.remove();
+            nextSibling.prepend(newListItem);
+        } else { //Start new list
+            const newOrderedList = jQuery(listTag);
+            newOrderedList.append(newListItem);
+            openMarkerParent.replaceWith(newOrderedList);
+        }
     }
 };
 
