@@ -10,7 +10,7 @@ let toAdd = [];
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike','sub','sup'];
-const advancedTags = ['ol','ul','li','hr'];
+const advancedTags = ['ol','ul','hr'];
 const allTags = tags.concat(advancedTags);
 const advancedFormat = ['ul','ol','hr'];
 
@@ -259,15 +259,8 @@ const makeTextEditor = el => {
     editArea.html(paragraphize(el.val()));
 
     //Make it so updates to the editArea affect the original el's value
-    editArea.on('input keyup',function() {
-        const updatedCode = $(this).html();
-        el.val(paragraphize(updatedCode));
-        codeEditArea.val(paragraphize(updatedCode));
-    });
-    codeEditArea.on('input keyup',function() {
-        const updatedCode = $(this).val();
-        el.val(paragraphize(updatedCode));
-        editArea.html(paragraphize(updatedCode));
+    editArea.add(codeEditArea).on('input keyup change',function() {
+        execFormattingTool(null,editArea,false);
     });
 
     //Only check for changes in editArea if we have a callback.
@@ -457,14 +450,22 @@ const execFormattingTool = (tool,editArea,format = true,props = false) => {
         }
     }
 
-    //Remove any nested instances of formatting
-    cleanRedundantCode(editArea);
-
     //Make sure we've got paragraphs in there
     editArea.html(paragraphize(editArea.html()));
 
+    //Remove any nested instances of formatting
+    cleanRedundantCode(editArea);
+
     //Reset the selection since the above will destroy the original selection
     replaceMarkersWithSelection(editArea);
+
+    //Update hidden and code divs to match
+    const masterDiv = editArea.closest('.textEditorMasterDiv');
+    const codeDiv = masterDiv.find('.code-editor');
+    const hiddenInput = masterDiv.find('.text-editor');
+    const code = editArea.html();
+    codeDiv.val(code);
+    hiddenInput.val(code);
 
     logVitals('execFormattingTool',true);
 
@@ -601,6 +602,9 @@ const getSelectionObject = (tool,editArea,emptySelection,props) => {
 const wrapTags = editArea => {
 
   logVitals('wrapTags');
+  if(null === selectionObject.tool) {
+      return;
+  }
 
     let editAreaString = editArea.html();
     if(selectionObject.allFormatted) {
@@ -788,6 +792,7 @@ const reconcileToolsDisplay = editArea => {
     }
   });
   reverseOrAddOnEmpty();
+
   logVitals('reconcileToolsDisplay',true);
 };
 

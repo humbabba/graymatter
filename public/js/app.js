@@ -30715,7 +30715,7 @@ var toAdd = [];
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike', 'sub', 'sup'];
-var advancedTags = ['ol', 'ul', 'li', 'hr'];
+var advancedTags = ['ol', 'ul', 'hr'];
 var allTags = tags.concat(advancedTags);
 var advancedFormat = ['ul', 'ol', 'hr'];
 /**
@@ -31046,15 +31046,8 @@ var makeTextEditor = function makeTextEditor(el) {
 
   editArea.html(paragraphize(el.val())); //Make it so updates to the editArea affect the original el's value
 
-  editArea.on('input keyup', function () {
-    var updatedCode = $(this).html();
-    el.val(paragraphize(updatedCode));
-    codeEditArea.val(paragraphize(updatedCode));
-  });
-  codeEditArea.on('input keyup', function () {
-    var updatedCode = $(this).val();
-    el.val(paragraphize(updatedCode));
-    editArea.html(paragraphize(updatedCode));
+  editArea.add(codeEditArea).on('input keyup change', function () {
+    execFormattingTool(null, editArea, false);
   }); //Only check for changes in editArea if we have a callback.
 
   if (textEditorOnChangeCallback) {
@@ -31237,14 +31230,21 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
         listifySelectedElement('unordered', editArea);
         break;
     }
-  } //Remove any nested instances of formatting
+  } //Make sure we've got paragraphs in there
 
 
-  cleanRedundantCode(editArea); //Make sure we've got paragraphs in there
+  editArea.html(paragraphize(editArea.html())); //Remove any nested instances of formatting
 
-  editArea.html(paragraphize(editArea.html())); //Reset the selection since the above will destroy the original selection
+  cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
 
-  replaceMarkersWithSelection(editArea);
+  replaceMarkersWithSelection(editArea); //Update hidden and code divs to match
+
+  var masterDiv = editArea.closest('.textEditorMasterDiv');
+  var codeDiv = masterDiv.find('.code-editor');
+  var hiddenInput = masterDiv.find('.text-editor');
+  var code = editArea.html();
+  codeDiv.val(code);
+  hiddenInput.val(code);
   logVitals('execFormattingTool', true);
 };
 /**
@@ -31381,6 +31381,11 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
 
 var wrapTags = function wrapTags(editArea) {
   logVitals('wrapTags');
+
+  if (null === selectionObject.tool) {
+    return;
+  }
+
   var editAreaString = editArea.html();
 
   if (selectionObject.allFormatted) {
