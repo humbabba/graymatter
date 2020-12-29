@@ -950,7 +950,6 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
 
     const openMarker = editArea.find('#openMarker');
     const openMarkerParent = openMarker.parent();
-    const openMarkerParentNodeName = openMarkerParent[0].nodeName;
     const openMarkerGrandparent = openMarkerParent.parent();
     const openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName;
     //See whether we only mean to change format between ordered and unordered
@@ -962,47 +961,69 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
     }
 
     //Let us gather all the elements that need listifying
-    
-
-    if('LI' === openMarkerParentNodeName) {
-        const prevSibling = openMarkerParent.prev();
-        const nextSibling = openMarkerParent.next();
-        const newParagraph = jQuery('<p>');
-        newParagraph.html(openMarkerParent.html());
-        if(prevSibling.length && nextSibling.length) { //We're in the middle of the list
-            const newOrderedList = jQuery(listTag);
-            const afterSiblings = openMarkerParent.nextAll().detach();
-            newOrderedList.append(afterSiblings);
-            openMarkerParent.remove();
-            openMarkerGrandparent.after(newOrderedList).after(newParagraph);
-        } else if(prevSibling.length && !nextSibling.length) { //We're at the end of the list
-            openMarkerParent.remove();
-            openMarkerGrandparent.after(newParagraph);
-        } else if(!prevSibling.length && nextSibling.length) { //We're at the beginning of the list
-            openMarkerParent.remove();
-            openMarkerGrandparent.before(newParagraph);
-        } else { //We are a list of one item
-            openMarkerGrandparent.replaceWith(newParagraph);
-        }
-    } else {
-        const newListItem = jQuery('<li>');
-        newListItem.html(openMarkerParent.html());
-        const prevSibling = openMarkerParent.prev();
-        const nextSibling = openMarkerParent.next();
-
-        //Check whether we should add item to neighboring list
-        if(prevSibling.length && listNodeName === prevSibling[0].nodeName) { //Append to previous list
-            openMarkerParent.remove();
-            prevSibling.append(newListItem);
-        } else if(nextSibling.length && listNodeName === nextSibling[0].nodeName) { //Prepend to following list
-            openMarkerParent.remove();
-            nextSibling.prepend(newListItem);
-        } else { //Start new list
-            const newOrderedList = jQuery(listTag);
-            newOrderedList.append(newListItem);
-            openMarkerParent.replaceWith(newOrderedList);
+    let eligibleElements = [openMarkerParent];
+    let moreEligible = true;
+    if(openMarkerParent.find('#closeMarker').length) {
+        moreEligible = false;
+    }
+    let currentEl = openMarkerParent;
+    while(moreEligible) {
+        const nextEl = currentEl.next();
+        if(nextEl.length) {
+            currentEl = nextEl;
+            eligibleElements.push(currentEl);
+            if(currentEl.find('#closeMarker').length) {
+                moreEligible = false;
+            }
+        } else {
+            moreEligible = false;
         }
     }
+
+    //Listify each item
+    eligibleElements.forEach((el) => {
+        const elParent = el.parent();
+        const elNodeName = el[0].nodeName;
+        if('LI' === elNodeName) {
+            const prevSibling = el.prev();
+            const nextSibling = el.next();
+            const newParagraph = jQuery('<p>');
+            newParagraph.html(el.html());
+            if(prevSibling.length && nextSibling.length) { //We're in the middle of the list
+                const newOrderedList = jQuery(listTag);
+                const afterSiblings = el.nextAll().detach();
+                newOrderedList.append(afterSiblings);
+                el.remove();
+                elParent.after(newOrderedList).after(newParagraph);
+            } else if(prevSibling.length && !nextSibling.length) { //We're at the end of the list
+                el.remove();
+                elParent.after(newParagraph);
+            } else if(!prevSibling.length && nextSibling.length) { //We're at the beginning of the list
+                el.remove();
+                elParent.before(newParagraph);
+            } else { //We are a list of one item
+                elParent.replaceWith(newParagraph);
+            }
+        } else {
+            const newListItem = jQuery('<li>');
+            newListItem.html(el.html());
+            const prevSibling = el.prev();
+            const nextSibling = el.next();
+
+            //Check whether we should add item to neighboring list
+            if(prevSibling.length && listNodeName === prevSibling[0].nodeName) { //Append to previous list
+                el.remove();
+                prevSibling.append(newListItem);
+            } else if(nextSibling.length && listNodeName === nextSibling[0].nodeName) { //Prepend to following list
+                el.remove();
+                nextSibling.prepend(newListItem);
+            } else { //Start new list
+                const newOrderedList = jQuery(listTag);
+                newOrderedList.append(newListItem);
+                el.replaceWith(newOrderedList);
+            }
+        }
+    });
 };
 
 /**

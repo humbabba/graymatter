@@ -31751,7 +31751,6 @@ var listifySelectedElement = function listifySelectedElement() {
 
   var openMarker = editArea.find('#openMarker');
   var openMarkerParent = openMarker.parent();
-  var openMarkerParentNodeName = openMarkerParent[0].nodeName;
   var openMarkerGrandparent = openMarkerParent.parent();
   var openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName; //See whether we only mean to change format between ordered and unordered
 
@@ -31763,62 +31762,92 @@ var listifySelectedElement = function listifySelectedElement() {
   } //Let us gather all the elements that need listifying
 
 
-  if ('LI' === openMarkerParentNodeName) {
-    var prevSibling = openMarkerParent.prev();
-    var nextSibling = openMarkerParent.next();
-    var newParagraph = jQuery('<p>');
-    newParagraph.html(openMarkerParent.html());
+  var eligibleElements = [openMarkerParent];
+  var moreEligible = true;
 
-    if (prevSibling.length && nextSibling.length) {
-      //We're in the middle of the list
-      var _newOrderedList = jQuery(listTag);
-
-      var afterSiblings = openMarkerParent.nextAll().detach();
-
-      _newOrderedList.append(afterSiblings);
-
-      openMarkerParent.remove();
-      openMarkerGrandparent.after(_newOrderedList).after(newParagraph);
-    } else if (prevSibling.length && !nextSibling.length) {
-      //We're at the end of the list
-      openMarkerParent.remove();
-      openMarkerGrandparent.after(newParagraph);
-    } else if (!prevSibling.length && nextSibling.length) {
-      //We're at the beginning of the list
-      openMarkerParent.remove();
-      openMarkerGrandparent.before(newParagraph);
-    } else {
-      //We are a list of one item
-      openMarkerGrandparent.replaceWith(newParagraph);
-    }
-  } else {
-    var newListItem = jQuery('<li>');
-    newListItem.html(openMarkerParent.html());
-
-    var _prevSibling = openMarkerParent.prev();
-
-    var _nextSibling = openMarkerParent.next(); //Check whether we should add item to neighboring list
-
-
-    if (_prevSibling.length && listNodeName === _prevSibling[0].nodeName) {
-      //Append to previous list
-      openMarkerParent.remove();
-
-      _prevSibling.append(newListItem);
-    } else if (_nextSibling.length && listNodeName === _nextSibling[0].nodeName) {
-      //Prepend to following list
-      openMarkerParent.remove();
-
-      _nextSibling.prepend(newListItem);
-    } else {
-      //Start new list
-      var _newOrderedList2 = jQuery(listTag);
-
-      _newOrderedList2.append(newListItem);
-
-      openMarkerParent.replaceWith(_newOrderedList2);
-    }
+  if (openMarkerParent.find('#closeMarker').length) {
+    moreEligible = false;
   }
+
+  var currentEl = openMarkerParent;
+
+  while (moreEligible) {
+    var nextEl = currentEl.next();
+
+    if (nextEl.length) {
+      currentEl = nextEl;
+      eligibleElements.push(currentEl);
+
+      if (currentEl.find('#closeMarker').length) {
+        moreEligible = false;
+      }
+    } else {
+      moreEligible = false;
+    }
+  } //Listify each item
+
+
+  eligibleElements.forEach(function (el) {
+    var elParent = el.parent();
+    var elNodeName = el[0].nodeName;
+
+    if ('LI' === elNodeName) {
+      var prevSibling = el.prev();
+      var nextSibling = el.next();
+      var newParagraph = jQuery('<p>');
+      newParagraph.html(el.html());
+
+      if (prevSibling.length && nextSibling.length) {
+        //We're in the middle of the list
+        var _newOrderedList = jQuery(listTag);
+
+        var afterSiblings = el.nextAll().detach();
+
+        _newOrderedList.append(afterSiblings);
+
+        el.remove();
+        elParent.after(_newOrderedList).after(newParagraph);
+      } else if (prevSibling.length && !nextSibling.length) {
+        //We're at the end of the list
+        el.remove();
+        elParent.after(newParagraph);
+      } else if (!prevSibling.length && nextSibling.length) {
+        //We're at the beginning of the list
+        el.remove();
+        elParent.before(newParagraph);
+      } else {
+        //We are a list of one item
+        elParent.replaceWith(newParagraph);
+      }
+    } else {
+      var newListItem = jQuery('<li>');
+      newListItem.html(el.html());
+
+      var _prevSibling = el.prev();
+
+      var _nextSibling = el.next(); //Check whether we should add item to neighboring list
+
+
+      if (_prevSibling.length && listNodeName === _prevSibling[0].nodeName) {
+        //Append to previous list
+        el.remove();
+
+        _prevSibling.append(newListItem);
+      } else if (_nextSibling.length && listNodeName === _nextSibling[0].nodeName) {
+        //Prepend to following list
+        el.remove();
+
+        _nextSibling.prepend(newListItem);
+      } else {
+        //Start new list
+        var _newOrderedList2 = jQuery(listTag);
+
+        _newOrderedList2.append(newListItem);
+
+        el.replaceWith(_newOrderedList2);
+      }
+    }
+  });
 };
 /**
  * Handle keyboard shortcuts for text editor
