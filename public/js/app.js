@@ -30707,7 +30707,6 @@ __webpack_require__.r(__webpack_exports__);
  * Globals
  */
 var currentGeneration, selectionObject;
-var selectionPointer = false;
 var ancestorTools = [];
 var selectedTools = [];
 var activeTools = [];
@@ -30716,7 +30715,9 @@ var toAdd = [];
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike', 'sub', 'sup'];
-var advancedFormat = ['insertUnorderedList', 'insertOrderedList'];
+var advancedTags = ['ol', 'ul', 'li'];
+var allTags = tags.concat(advancedTags);
+var advancedFormat = ['ul', 'ol'];
 /**
  * Define rich-text editing tools
  * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
@@ -30764,11 +30765,11 @@ var toolsArray = [{
   title: 'Outdent'
 }, {
   "class": 'fas fa-list-ol',
-  tool: 'insertOrderedList',
+  tool: 'ol',
   title: 'Ordered list'
 }, {
   "class": 'fas fa-list-ul toolbar-spacer',
-  tool: 'insertUnorderedList',
+  tool: 'ul',
   title: 'Unordered list'
 }, {
   "class": 'fas fa-text-height',
@@ -30951,8 +30952,8 @@ var makeTextEditor = function makeTextEditor(el) {
           unlinkSelection(copyDiv, codeDiv, el);
           break;
 
-        case 'insertOrderedList':
-        case 'insertUnorderedList':
+        case 'ol':
+        case 'ul':
           execFormattingTool(item.tool, editArea, false);
           break;
 
@@ -31216,7 +31217,6 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
 
   if (selectionObject.emptySelection && -1 === advancedFormat.indexOf(selectionObject.tool)) {
     toggleSelectedTools(selectionObject.tool);
-    reconcileToolsDisplay(editArea);
   } else if (format) {
     //Format may be false in the case of evaluateFormatting, where we just want to get a selectionObject based on mere selection, not a formatting button click
     //Go through the logic to apply (or reverse) formatting on selection
@@ -31224,11 +31224,11 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
   } else if (-1 < advancedFormat.indexOf(selectionObject.tool)) {
     //For advanced formatting
     switch (selectionObject.tool) {
-      case 'insertOrderedList':
+      case 'ol':
         listifySelectedElement('ordered', editArea);
         break;
 
-      case 'insertUnorderedList':
+      case 'ul':
         listifySelectedElement('unordered', editArea);
         break;
     }
@@ -31473,7 +31473,7 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
 
       range.surroundContents(emptyMarker[0]);
       ancestorTools = [];
-      tags.forEach(function (tag, index) {
+      allTags.forEach(function (tag, index) {
         var ancestor = emptyMarker.closest(tag);
 
         if (ancestor.length) {
@@ -31482,10 +31482,7 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
       });
       emptyMarker.remove();
       inactivateNonSelectedToolsDisplay(editArea);
-
-      if (ancestorTools.length) {
-        reconcileToolsDisplay(editArea);
-      }
+      reconcileToolsDisplay(editArea);
     } else {
       tags.forEach(function (tool, index) {
         if (e.shiftKey && 37 === e.which) {
@@ -31737,6 +31734,12 @@ var stripTags = function stripTags(el) {
     reconcileToolsDisplay(editArea);
   }
 };
+/**
+ * Handles insertion/updating of ordered and unordered lists
+ * @param type
+ * @param editArea
+ */
+
 
 var listifySelectedElement = function listifySelectedElement() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ordered';
@@ -31758,6 +31761,9 @@ var listifySelectedElement = function listifySelectedElement() {
     var newOrderedList = jQuery(listTag);
     newOrderedList.html(openMarkerGrandparent.html());
     openMarkerGrandparent.replaceWith(newOrderedList);
+    inactivateToolDisplay(editArea, 'ul');
+    inactivateToolDisplay(editArea, 'ol');
+    activateToolDisplay(editArea, selectionObject.tool);
     return;
   } //Let us gather all the elements that need listifying
 
@@ -31819,6 +31825,8 @@ var listifySelectedElement = function listifySelectedElement() {
         //We are a list of one item
         elParent.replaceWith(newParagraph);
       }
+
+      inactivateToolDisplay(editArea, selectionObject.tool);
     } else {
       var newListItem = jQuery('<li>');
       newListItem.html(el.html());
@@ -31846,6 +31854,8 @@ var listifySelectedElement = function listifySelectedElement() {
 
         el.replaceWith(_newOrderedList2);
       }
+
+      activateToolDisplay(editArea, selectionObject.tool);
     }
   });
 };
@@ -31915,7 +31925,7 @@ initTextEditors(50);
 
 var logVitals = function logVitals(func) {
   var leaving = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  return;
+  // return;
   console.log('----------------------');
 
   if (leaving) {

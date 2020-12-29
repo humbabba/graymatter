@@ -2,7 +2,6 @@
  * Globals
  */
 let currentGeneration,selectionObject;
-let selectionPointer = false;
 let ancestorTools = [];
 let selectedTools = [];
 let activeTools = [];
@@ -11,7 +10,9 @@ let toAdd = [];
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike','sub','sup'];
-const advancedFormat = ['insertUnorderedList','insertOrderedList'];
+const advancedTags = ['ol','ul','li'];
+const allTags = tags.concat(advancedTags);
+const advancedFormat = ['ul','ol'];
 
 /**
  * Define rich-text editing tools
@@ -28,8 +29,8 @@ const toolsArray = [
     {class:'fas fa-unlink toolbar-spacer',tool: 'unlink',title: 'Unlink'},
     {class:'fas fa-indent',tool: 'indent',title: 'Indent'},
     {class:'fas fa-outdent toolbar-spacer',tool: 'outdent',title: 'Outdent'},
-    {class:'fas fa-list-ol',tool: 'insertOrderedList',title: 'Ordered list'},
-    {class:'fas fa-list-ul toolbar-spacer',tool: 'insertUnorderedList',title: 'Unordered list'},
+    {class:'fas fa-list-ol',tool: 'ol',title: 'Ordered list'},
+    {class:'fas fa-list-ul toolbar-spacer',tool: 'ul',title: 'Unordered list'},
     {class:'fas fa-text-height',tool: 'fontSize',title: 'Font size'},
     {class:'fas fa-palette toolbar-spacer',tool: 'foreColor',title: 'Font color'},
     {class:'fas fa-align-center',tool: 'justifyCenter',title: 'Center'},
@@ -176,8 +177,8 @@ const makeTextEditor = el => {
                     codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
                     unlinkSelection(copyDiv,codeDiv,el);
                     break;
-                case 'insertOrderedList':
-                case 'insertUnorderedList':
+                case 'ol':
+                case 'ul':
                     execFormattingTool(item.tool,editArea,false);
                     break;
                 case 'fontSize':
@@ -437,16 +438,15 @@ const execFormattingTool = (tool,editArea,format = true,props = false) => {
     //For empty selects, we need to update active tools display
     if(selectionObject.emptySelection && -1 === advancedFormat.indexOf(selectionObject.tool)) {
         toggleSelectedTools(selectionObject.tool);
-        reconcileToolsDisplay(editArea);
     } else if(format) { //Format may be false in the case of evaluateFormatting, where we just want to get a selectionObject based on mere selection, not a formatting button click
       //Go through the logic to apply (or reverse) formatting on selection
       wrapTags(editArea);
     } else if(-1 < advancedFormat.indexOf(selectionObject.tool)) { //For advanced formatting
         switch (selectionObject.tool) {
-            case 'insertOrderedList':
+            case 'ol':
                 listifySelectedElement('ordered',editArea);
                 break;
-            case 'insertUnorderedList':
+            case 'ul':
                 listifySelectedElement('unordered',editArea);
                 break;
         }
@@ -694,17 +694,15 @@ const evaluateFormatting = (editArea,e) => {
       const emptyMarker = $('<empty>'); //A fake element for the purposes finding ancestor elements with jQuery
       range.surroundContents(emptyMarker[0]);
       ancestorTools = [];
-      tags.forEach(function(tag,index) {
+      allTags.forEach(function(tag,index) {
         const ancestor = emptyMarker.closest(tag);
         if(ancestor.length) {
           ancestorTools.push(tag);
         }
       });
-      emptyMarker.remove();
-      inactivateNonSelectedToolsDisplay(editArea);
-      if(ancestorTools.length) {
+        emptyMarker.remove();
+        inactivateNonSelectedToolsDisplay(editArea);
         reconcileToolsDisplay(editArea);
-      }
     } else {
       tags.forEach(function(tool,index) {
         if(e.shiftKey && 37 === e.which) { //This prevents weird selection behavior on this key combo
@@ -940,6 +938,11 @@ const stripTags = el => {
 
 };
 
+/**
+ * Handles insertion/updating of ordered and unordered lists
+ * @param type
+ * @param editArea
+ */
 const listifySelectedElement = (type = 'ordered', editArea) => {
     let listTag = '<ol>';
     let listNodeName = 'OL';
@@ -957,6 +960,9 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
         const newOrderedList = jQuery(listTag);
         newOrderedList.html(openMarkerGrandparent.html());
         openMarkerGrandparent.replaceWith(newOrderedList);
+        inactivateToolDisplay(editArea,'ul');
+        inactivateToolDisplay(editArea,'ol');
+        activateToolDisplay(editArea,selectionObject.tool);
         return;
     }
 
@@ -1004,6 +1010,7 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
             } else { //We are a list of one item
                 elParent.replaceWith(newParagraph);
             }
+            inactivateToolDisplay(editArea,selectionObject.tool);
         } else {
             const newListItem = jQuery('<li>');
             newListItem.html(el.html());
@@ -1022,6 +1029,7 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
                 newOrderedList.append(newListItem);
                 el.replaceWith(newOrderedList);
             }
+            activateToolDisplay(editArea,selectionObject.tool);
         }
     });
 };
@@ -1080,7 +1088,7 @@ $(document).on('keydown', function (e) {
 initTextEditors(50);
 
 const logVitals = (func,leaving = false) => {
-    return;
+    // return;
   console.log('----------------------');
   if(leaving) {
     console.log('LEAVING FUNCTION: ' + func);
