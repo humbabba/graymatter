@@ -1109,7 +1109,7 @@ $(document).on('keydown', function (e) {
 initTextEditors(50);
 
 const logVitals = (func,leaving = false) => {
-    // return;
+    return;
   console.log('----------------------');
   if(leaving) {
     console.log('LEAVING FUNCTION: ' + func);
