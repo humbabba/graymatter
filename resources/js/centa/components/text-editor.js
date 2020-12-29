@@ -10,9 +10,9 @@ let toAdd = [];
 const openMarkerString = '<marker id="openMarker"></marker>';
 const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike','sub','sup'];
-const advancedTags = ['ol','ul','li'];
+const advancedTags = ['ol','ul','li','hr'];
 const allTags = tags.concat(advancedTags);
-const advancedFormat = ['ul','ol'];
+const advancedFormat = ['ul','ol','hr'];
 
 /**
  * Define rich-text editing tools
@@ -24,7 +24,7 @@ const toolsArray = [
     {class:'fas fa-underline',tool: 'u',title: 'Underline (ctrl-u)'},
     {class:'fas fa-strikethrough toolbar-spacer',tool: 'strike',title: 'Strikethrough'},
     {class:'fas fa-image toolbar-spacer',tool: 'insertImage',title: 'Insert image'},
-    {class:'fas fa-minus toolbar-spacer',tool: 'insertHorizontalRule',title: 'Horizontal rule'},
+    {class:'fas fa-minus toolbar-spacer',tool: 'hr',title: 'Horizontal rule'},
     {class:'fas fa-link',tool: 'createLink',title: 'Link'},
     {class:'fas fa-unlink toolbar-spacer',tool: 'unlink',title: 'Unlink'},
     {class:'fas fa-indent',tool: 'indent',title: 'Indent'},
@@ -847,13 +847,22 @@ const cleanRedundantCode = editArea => {
     });
 
     //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
-    editAreaString = editAreaString.replace('<strong>','<b>').replace('</strong>','</b>')
-        .replace('<em>','<i>').replace('</em>','</i>');
+    editAreaString = editAreaString.replace(/<strong>/gi,'<b>').replace(/<\/strong>/gi,'</b>')
+        .replace(/<em>/gi,'<i>').replace(/<\/em>/gi,'</i>');
 
     //Case: Empty paragraphs
-    editAreaString = editAreaString.replace('<p></p>','');
+    editAreaString = editAreaString.replace(/<p><\/p>/gi,'');
+
+    //Case: Divs
+    editAreaString = editAreaString.replace(/<div/gi,'<p').replace(/<\/div>/gi,'</p>');
 
     editArea.html(editAreaString);
+
+    //Last check for loose text nodes
+    editArea.contents().filter(function () {
+        return this.nodeType === 3; //Text node
+    }).wrap('<p></p>');
+
     logVitals('cleanRedundantCode',true);
 };
 

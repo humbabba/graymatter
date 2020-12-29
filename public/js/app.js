@@ -30715,9 +30715,9 @@ var toAdd = [];
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike', 'sub', 'sup'];
-var advancedTags = ['ol', 'ul', 'li'];
+var advancedTags = ['ol', 'ul', 'li', 'hr'];
 var allTags = tags.concat(advancedTags);
-var advancedFormat = ['ul', 'ol'];
+var advancedFormat = ['ul', 'ol', 'hr'];
 /**
  * Define rich-text editing tools
  * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
@@ -30745,7 +30745,7 @@ var toolsArray = [{
   title: 'Insert image'
 }, {
   "class": 'fas fa-minus toolbar-spacer',
-  tool: 'insertHorizontalRule',
+  tool: 'hr',
   title: 'Horizontal rule'
 }, {
   "class": 'fas fa-link',
@@ -31643,10 +31643,16 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     editAreaString = editAreaString.replace(redundantCloseOpen, '');
   }); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
 
-  editAreaString = editAreaString.replace('<strong>', '<b>').replace('</strong>', '</b>').replace('<em>', '<i>').replace('</em>', '</i>'); //Case: Empty paragraphs
+  editAreaString = editAreaString.replace(/<strong>/gi, '<b>').replace(/<\/strong>/gi, '</b>').replace(/<em>/gi, '<i>').replace(/<\/em>/gi, '</i>'); //Case: Empty paragraphs
 
-  editAreaString = editAreaString.replace('<p></p>', '');
-  editArea.html(editAreaString);
+  editAreaString = editAreaString.replace(/<p><\/p>/gi, ''); //Case: Divs
+
+  editAreaString = editAreaString.replace(/<div/gi, '<p').replace(/<\/div>/gi, '</p>');
+  editArea.html(editAreaString); //Last check for loose text nodes
+
+  editArea.contents().filter(function () {
+    return this.nodeType === 3; //Text node
+  }).wrap('<p></p>');
   logVitals('cleanRedundantCode', true);
 };
 /**
