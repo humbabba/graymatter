@@ -31046,10 +31046,15 @@ var makeTextEditor = function makeTextEditor(el) {
 
   editArea.html(paragraphize(el.val())); //Make it so updates to the editArea affect the original el's value
 
-  editArea.add(codeEditArea).on('input keyup', function () {
+  editArea.on('input keyup', function () {
     var updatedCode = $(this).html();
-    editArea.val(paragraphize(updatedCode));
+    el.val(paragraphize(updatedCode));
     codeEditArea.val(paragraphize(updatedCode));
+  });
+  codeEditArea.on('input keyup', function () {
+    var updatedCode = $(this).val();
+    el.val(paragraphize(updatedCode));
+    editArea.html(paragraphize(updatedCode));
   }); //Only check for changes in editArea if we have a callback.
 
   if (textEditorOnChangeCallback) {
@@ -31158,7 +31163,7 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
   unlinkElement.replaceWith(unlinkElement.html());
   replaceMarkersWithSelection(copyDiv);
   var updatedCode = copyDiv.html();
-  codeDiv.val(updatedCode);
+  codeDiv.html(updatedCode);
   hiddenInput.val(updatedCode);
 
   if (updatedCode !== originalCode) {

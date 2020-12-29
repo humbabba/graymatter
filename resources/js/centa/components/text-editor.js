@@ -259,10 +259,15 @@ const makeTextEditor = el => {
     editArea.html(paragraphize(el.val()));
 
     //Make it so updates to the editArea affect the original el's value
-    editArea.add(codeEditArea).on('input keyup',function() {
+    editArea.on('input keyup',function() {
         const updatedCode = $(this).html();
-        editArea.val(paragraphize(updatedCode));
+        el.val(paragraphize(updatedCode));
         codeEditArea.val(paragraphize(updatedCode));
+    });
+    codeEditArea.on('input keyup',function() {
+        const updatedCode = $(this).val();
+        el.val(paragraphize(updatedCode));
+        editArea.html(paragraphize(updatedCode));
     });
 
     //Only check for changes in editArea if we have a callback.
@@ -377,7 +382,7 @@ const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
     replaceMarkersWithSelection(copyDiv);
 
     const updatedCode = copyDiv.html();
-    codeDiv.val(updatedCode);
+    codeDiv.html(updatedCode);
     hiddenInput.val(updatedCode);
 
     if(updatedCode !== originalCode) {
