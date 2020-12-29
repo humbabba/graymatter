@@ -30716,6 +30716,7 @@ var toAdd = [];
 var openMarkerString = '<marker id="openMarker"></marker>';
 var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike', 'sub', 'sup'];
+var advancedFormat = ['insertUnorderedList', 'insertOrderedList'];
 /**
  * Define rich-text editing tools
  * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
@@ -30951,6 +30952,7 @@ var makeTextEditor = function makeTextEditor(el) {
           break;
 
         case 'insertOrderedList':
+        case 'insertUnorderedList':
           execFormattingTool(item.tool, editArea, false);
           break;
 
@@ -31212,16 +31214,24 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
 
   getSelectionObject(tool, editArea, emptySelection, props); //For empty selects, we need to update active tools display
 
-  if (selectionObject.emptySelection && 'insertOrderedList' !== selectionObject.tool) {
+  if (selectionObject.emptySelection && -1 === advancedFormat.indexOf(selectionObject.tool)) {
     toggleSelectedTools(selectionObject.tool);
     reconcileToolsDisplay(editArea);
   } else if (format) {
     //Format may be false in the case of evaluateFormatting, where we just want to get a selectionObject based on mere selection, not a formatting button click
     //Go through the logic to apply (or reverse) formatting on selection
     wrapTags(editArea);
-  } else if ('insertOrderedList' === selectionObject.tool) {
+  } else if (-1 < advancedFormat.indexOf(selectionObject.tool)) {
     //For advanced formatting
-    listifySelectedElement('ordered', editArea);
+    switch (selectionObject.tool) {
+      case 'insertOrderedList':
+        listifySelectedElement('ordered', editArea);
+        break;
+
+      case 'insertUnorderedList':
+        listifySelectedElement('unordered', editArea);
+        break;
+    }
   } //Remove any nested instances of formatting
 
 
@@ -31731,20 +31741,28 @@ var stripTags = function stripTags(el) {
 var listifySelectedElement = function listifySelectedElement() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ordered';
   var editArea = arguments.length > 1 ? arguments[1] : undefined;
-  var editAreaString = editArea.html();
+  var listTag = '<ol>';
+  var listNodeName = 'OL';
+
+  if ('unordered' === type) {
+    listTag = '<ul>';
+    listNodeName = 'UL';
+  }
+
   var openMarker = editArea.find('#openMarker');
   var openMarkerParent = openMarker.parent();
   var openMarkerParentNodeName = openMarkerParent[0].nodeName;
   var openMarkerGrandparent = openMarkerParent.parent();
-  var openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName;
-  console.log('In listify before insert:');
-  console.log('editAreaString');
-  console.log(editAreaString);
-  console.log('openMarkerParent');
-  console.log(openMarkerParent);
+  var openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName; //See whether we only mean to change format between ordered and unordered
+
+  if (('UL' === openMarkerGrandparentNodeName || 'OL' === openMarkerGrandparentNodeName) && openMarkerGrandparentNodeName !== listNodeName) {
+    var newOrderedList = jQuery(listTag);
+    newOrderedList.html(openMarkerGrandparent.html());
+    openMarkerGrandparent.replaceWith(newOrderedList);
+    return;
+  }
 
   if ('LI' === openMarkerParentNodeName) {
-    console.log('We already has a LI');
     var prevSibling = openMarkerParent.prev();
     var nextSibling = openMarkerParent.next();
     var newParagraph = jQuery('<p>');
@@ -31752,35 +31770,32 @@ var listifySelectedElement = function listifySelectedElement() {
 
     if (prevSibling.length && nextSibling.length) {
       //We're in the middle of the list
-      console.log('We are in the middle!');
-      var newOrderedList = jQuery('<ol>');
+      var _newOrderedList = jQuery(listTag);
+
       var afterSiblings = openMarkerParent.nextAll().detach();
-      newOrderedList.append(afterSiblings);
+
+      _newOrderedList.append(afterSiblings);
+
       openMarkerParent.remove();
-      openMarkerGrandparent.after(newOrderedList).after(newParagraph);
+      openMarkerGrandparent.after(_newOrderedList).after(newParagraph);
     } else if (prevSibling.length && !nextSibling.length) {
-      console.log('We are at the end!');
       openMarkerParent.remove();
       openMarkerGrandparent.after(newParagraph);
     } else if (!prevSibling.length && nextSibling.length) {
-      console.log('We are at the beginning!');
       openMarkerParent.remove();
       openMarkerGrandparent.before(newParagraph);
     } else {
-      console.log('We are alone!');
       openMarkerGrandparent.replaceWith(newParagraph);
     }
   } else {
-    if ('OL' !== openMarkerGrandparentNodeName) {
-      var _newOrderedList = jQuery('<ol>');
+    var _newOrderedList2 = jQuery(listTag);
 
-      var newListItem = jQuery('<li>');
-      newListItem.html(openMarkerParent.html());
+    var newListItem = jQuery('<li>');
+    newListItem.html(openMarkerParent.html());
 
-      _newOrderedList.append(newListItem);
+    _newOrderedList2.append(newListItem);
 
-      openMarkerParent.replaceWith(_newOrderedList);
-    }
+    openMarkerParent.replaceWith(_newOrderedList2);
   }
 };
 /**
