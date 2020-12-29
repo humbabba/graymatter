@@ -31943,7 +31943,7 @@ initTextEditors(50);
 
 var logVitals = function logVitals(func) {
   var leaving = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  return;
+  // return;
   console.log('----------------------');
 
   if (leaving) {
