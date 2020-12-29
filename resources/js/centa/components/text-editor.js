@@ -259,8 +259,10 @@ const makeTextEditor = el => {
     editArea.html(paragraphize(el.val()));
 
     //Make it so updates to the editArea affect the original el's value
-    editArea.add(codeEditArea).on('input keyup change',function() {
-        execFormattingTool(null,editArea,false);
+    editArea.add(codeEditArea).on('input change',function() {
+        if(0 === activeTools.length) {
+            execFormattingTool(null,editArea,false);
+        }
     });
 
     //Only check for changes in editArea if we have a callback.
@@ -495,7 +497,7 @@ const toggleSelectedTools = tool => {
   const targetToolIndex = selectedTools.indexOf(tool);
   if(targetToolIndex > -1) {
     selectedTools.splice(targetToolIndex,1);
-  } else {
+  } else if(null !== tool) {
     selectedTools.push(tool);
   }
 
@@ -738,7 +740,7 @@ const activateToolDisplay = (editArea,tool) => {
     logVitals('activateToolDisplay');
     editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`).addClass('active');
     const targetToolIndex = activeTools.indexOf(tool);
-    if(targetToolIndex === -1) {
+    if(targetToolIndex === -1 && null !== tool) {
       activeTools.push(tool);
     }
     logVitals('activateToolDisplay',true);
