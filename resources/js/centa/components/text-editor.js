@@ -175,6 +175,9 @@ const makeTextEditor = el => {
                     codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
                     unlinkSelection(copyDiv,codeDiv,el);
                     break;
+                case 'insertOrderedList':
+                    execFormattingTool(item.tool,editArea,false);
+                    break;
                 case 'fontSize':
                     input = prompt('Text size:','(Integer from 1 to 7)');
                     if(input) {
@@ -430,12 +433,14 @@ const execFormattingTool = (tool,editArea,format = true,props = false) => {
     getSelectionObject(tool,editArea,emptySelection,props);
 
     //For empty selects, we need to update active tools display
-    if(selectionObject.emptySelection) {
+    if(selectionObject.emptySelection && 'insertOrderedList' !== selectionObject.tool) {
         toggleSelectedTools(selectionObject.tool);
         reconcileToolsDisplay(editArea);
     } else if(format) { //Format may be false in the case of evaluateFormatting, where we just want to get a selectionObject based on mere selection, not a formatting button click
       //Go through the logic to apply (or reverse) formatting on selection
       wrapTags(editArea);
+    } else if('insertOrderedList' === selectionObject.tool) { //For advanced formatting
+        listifySelectedElement('ordered',editArea);
     }
 
     //Remove any nested instances of formatting
@@ -832,12 +837,15 @@ const cleanRedundantCode = editArea => {
         //Case: An empty tag.
         redundantCloseOpen = new RegExp(openTag + closeTag,'gi');
         editAreaString = editAreaString.replace(redundantCloseOpen,'');
-
-        //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
-        editAreaString = editAreaString.replace('<strong>','<b>').replace('</strong>','</b>')
-          .replace('<em>','<i>').replace('</em>','</i>');
-
     });
+
+    //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
+    editAreaString = editAreaString.replace('<strong>','<b>').replace('</strong>','</b>')
+        .replace('<em>','<i>').replace('</em>','</i>');
+
+    //Case: Empty paragraphs
+    editAreaString = editAreaString.replace('<p></p>','');
+
     editArea.html(editAreaString);
     logVitals('cleanRedundantCode',true);
 };
@@ -921,6 +929,54 @@ const stripTags = el => {
         reconcileToolsDisplay(editArea);
     }
 
+};
+
+const listifySelectedElement = (type = 'ordered', editArea) => {
+    let editAreaString = editArea.html();
+    const openMarker = editArea.find('#openMarker');
+    const openMarkerParent = openMarker.parent();
+    const openMarkerParentNodeName = openMarkerParent[0].nodeName;
+    const openMarkerGrandparent = openMarkerParent.parent();
+    const openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName;
+    console.log('In listify before insert:');
+    console.log('editAreaString');
+    console.log(editAreaString);
+    console.log('openMarkerParent');
+    console.log(openMarkerParent);
+    if('LI' === openMarkerParentNodeName) {
+        console.log('We already has a LI');
+        const prevSibling = openMarkerParent.prev();
+        const nextSibling = openMarkerParent.next();
+        const newParagraph = jQuery('<p>');
+        newParagraph.html(openMarkerParent.html());
+        if(prevSibling.length && nextSibling.length) { //We're in the middle of the list
+            console.log('We are in the middle!');
+            const newOrderedList = jQuery('<ol>');
+            const afterSiblings = openMarkerParent.nextAll().detach();
+            newOrderedList.append(afterSiblings);
+            openMarkerParent.remove();
+            openMarkerGrandparent.after(newOrderedList).after(newParagraph);
+        } else if(prevSibling.length && !nextSibling.length) {
+            console.log('We are at the end!');
+            openMarkerParent.remove();
+            openMarkerGrandparent.after(newParagraph);
+        } else if(!prevSibling.length && nextSibling.length) {
+            console.log('We are at the beginning!');
+            openMarkerParent.remove();
+            openMarkerGrandparent.before(newParagraph);
+        } else {
+            console.log('We are alone!');
+            openMarkerGrandparent.replaceWith(newParagraph);
+        }
+    } else {
+        if('OL' !== openMarkerGrandparentNodeName) {
+            const newOrderedList = jQuery('<ol>');
+            const newListItem = jQuery('<li>');
+            newListItem.html(openMarkerParent.html());
+            newOrderedList.append(newListItem);
+            openMarkerParent.replaceWith(newOrderedList);
+        }
+    }
 };
 
 /**
