@@ -31677,7 +31677,9 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
 
   editAreaString = editAreaString.replace(/<p><\/p>/gi, ''); //Case: Divs
 
-  editAreaString = editAreaString.replace(/<div/gi, '<p').replace(/<\/div>/gi, '</p>');
+  editAreaString = editAreaString.replace(/<div/gi, '<p').replace(/<\/div>/gi, '</p>'); //Case: Trailing BR tags
+
+  editAreaString = editAreaString.replace(/(?<!<p>)<br><\/p>/gi, '</p>');
   editArea.html(editAreaString); //Last check for loose text nodes
 
   editArea.contents().filter(function () {

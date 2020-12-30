@@ -885,6 +885,9 @@ const cleanRedundantCode = editArea => {
     //Case: Divs
     editAreaString = editAreaString.replace(/<div/gi,'<p').replace(/<\/div>/gi,'</p>');
 
+    //Case: Trailing BR tags
+    editAreaString = editAreaString.replace(/(?<!<p>)<br><\/p>/gi,'</p>');
+
     editArea.html(editAreaString);
 
     //Last check for loose text nodes
