@@ -30954,6 +30954,8 @@ var makeTextEditor = function makeTextEditor(el) {
 
         case 'ol':
         case 'ul':
+        case 'indent':
+        case 'outdent':
           execFormattingTool(item.tool, editArea, false);
           break;
 
@@ -31047,7 +31049,7 @@ var makeTextEditor = function makeTextEditor(el) {
   editArea.html(paragraphize(el.val())); //Make it so updates to the editArea affect the original el's value and the code editor
 
   editArea.on('input change', function () {
-    var code = jQuery(this).html(); //We need to check is an operation like breaking a list inserted a div and paragraphize it while keeping the selection where it is supposed to be
+    var code = jQuery(this).html(); //We need to check whether an operation like breaking a list inserted a div and paragraphize it while keeping the selection where it is supposed to be
 
     if (-1 < code.indexOf('<div></div>') || -1 < code.indexOf('<div><br></div>')) {
       code = code.replace('<div></div>', '<p>' + openMarkerString + closeMarkerString + '<br></p>').replace('<div><br></div>', '<p>' + openMarkerString + closeMarkerString + '<br></p>');
@@ -31249,13 +31251,19 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
       case 'indent':
         handleIndentation('indent', editArea);
         break;
+
+      case 'outdent':
+        handleIndentation('outdent', editArea);
+        break;
     }
   } //Make sure we've got paragraphs in there
 
 
   editArea.html(paragraphize(editArea.html())); //Remove any nested instances of formatting
 
-  cleanRedundantCode(editArea); //Reset the selection since the above will destroy the original selection
+  cleanRedundantCode(editArea); //Remove any malformed nested lists
+
+  cleanBadLists(editArea); //Reset the selection since the above will destroy the original selection
 
   replaceMarkersWithSelection(editArea); //Update hidden and code divs to match
 
@@ -31688,6 +31696,40 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
   logVitals('cleanRedundantCode', true);
 };
 /**
+ * In case lists are malformed in editing
+ * @param editArea
+ */
+
+
+var cleanBadLists = function cleanBadLists(editArea) {
+  //Clean up bad lists
+  var badLists = editArea.find('ul>ul').add('ol>ol');
+
+  if (badLists.length) {
+    badLists.each(function () {
+      var badList = jQuery(this);
+      var listParent = badList.parent();
+      var targetRelative = listParent.find('li[style="list-style-type: none;"]');
+      console.log('targetRelative');
+      console.log(targetRelative);
+
+      if (targetRelative.length) {
+        targetRelative.append(badList);
+      } else {
+        var newListItem = jQuery('<li style="list-style-type: none;">');
+        newListItem.append(badList);
+        listParent.append(newListItem);
+      }
+    });
+  } //Clean up empty lists
+
+
+  editArea.find('ul:empty').add('ol:empty').remove();
+  editArea.find('ul>li:empty').add('ol>li:empty').each(function () {
+    jQuery(this).parent().remove();
+  });
+};
+/**
 * Make sure our editorDiv and codeDiv have P tags
 */
 
@@ -31806,30 +31848,7 @@ var listifySelectedElement = function listifySelectedElement() {
   } //Let us gather all the elements that need listifying
 
 
-  var eligibleElements = [openMarkerParent];
-  var moreEligible = true;
-
-  if (openMarkerParent.find('#closeMarker').length) {
-    moreEligible = false;
-  }
-
-  var currentEl = openMarkerParent;
-
-  while (moreEligible) {
-    var nextEl = currentEl.next();
-
-    if (nextEl.length) {
-      currentEl = nextEl;
-      eligibleElements.push(currentEl);
-
-      if (currentEl.find('#closeMarker').length) {
-        moreEligible = false;
-      }
-    } else {
-      moreEligible = false;
-    }
-  } //Listify each item
-
+  var eligibleElements = getEligibleElements(editArea, openMarkerParent); //Listify each item
 
   eligibleElements.forEach(function (el) {
     var elParent = el.parent();
@@ -31901,31 +31920,33 @@ var listifySelectedElement = function listifySelectedElement() {
 var handleIndentation = function handleIndentation() {
   var direction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'indent';
   var editArea = arguments.length > 1 ? arguments[1] : undefined;
-
-  if ('outdent' === direction) {//Well?
-  }
-
   var openMarker = editArea.find('#openMarker');
-  var openMarkerParent = openMarker.parent();
-  var openMarkerParentNodeName = openMarkerParent[0].nodeName;
-  console.log('We here:');
-  console.log('openMarkerParentNodeName:');
-  console.log(openMarkerParentNodeName);
-  return;
-  var openMarkerGrandparent = openMarkerParent.parent();
-  var openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName; //See whether we only mean to change format between ordered and unordered
+  var openMarkerParent = openMarker.parent(); //Let us gather all the elements that need indenting
 
-  if (('UL' === openMarkerGrandparentNodeName || 'OL' === openMarkerGrandparentNodeName) && openMarkerGrandparentNodeName !== listNodeName) {
-    var newOrderedList = jQuery(listTag);
-    newOrderedList.html(openMarkerGrandparent.html());
-    openMarkerGrandparent.replaceWith(newOrderedList);
-    inactivateToolDisplay(editArea, 'ul');
-    inactivateToolDisplay(editArea, 'ol');
-    activateToolDisplay(editArea, selectionObject.tool);
-    return;
-  } //Let us gather all the elements that need listifying
+  var eligibleElements = getEligibleElements(editArea, openMarkerParent);
+  eligibleElements.forEach(function (el) {
+    var elNodeName = el[0].nodeName;
+
+    switch (elNodeName) {
+      case 'P':
+        indentParagraph(el, direction);
+        break;
+
+      case 'LI':
+        indentListItem(el, direction);
+        break;
+    }
+  });
+};
+/**
+ * Gather all elements between open and close markers, inclusive of those in which they reside
+ * @param editArea
+ * @param openMarkerParent
+ * @returns {[*]}
+ */
 
 
+var getEligibleElements = function getEligibleElements(editArea, openMarkerParent) {
   var eligibleElements = [openMarkerParent];
   var moreEligible = true;
 
@@ -31948,74 +31969,104 @@ var handleIndentation = function handleIndentation() {
     } else {
       moreEligible = false;
     }
-  } //Listify each item
+  }
+
+  return eligibleElements;
+};
+/**
+ * Add to or remove from P's left-margin style
+ * @param paragraph
+ * @param direction
+ */
 
 
-  eligibleElements.forEach(function (el) {
-    var elParent = el.parent();
-    var elNodeName = el[0].nodeName;
+var indentParagraph = function indentParagraph(paragraph, direction) {
+  var currentStyle = paragraph.css('margin-left');
+  var indentPixels = parseInt(currentStyle.replace('px', ''));
 
-    if ('LI' === elNodeName) {
-      var prevSibling = el.prev();
-      var nextSibling = el.next();
-      var newParagraph = jQuery('<p>');
-      newParagraph.html(el.html());
+  if ('indent' === direction) {
+    indentPixels += 20;
+  } else {
+    indentPixels -= 20;
+  }
 
-      if (prevSibling.length && nextSibling.length) {
-        //We're in the middle of the list
-        var _newOrderedList3 = jQuery(listTag);
+  if (0 > indentPixels) {
+    indentPixels = 0;
+  }
 
-        var afterSiblings = el.nextAll().detach();
+  paragraph.css('margin-left', indentPixels + 'px');
+};
+/**
+ * Handle the indentation of LIs, which require addition/subtraction of nested lists
+ * @param item
+ * @param direction
+ */
 
-        _newOrderedList3.append(afterSiblings);
 
-        el.remove();
-        elParent.after(_newOrderedList3).after(newParagraph);
-      } else if (prevSibling.length && !nextSibling.length) {
-        //We're at the end of the list
-        el.remove();
-        elParent.after(newParagraph);
-      } else if (!prevSibling.length && nextSibling.length) {
-        //We're at the beginning of the list
-        el.remove();
-        elParent.before(newParagraph);
-      } else {
-        //We are a list of one item
-        elParent.replaceWith(newParagraph);
-      }
+var indentListItem = function indentListItem(item, direction) {
+  var itemParent = item.parent();
+  var itemParentNodeName = itemParent[0].nodeName;
+  var newList;
 
-      inactivateToolDisplay(editArea, selectionObject.tool);
+  switch (itemParentNodeName) {
+    case 'UL':
+      newList = jQuery('<ul>');
+      break;
+
+    case 'OL':
+      newList = jQuery('<ol>');
+      break;
+
+    default:
+      return;
+  }
+
+  if ('indent' === direction) {
+    var itemPrevSibling = item.prev();
+    var itemNextSibling = item.next();
+
+    if (itemPrevSibling.length && 'none' === itemPrevSibling.css('list-style-type')) {
+      itemPrevSibling.children().first().append(item);
+    } else if (itemNextSibling.length && 'none' === itemNextSibling.css('list-style-type')) {
+      itemNextSibling.children().first().prepend(item);
     } else {
       var newListItem = jQuery('<li>');
-      newListItem.html(el.html());
-
-      var _prevSibling2 = el.prev();
-
-      var _nextSibling2 = el.next(); //Check whether we should add item to neighboring list
-
-
-      if (_prevSibling2.length && listNodeName === _prevSibling2[0].nodeName) {
-        //Append to previous list
-        el.remove();
-
-        _prevSibling2.append(newListItem);
-      } else if (_nextSibling2.length && listNodeName === _nextSibling2[0].nodeName) {
-        //Prepend to following list
-        el.remove();
-
-        _nextSibling2.prepend(newListItem);
-      } else {
-        //Start new list
-        var _newOrderedList4 = jQuery(listTag);
-
-        _newOrderedList4.append(newListItem);
-
-        el.replaceWith(_newOrderedList4);
-      }
-
-      activateToolDisplay(editArea, selectionObject.tool);
+      newListItem.html(item.html());
+      newList.append(newListItem);
+      var replacementListItem = jQuery('<li style="list-style-type: none;">');
+      replacementListItem.append(newList);
+      item.replaceWith(replacementListItem);
     }
-  });
+  } else {
+    var itemGrandparent = itemParent.parent();
+    var itemGrandparentNodeName = itemGrandparent[0].nodeName; //Check for siblings
+
+    var itemSiblingBefore = item.prev();
+    var itemSiblingAfter = item.next();
+
+    if ('LI' === itemGrandparentNodeName) {
+      if (!itemSiblingBefore.length && itemSiblingAfter.length) {
+        //If first, we move the item before grandparent
+        itemGrandparent.before(item);
+      } else if (itemSiblingBefore.length && !itemSiblingAfter.length) {
+        //If last, we move the item after grandparent
+        itemGrandparent.after(item);
+      } else if (itemSiblingBefore.length && itemSiblingAfter.length) {
+        //If in the middle, we split the grandparent
+        var itemSiblingsAfter = item.nextAll().detach();
+        newList.append(itemSiblingsAfter);
+
+        var _newListItem = jQuery('<li style="list-style-type: none;">');
+
+        _newListItem.append(newList);
+
+        itemGrandparent.after(_newListItem).after(item);
+      } else {
+        //If no siblings, we replace the grandparent
+        itemGrandparent.replaceWith(item);
+      }
+    }
+  }
 };
 /**
  * Handle keyboard shortcuts for text editor
