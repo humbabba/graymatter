@@ -1100,7 +1100,9 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
 const handleIndentation = (direction = 'indent',editArea) => {
 
     const openMarker = editArea.find('#openMarker');
-    const openMarkerParent = openMarker.parent();
+    const openMarkerParent = openMarker.closest('li,p');
+    console.log('openMarkerParent');
+    console.log(openMarkerParent);
 
     //Let us gather all the elements that need indenting
     const eligibleElements = getEligibleElements(editArea,openMarkerParent);
@@ -1171,7 +1173,9 @@ const indentParagraph = (paragraph,direction) => {
  */
 const indentListItem = (item,direction) => {
 
-    const itemParent = item.parent();
+    const itemParent = item.closest('ul,ol');
+    console.log('itemParent');
+    console.log(itemParent);
     const itemParentNodeName = itemParent[0].nodeName;
     let newList;
     switch(itemParentNodeName) {

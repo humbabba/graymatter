@@ -31921,7 +31921,9 @@ var handleIndentation = function handleIndentation() {
   var direction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'indent';
   var editArea = arguments.length > 1 ? arguments[1] : undefined;
   var openMarker = editArea.find('#openMarker');
-  var openMarkerParent = openMarker.parent(); //Let us gather all the elements that need indenting
+  var openMarkerParent = openMarker.closest('li,p');
+  console.log('openMarkerParent');
+  console.log(openMarkerParent); //Let us gather all the elements that need indenting
 
   var eligibleElements = getEligibleElements(editArea, openMarkerParent);
   eligibleElements.forEach(function (el) {
@@ -32004,7 +32006,9 @@ var indentParagraph = function indentParagraph(paragraph, direction) {
 
 
 var indentListItem = function indentListItem(item, direction) {
-  var itemParent = item.parent();
+  var itemParent = item.closest('ul,ol');
+  console.log('itemParent');
+  console.log(itemParent);
   var itemParentNodeName = itemParent[0].nodeName;
   var newList;
 
