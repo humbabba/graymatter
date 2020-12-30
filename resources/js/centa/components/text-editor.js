@@ -12,7 +12,7 @@ const closeMarkerString = '<marker id="closeMarker"></marker>';
 const tags = ['b','i','u','strike','sub','sup'];
 const advancedTags = ['ol','ul','hr'];
 const allTags = tags.concat(advancedTags);
-const advancedFormat = ['ul','ol','hr'];
+const advancedFormat = ['ul','ol','hr','indent','outdent'];
 
 /**
  * Define rich-text editing tools
@@ -258,11 +258,25 @@ const makeTextEditor = el => {
     //Start editArea with a P element so the first line gets wrapped
     editArea.html(paragraphize(el.val()));
 
-    //Make it so updates to the editArea affect the original el's value
-    editArea.add(codeEditArea).on('input change',function() {
-        if(0 === activeTools.length) {
-            execFormattingTool(null,editArea,false);
+    //Make it so updates to the editArea affect the original el's value and the code editor
+    editArea.on('input change',function() {
+        let code = jQuery(this).html();
+        //We need to check is an operation like breaking a list inserted a div and paragraphize it while keeping the selection where it is supposed to be
+        if(-1 < code.indexOf('<div></div>') || -1 < code.indexOf('<div><br></div>')) {
+            code = code.replace('<div></div>','<p>' + openMarkerString + closeMarkerString + '<br></p>').replace('<div><br></div>','<p>' + openMarkerString + closeMarkerString + '<br></p>');
+            editArea.html(code);
+            replaceMarkersWithSelection(editArea);
+            code = editArea.html();
         }
+        el.val(code);
+        codeEditArea.val(code);
+    });
+
+    //Update original el and editArea on changes in code editor
+    codeEditArea.on('input change',function() {
+        const code = jQuery(this).val();
+        el.val(code);
+        editArea.html(code);
     });
 
     //Only check for changes in editArea if we have a callback.
@@ -448,6 +462,9 @@ const execFormattingTool = (tool,editArea,format = true,props = false) => {
                 break;
             case 'ul':
                 listifySelectedElement('unordered',editArea);
+                break;
+            case 'indent':
+                handleIndentation('indent',editArea);
                 break;
         }
     }
@@ -1055,6 +1072,99 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
     });
 };
 
+const handleIndentation = (direction = 'indent',editArea) => {
+    if('outdent' === direction) {
+        //Well?
+    }
+
+    const openMarker = editArea.find('#openMarker');
+    const openMarkerParent = openMarker.parent();
+    const openMarkerParentNodeName = openMarkerParent[0].nodeName;
+    console.log('We here:');
+    console.log('openMarkerParentNodeName:');
+    console.log(openMarkerParentNodeName);
+    return;
+    const openMarkerGrandparent = openMarkerParent.parent();
+    const openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName;
+    //See whether we only mean to change format between ordered and unordered
+    if(('UL' === openMarkerGrandparentNodeName || 'OL' === openMarkerGrandparentNodeName) && openMarkerGrandparentNodeName !== listNodeName) {
+        const newOrderedList = jQuery(listTag);
+        newOrderedList.html(openMarkerGrandparent.html());
+        openMarkerGrandparent.replaceWith(newOrderedList);
+        inactivateToolDisplay(editArea,'ul');
+        inactivateToolDisplay(editArea,'ol');
+        activateToolDisplay(editArea,selectionObject.tool);
+        return;
+    }
+
+    //Let us gather all the elements that need listifying
+    let eligibleElements = [openMarkerParent];
+    let moreEligible = true;
+    if(openMarkerParent.find('#closeMarker').length) {
+        moreEligible = false;
+    }
+    let currentEl = openMarkerParent;
+    while(moreEligible) {
+        const nextEl = currentEl.next();
+        if(nextEl.length) {
+            currentEl = nextEl;
+            eligibleElements.push(currentEl);
+            if(currentEl.find('#closeMarker').length) {
+                moreEligible = false;
+            }
+        } else {
+            moreEligible = false;
+        }
+    }
+
+    //Listify each item
+    eligibleElements.forEach((el) => {
+        const elParent = el.parent();
+        const elNodeName = el[0].nodeName;
+        if('LI' === elNodeName) {
+            const prevSibling = el.prev();
+            const nextSibling = el.next();
+            const newParagraph = jQuery('<p>');
+            newParagraph.html(el.html());
+            if(prevSibling.length && nextSibling.length) { //We're in the middle of the list
+                const newOrderedList = jQuery(listTag);
+                const afterSiblings = el.nextAll().detach();
+                newOrderedList.append(afterSiblings);
+                el.remove();
+                elParent.after(newOrderedList).after(newParagraph);
+            } else if(prevSibling.length && !nextSibling.length) { //We're at the end of the list
+                el.remove();
+                elParent.after(newParagraph);
+            } else if(!prevSibling.length && nextSibling.length) { //We're at the beginning of the list
+                el.remove();
+                elParent.before(newParagraph);
+            } else { //We are a list of one item
+                elParent.replaceWith(newParagraph);
+            }
+            inactivateToolDisplay(editArea,selectionObject.tool);
+        } else {
+            const newListItem = jQuery('<li>');
+            newListItem.html(el.html());
+            const prevSibling = el.prev();
+            const nextSibling = el.next();
+
+            //Check whether we should add item to neighboring list
+            if(prevSibling.length && listNodeName === prevSibling[0].nodeName) { //Append to previous list
+                el.remove();
+                prevSibling.append(newListItem);
+            } else if(nextSibling.length && listNodeName === nextSibling[0].nodeName) { //Prepend to following list
+                el.remove();
+                nextSibling.prepend(newListItem);
+            } else { //Start new list
+                const newOrderedList = jQuery(listTag);
+                newOrderedList.append(newListItem);
+                el.replaceWith(newOrderedList);
+            }
+            activateToolDisplay(editArea,selectionObject.tool);
+        }
+    });
+};
+
 /**
  * Handle keyboard shortcuts for text editor
  */
@@ -1109,36 +1219,36 @@ $(document).on('keydown', function (e) {
 initTextEditors(50);
 
 const logVitals = (func,leaving = false) => {
-    // return;
-  console.log('----------------------');
-  if(leaving) {
-    console.log('LEAVING FUNCTION: ' + func);
-  } else {
-    console.log('ENTERING FUNCTION: ' + func);
-  }
-  if(toAdd.length) {
-    console.log('toAdd');
-    console.log(toAdd);
-  }
-  if(toReverse.length) {
-    console.log('toReverse');
-    console.log(toReverse);
-  }
-  if(selectedTools.length) {
-    console.log('selectedTools');
-    console.log(selectedTools);
-  }
-  if(activeTools.length) {
-    console.log('activeTools');
-    console.log(activeTools);
-  }
-  if(ancestorTools.length) {
-    console.log('ancestorTools');
-    console.log(ancestorTools);
-  }
-  const editArea = $(':focus');
-  if(editArea.hasClass('fancy-text-div')) {
-      console.log('editArea.html()');
-      console.log(editArea.html());
-  }
+    return;
+    console.log('----------------------');
+    if(leaving) {
+        console.log('LEAVING FUNCTION: ' + func);
+    } else {
+        console.log('ENTERING FUNCTION: ' + func);
+    }
+    if(toAdd.length) {
+        console.log('toAdd');
+        console.log(toAdd);
+    }
+    if(toReverse.length) {
+        console.log('toReverse');
+        console.log(toReverse);
+    }
+    if(selectedTools.length) {
+        console.log('selectedTools');
+        console.log(selectedTools);
+    }
+    if(activeTools.length) {
+        console.log('activeTools');
+        console.log(activeTools);
+    }
+    if(ancestorTools.length) {
+        console.log('ancestorTools');
+        console.log(ancestorTools);
+    }
+    const editArea = $(':focus');
+    if(editArea.hasClass('fancy-text-div')) {
+        console.log('editArea.html()');
+        console.log(editArea.html());
+    }
 }

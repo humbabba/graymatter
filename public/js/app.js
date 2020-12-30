@@ -12804,7 +12804,7 @@ return jQuery;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.19';
+  var VERSION = '4.17.20';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -28380,7 +28380,7 @@ return jQuery;
      * // => [{ 'a': 4, 'b': 5, 'c': 6 }]
      *
      * // Checking for several possible values
-     * _.filter(users, _.overSome([_.matches({ 'a': 1 }), _.matches({ 'a': 4 })]));
+     * _.filter(objects, _.overSome([_.matches({ 'a': 1 }), _.matches({ 'a': 4 })]));
      * // => [{ 'a': 1, 'b': 2, 'c': 3 }, { 'a': 4, 'b': 5, 'c': 6 }]
      */
     function matches(source) {
@@ -28417,7 +28417,7 @@ return jQuery;
      * // => { 'a': 4, 'b': 5, 'c': 6 }
      *
      * // Checking for several possible values
-     * _.filter(users, _.overSome([_.matchesProperty('a', 1), _.matchesProperty('a', 4)]));
+     * _.filter(objects, _.overSome([_.matchesProperty('a', 1), _.matchesProperty('a', 4)]));
      * // => [{ 'a': 1, 'b': 2, 'c': 3 }, { 'a': 4, 'b': 5, 'c': 6 }]
      */
     function matchesProperty(path, srcValue) {
@@ -30717,7 +30717,7 @@ var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike', 'sub', 'sup'];
 var advancedTags = ['ol', 'ul', 'hr'];
 var allTags = tags.concat(advancedTags);
-var advancedFormat = ['ul', 'ol', 'hr'];
+var advancedFormat = ['ul', 'ol', 'hr', 'indent', 'outdent'];
 /**
  * Define rich-text editing tools
  * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
@@ -31044,12 +31044,26 @@ var makeTextEditor = function makeTextEditor(el) {
   } //Start editArea with a P element so the first line gets wrapped
 
 
-  editArea.html(paragraphize(el.val())); //Make it so updates to the editArea affect the original el's value
+  editArea.html(paragraphize(el.val())); //Make it so updates to the editArea affect the original el's value and the code editor
 
-  editArea.add(codeEditArea).on('input change', function () {
-    if (0 === activeTools.length) {
-      execFormattingTool(null, editArea, false);
+  editArea.on('input change', function () {
+    var code = jQuery(this).html(); //We need to check is an operation like breaking a list inserted a div and paragraphize it while keeping the selection where it is supposed to be
+
+    if (-1 < code.indexOf('<div></div>') || -1 < code.indexOf('<div><br></div>')) {
+      code = code.replace('<div></div>', '<p>' + openMarkerString + closeMarkerString + '<br></p>').replace('<div><br></div>', '<p>' + openMarkerString + closeMarkerString + '<br></p>');
+      editArea.html(code);
+      replaceMarkersWithSelection(editArea);
+      code = editArea.html();
     }
+
+    el.val(code);
+    codeEditArea.val(code);
+  }); //Update original el and editArea on changes in code editor
+
+  codeEditArea.on('input change', function () {
+    var code = jQuery(this).val();
+    el.val(code);
+    editArea.html(code);
   }); //Only check for changes in editArea if we have a callback.
 
   if (textEditorOnChangeCallback) {
@@ -31230,6 +31244,10 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
 
       case 'ul':
         listifySelectedElement('unordered', editArea);
+        break;
+
+      case 'indent':
+        handleIndentation('indent', editArea);
         break;
     }
   } //Make sure we've got paragraphs in there
@@ -31877,6 +31895,126 @@ var listifySelectedElement = function listifySelectedElement() {
     }
   });
 };
+
+var handleIndentation = function handleIndentation() {
+  var direction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'indent';
+  var editArea = arguments.length > 1 ? arguments[1] : undefined;
+
+  if ('outdent' === direction) {//Well?
+  }
+
+  var openMarker = editArea.find('#openMarker');
+  var openMarkerParent = openMarker.parent();
+  var openMarkerParentNodeName = openMarkerParent[0].nodeName;
+  console.log('We here:');
+  console.log('openMarkerParentNodeName:');
+  console.log(openMarkerParentNodeName);
+  return;
+  var openMarkerGrandparent = openMarkerParent.parent();
+  var openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName; //See whether we only mean to change format between ordered and unordered
+
+  if (('UL' === openMarkerGrandparentNodeName || 'OL' === openMarkerGrandparentNodeName) && openMarkerGrandparentNodeName !== listNodeName) {
+    var newOrderedList = jQuery(listTag);
+    newOrderedList.html(openMarkerGrandparent.html());
+    openMarkerGrandparent.replaceWith(newOrderedList);
+    inactivateToolDisplay(editArea, 'ul');
+    inactivateToolDisplay(editArea, 'ol');
+    activateToolDisplay(editArea, selectionObject.tool);
+    return;
+  } //Let us gather all the elements that need listifying
+
+
+  var eligibleElements = [openMarkerParent];
+  var moreEligible = true;
+
+  if (openMarkerParent.find('#closeMarker').length) {
+    moreEligible = false;
+  }
+
+  var currentEl = openMarkerParent;
+
+  while (moreEligible) {
+    var nextEl = currentEl.next();
+
+    if (nextEl.length) {
+      currentEl = nextEl;
+      eligibleElements.push(currentEl);
+
+      if (currentEl.find('#closeMarker').length) {
+        moreEligible = false;
+      }
+    } else {
+      moreEligible = false;
+    }
+  } //Listify each item
+
+
+  eligibleElements.forEach(function (el) {
+    var elParent = el.parent();
+    var elNodeName = el[0].nodeName;
+
+    if ('LI' === elNodeName) {
+      var prevSibling = el.prev();
+      var nextSibling = el.next();
+      var newParagraph = jQuery('<p>');
+      newParagraph.html(el.html());
+
+      if (prevSibling.length && nextSibling.length) {
+        //We're in the middle of the list
+        var _newOrderedList3 = jQuery(listTag);
+
+        var afterSiblings = el.nextAll().detach();
+
+        _newOrderedList3.append(afterSiblings);
+
+        el.remove();
+        elParent.after(_newOrderedList3).after(newParagraph);
+      } else if (prevSibling.length && !nextSibling.length) {
+        //We're at the end of the list
+        el.remove();
+        elParent.after(newParagraph);
+      } else if (!prevSibling.length && nextSibling.length) {
+        //We're at the beginning of the list
+        el.remove();
+        elParent.before(newParagraph);
+      } else {
+        //We are a list of one item
+        elParent.replaceWith(newParagraph);
+      }
+
+      inactivateToolDisplay(editArea, selectionObject.tool);
+    } else {
+      var newListItem = jQuery('<li>');
+      newListItem.html(el.html());
+
+      var _prevSibling2 = el.prev();
+
+      var _nextSibling2 = el.next(); //Check whether we should add item to neighboring list
+
+
+      if (_prevSibling2.length && listNodeName === _prevSibling2[0].nodeName) {
+        //Append to previous list
+        el.remove();
+
+        _prevSibling2.append(newListItem);
+      } else if (_nextSibling2.length && listNodeName === _nextSibling2[0].nodeName) {
+        //Prepend to following list
+        el.remove();
+
+        _nextSibling2.prepend(newListItem);
+      } else {
+        //Start new list
+        var _newOrderedList4 = jQuery(listTag);
+
+        _newOrderedList4.append(newListItem);
+
+        el.replaceWith(_newOrderedList4);
+      }
+
+      activateToolDisplay(editArea, selectionObject.tool);
+    }
+  });
+};
 /**
  * Handle keyboard shortcuts for text editor
  */
@@ -31943,7 +32081,7 @@ initTextEditors(50);
 
 var logVitals = function logVitals(func) {
   var leaving = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  // return;
+  return;
   console.log('----------------------');
 
   if (leaving) {
