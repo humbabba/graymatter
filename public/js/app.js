@@ -30718,7 +30718,7 @@ var closeMarkerString = '<marker id="closeMarker"></marker>';
 var tags = ['b', 'i', 'u', 'strike', 'sub', 'sup'];
 var advancedTags = ['ol', 'ul', 'hr'];
 var allTags = tags.concat(advancedTags);
-var advancedFormat = ['ul', 'ol', 'hr', 'indent', 'outdent'];
+var advancedFormat = ['ul', 'ol', 'hr', 'indent', 'outdent', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight'];
 var blockNodeNames = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE'];
 var blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
 /**
@@ -30792,7 +30792,7 @@ var toolsArray = [{
 }, {
   "class": 'fas fa-align-left',
   tool: 'justifyLeft',
-  title: 'Aling left'
+  title: 'Align left'
 }, {
   "class": 'fas fa-align-right toolbar-spacer',
   tool: 'justifyRight',
@@ -30976,6 +30976,13 @@ var makeTextEditor = function makeTextEditor(el) {
 
           break;
 
+        case 'justifyCenter':
+        case 'justifyFull':
+        case 'justifyLeft':
+        case 'justifyRight':
+          execFormattingTool(item.tool, editArea, false);
+          break;
+
         case 'foreColor':
           input = prompt('Hexidecimal color value for text:', '#000000');
 
@@ -31057,7 +31064,7 @@ var makeTextEditor = function makeTextEditor(el) {
   editArea.html(paragraphize(el.val())); //Make it so updates to the editArea affect the original el's value and the code editor
 
   editArea.on('input change', function () {
-    var code = jQuery(this).html(); //We need to check whether an operation like breaking a list inserted a div and paragraphize it while keeping the selection where it is supposed to be
+    var code = $(this).html(); //We need to check whether an operation like breaking a list inserted a div and paragraphize it while keeping the selection where it is supposed to be
 
     if (-1 < code.indexOf('<div></div>') || -1 < code.indexOf('<div><br></div>')) {
       code = code.replace('<div></div>', '<p>' + openMarkerString + closeMarkerString + '<br></p>').replace('<div><br></div>', '<p>' + openMarkerString + closeMarkerString + '<br></p>');
@@ -31071,7 +31078,7 @@ var makeTextEditor = function makeTextEditor(el) {
   }); //Update original el and editArea on changes in code editor
 
   codeEditArea.on('input change', function () {
-    var code = jQuery(this).val();
+    var code = $(this).val();
     el.val(code);
     editArea.html(code);
   }); //Only check for changes in editArea if we have a callback.
@@ -31139,7 +31146,7 @@ var makeTextEditor = function makeTextEditor(el) {
   }); //Add change handler for blockSelector
 
   editor.find('.blockSelector').off('change').on('change', function () {
-    updateBlockTag(jQuery(this));
+    updateBlockTag($(this));
   });
   editor.append(el);
   return editor;
@@ -31165,7 +31172,7 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
     return;
   }
 
-  var unlinkWrapper = jQuery('<unlink>');
+  var unlinkWrapper = $('<unlink>');
   range = insertOpenAndCloseMarkers(range); // Manually wrap code inside selection with temp 'unlink' element
 
   var openMarkerPattern = new RegExp(openMarkerString);
@@ -31179,7 +31186,7 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
 
   var allAnchors = inside.add(outside);
   allAnchors.each(function () {
-    jQuery(this).replaceWith(jQuery(this).html());
+    $(this).replaceWith($(this).html());
   }); //Have to reset unlinkElement case the above replacement hoses it in Chrome
 
   unlinkElement = copyDiv.find('unlink').first();
@@ -31203,9 +31210,9 @@ var unlinkSelection = function unlinkSelection(copyDiv, codeDiv, hiddenInput) {
 var insertOpenAndCloseMarkers = function insertOpenAndCloseMarkers(range) {
   //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
   var openMarker = document.createElement('marker');
-  jQuery(openMarker).attr('id', 'openMarker');
+  $(openMarker).attr('id', 'openMarker');
   var closeMarker = document.createElement('marker');
-  jQuery(closeMarker).attr('id', 'closeMarker');
+  $(closeMarker).attr('id', 'closeMarker');
   range.insertNode(openMarker); //Collapse the range to the end, so we can insert the closeMarker in the proper spot
 
   range.collapse(false);
@@ -31266,6 +31273,13 @@ var execFormattingTool = function execFormattingTool(tool, editArea) {
 
       case 'outdent':
         handleIndentation('outdent', editArea);
+        break;
+
+      case 'justifyCenter':
+      case 'justifyFull':
+      case 'justifyLeft':
+      case 'justifyRight':
+        justifyBlocks(selectionObject.tool, editArea);
         break;
     }
   } //Make sure we've got paragraphs in there
@@ -31391,10 +31405,10 @@ var getSelectionObject = function getSelectionObject(tool, editArea, emptySelect
 
     var openTagPattern = new RegExp(selectionObject.openTool + selectionObject.openTool, 'gi');
     var closeTagPattern = new RegExp(selectionObject.closeTool + selectionObject.closeTool, 'gi');
-    contentString = contentString.replace(openTagPattern, selectionObject.openTool).replace(closeTagPattern, selectionObject.closeTool); //Create new JQuery object containing the cleaned HTML of the selected content
+    contentString = contentString.replace(openTagPattern, selectionObject.openTool).replace(closeTagPattern, selectionObject.closeTool); //Create new $ object containing the cleaned HTML of the selected content
 
     var contentStringObj = $('<span>');
-    contentStringObj.html(contentString); //Find any instances of the selected tool as *children* of our JQuery object
+    contentStringObj.html(contentString); //Find any instances of the selected tool as *children* of our $ object
 
     var tools = contentStringObj.find(tool);
     var wrappedText = ''; //A placeholder string for all text already wrapped in tool
@@ -31519,7 +31533,7 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
     var emptySelection = range.collapsed;
 
     if (emptySelection) {
-      var emptyMarker = $('<empty>'); //A fake element for the purposes finding ancestor elements with jQuery
+      var emptyMarker = $('<empty>'); //A fake element for the purposes finding ancestor elements with $
 
       range.surroundContents(emptyMarker[0]);
       ancestorTools = [];
@@ -31529,7 +31543,7 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
         if (ancestor.length) {
           ancestorTools.push(tag);
         }
-      }); //While we're hear, let's find the ancestorBlock
+      }); //While we're here, let's find the ancestorBlock
 
       ancestorBlock = false;
       var currentBlock = emptyMarker.closest(blockNodeNamesString);
@@ -31635,17 +31649,36 @@ var reconcileToolsDisplay = function reconcileToolsDisplay(editArea) {
       inactivateToolDisplay(editArea, tool);
     }
   });
-  reverseOrAddOnEmpty(); //Now let's deal with the blockSelector
-
-  var selector = editArea.closest('.textEditorMasterDiv').find('.blockSelector');
+  reverseOrAddOnEmpty();
 
   if (ancestorBlock) {
+    //Now let's deal with the blockSelector
+    var selector = editArea.closest('.textEditorMasterDiv').find('.blockSelector');
     var ancestorBlockNodeName = ancestorBlock[0].nodeName;
 
     if (-1 < blockNodeNames.indexOf(ancestorBlockNodeName)) {
       selector.val(ancestorBlockNodeName.toLowerCase());
     } else {
       selector.val('p');
+    } //Now we deal with justification
+
+
+    switch (ancestorBlock.css('text-align')) {
+      case 'center':
+        activateToolDisplay(editArea, 'justifyCenter');
+        break;
+
+      case 'justify':
+        activateToolDisplay(editArea, 'justifyFull');
+        break;
+
+      case 'left':
+        activateToolDisplay(editArea, 'justifyLeft');
+        break;
+
+      case 'right':
+        activateToolDisplay(editArea, 'justifyRight');
+        break;
     }
   }
 
@@ -31740,14 +31773,14 @@ var cleanBadLists = function cleanBadLists(editArea) {
 
   if (badLists.length) {
     badLists.each(function () {
-      var badList = jQuery(this);
+      var badList = $(this);
       var listParent = badList.parent();
       var targetRelative = listParent.find('li[style="list-style-type: none;"]');
 
       if (targetRelative.length) {
         targetRelative.append(badList);
       } else {
-        var newListItem = jQuery('<li style="list-style-type: none;">');
+        var newListItem = $('<li style="list-style-type: none;">');
         newListItem.append(badList);
         listParent.append(newListItem);
       }
@@ -31757,7 +31790,7 @@ var cleanBadLists = function cleanBadLists(editArea) {
 
   editArea.find('ul:empty').add('ol:empty').remove();
   editArea.find('ul>li:empty').add('ol>li:empty').each(function () {
-    jQuery(this).parent().remove();
+    $(this).parent().remove();
   });
 };
 /**
@@ -31839,6 +31872,7 @@ var stripTags = function stripTags(el) {
   activeTools = [];
   selectedTools = [];
   ancestorTools = [];
+  ancestorBlock = false;
   var editArea = $(':focus');
 
   if (editArea.hasClass('fancy-text-div')) {
@@ -31869,7 +31903,7 @@ var listifySelectedElement = function listifySelectedElement() {
   var openMarkerGrandparentNodeName = openMarkerGrandparent[0].nodeName; //See whether we only mean to change format between ordered and unordered
 
   if (('UL' === openMarkerGrandparentNodeName || 'OL' === openMarkerGrandparentNodeName) && openMarkerGrandparentNodeName !== listNodeName) {
-    var newOrderedList = jQuery(listTag);
+    var newOrderedList = $(listTag);
     newOrderedList.html(openMarkerGrandparent.html());
     openMarkerGrandparent.replaceWith(newOrderedList);
     inactivateToolDisplay(editArea, 'ul');
@@ -31888,12 +31922,12 @@ var listifySelectedElement = function listifySelectedElement() {
     if ('LI' === elNodeName) {
       var prevSibling = el.prev();
       var nextSibling = el.next();
-      var newParagraph = jQuery('<p>');
+      var newParagraph = $('<p>');
       newParagraph.html(el.html());
 
       if (prevSibling.length && nextSibling.length) {
         //We're in the middle of the list
-        var _newOrderedList = jQuery(listTag);
+        var _newOrderedList = $(listTag);
 
         var afterSiblings = el.nextAll().detach();
 
@@ -31916,7 +31950,7 @@ var listifySelectedElement = function listifySelectedElement() {
 
       inactivateToolDisplay(editArea, selectionObject.tool);
     } else {
-      var newListItem = jQuery('<li>');
+      var newListItem = $('<li>');
       newListItem.html(el.html());
 
       var _prevSibling = el.prev();
@@ -31936,7 +31970,7 @@ var listifySelectedElement = function listifySelectedElement() {
         _nextSibling.prepend(newListItem);
       } else {
         //Start new list
-        var _newOrderedList2 = jQuery(listTag);
+        var _newOrderedList2 = $(listTag);
 
         _newOrderedList2.append(newListItem);
 
@@ -32052,11 +32086,11 @@ var indentListItem = function indentListItem(item, direction) {
 
   switch (itemParentNodeName) {
     case 'UL':
-      newList = jQuery('<ul>');
+      newList = $('<ul>');
       break;
 
     case 'OL':
-      newList = jQuery('<ol>');
+      newList = $('<ol>');
       break;
 
     default:
@@ -32072,10 +32106,10 @@ var indentListItem = function indentListItem(item, direction) {
     } else if (itemNextSibling.length && 'none' === itemNextSibling.css('list-style-type')) {
       itemNextSibling.children().first().prepend(item);
     } else {
-      var newListItem = jQuery('<li>');
+      var newListItem = $('<li>');
       newListItem.html(item.html());
       newList.append(newListItem);
-      var replacementListItem = jQuery('<li style="list-style-type: none;">');
+      var replacementListItem = $('<li style="list-style-type: none;">');
       replacementListItem.append(newList);
       item.replaceWith(replacementListItem);
     }
@@ -32098,7 +32132,7 @@ var indentListItem = function indentListItem(item, direction) {
         var itemSiblingsAfter = item.nextAll().detach();
         newList.append(itemSiblingsAfter);
 
-        var _newListItem = jQuery('<li style="list-style-type: none;">');
+        var _newListItem = $('<li style="list-style-type: none;">');
 
         _newListItem.append(newList);
 
@@ -32109,6 +32143,87 @@ var indentListItem = function indentListItem(item, direction) {
       }
     }
   }
+};
+/**
+ * Change block-level format of current block
+ * @param selector
+ */
+
+
+var updateBlockTag = function updateBlockTag(selector) {
+  var masterDiv = selector.closest('.textEditorMasterDiv');
+  var editArea = masterDiv.find('.fancy-text-div');
+  var selection = window.getSelection();
+  var selectionNode = selection.focusNode;
+  var selectionNodeName = selectionNode.nodeName;
+  var selectionEl = $(selectionNode); //In case our selected node is not block level, find the closest block-level element
+
+  if (-1 === blockNodeNames.indexOf(selectionNodeName)) {
+    selectionEl = selectionEl.closest(blockNodeNamesString);
+  } //Bail if we have no selectionEl
+
+
+  if (!selectionEl.length) {
+    return;
+  } //Bail if selection is in a different editor
+
+
+  if (!masterDiv.has(selectionEl).length) {
+    return;
+  }
+
+  var selectedVal = selector.val();
+  var newEl = $('<' + selectedVal + '>').html(selectionEl.html());
+  newEl.css('text-align', selectionEl.css('text-align'));
+  selectionEl.replaceWith(newEl); //Updated hidden input and code editor
+
+  masterDiv.find('.code-editor').val(editArea.html());
+  masterDiv.find('.text-editor').val(editArea.html());
+};
+/**
+ * Apply text alignment to blocks
+ * @param format
+ * @param editArea
+ */
+
+
+var justifyBlocks = function justifyBlocks(format, editArea) {
+  inactivateToolDisplay(editArea, 'justifyCenter');
+  inactivateToolDisplay(editArea, 'justifyFull');
+  inactivateToolDisplay(editArea, 'justifyLeft');
+  inactivateToolDisplay(editArea, 'justifyRight');
+  var parentBlock = editArea.find('#openMarker').closest(blockNodeNamesString + ',' + 'ul,ol'); //Bail if no block selected
+
+  if (!parentBlock.length) {
+    return;
+  }
+
+  var eligibleElements = getEligibleElements(editArea, parentBlock);
+  eligibleElements.forEach(function (block) {
+    block.css('text-align', '');
+
+    switch (format) {
+      case 'justifyCenter':
+        block.css('text-align', 'center');
+        activateToolDisplay(editArea, 'justifyCenter');
+        break;
+
+      case 'justifyFull':
+        block.css('text-align', 'justify');
+        activateToolDisplay(editArea, 'justifyFull');
+        break;
+
+      case 'justifyLeft':
+        block.css('text-align', 'left');
+        activateToolDisplay(editArea, 'justifyLeft');
+        break;
+
+      case 'justifyRight':
+        block.css('text-align', 'right');
+        activateToolDisplay(editArea, 'justifyRight');
+        break;
+    }
+  });
 };
 /**
  * Handle keyboard shortcuts for text editor
@@ -32168,40 +32283,9 @@ $(document).on('keydown', function (e) {
     }
   }
 });
-
-var updateBlockTag = function updateBlockTag(selector) {
-  var masterDiv = selector.closest('.textEditorMasterDiv');
-  var editArea = masterDiv.find('.fancy-text-div');
-  var selection = window.getSelection();
-  var selectionNode = selection.focusNode;
-  var selectionNodeName = selectionNode.nodeName;
-  var selectionEl = jQuery(selectionNode); //In case our selected node is not block level, find the closest block-level element
-
-  if (-1 === blockNodeNames.indexOf(selectionNodeName)) {
-    selectionEl = selectionEl.closest(blockNodeNamesString);
-  } //Bail if we have no selectionEl
-
-
-  if (!selectionEl.length) {
-    return;
-  } //Bail if selection is in a different editor
-
-
-  if (!masterDiv.has(selectionEl).length) {
-    return;
-  }
-
-  var selectedVal = selector.val();
-  var newEl = jQuery('<' + selectedVal + '>').html(selectionEl.html());
-  selectionEl.replaceWith(newEl); //Updated hidden input and code editor
-
-  masterDiv.find('.code-editor').val(editArea.html());
-  masterDiv.find('.text-editor').val(editArea.html());
-};
 /**
  * Init on load
  */
-
 
 initTextEditors(50);
 
