@@ -2,6 +2,7 @@
  * Globals
  */
 let currentGeneration,selectionObject;
+let ancestorBlock = false;
 let ancestorTools = [];
 let selectedTools = [];
 let activeTools = [];
@@ -13,34 +14,34 @@ const tags = ['b','i','u','strike','sub','sup'];
 const advancedTags = ['ol','ul','hr'];
 const allTags = tags.concat(advancedTags);
 const advancedFormat = ['ul','ol','hr','indent','outdent'];
+const blockNodeNames = ['P','H1','H2','H3','H4','H5','H6','PRE'];
+const blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
 
 /**
  * Define rich-text editing tools
- * @type {({title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string}|{title: string, class: string, tool: string})[]}
  */
 const toolsArray = [
+    {class:'fas fa-minus-circle',tool: 'clearFormat',title: 'Clear all formatting'},
+    {class:'fas fa-code toolbar-spacer',tool: 'toggleCode',title: 'Toggle code view'},
     {class:'fas fa-bold',tool: 'b',title: 'Bold (ctrl-b)'},
     {class:'fas fa-italic',tool: 'i',title: 'Italic (ctrl-i)'},
     {class:'fas fa-underline',tool: 'u',title: 'Underline (ctrl-u)'},
     {class:'fas fa-strikethrough toolbar-spacer',tool: 'strike',title: 'Strikethrough'},
-    {class:'fas fa-image toolbar-spacer',tool: 'insertImage',title: 'Insert image'},
-    {class:'fas fa-minus toolbar-spacer',tool: 'hr',title: 'Horizontal rule'},
-    {class:'fas fa-link',tool: 'createLink',title: 'Link'},
+    {class:'fas fa-link',tool: 'createLink',title: 'Link (ctrl-k)'},
     {class:'fas fa-unlink toolbar-spacer',tool: 'unlink',title: 'Unlink'},
-    {class:'fas fa-indent',tool: 'indent',title: 'Indent'},
-    {class:'fas fa-outdent toolbar-spacer',tool: 'outdent',title: 'Outdent'},
+    {class:'fas fa-image toolbar-spacer',tool: 'insertImage',title: 'Insert image'},
+    {class:'fas fa-palette toolbar-spacer',tool: 'foreColor',title: 'Font color'},
     {class:'fas fa-list-ol',tool: 'ol',title: 'Ordered list'},
     {class:'fas fa-list-ul toolbar-spacer',tool: 'ul',title: 'Unordered list'},
-    {class:'fas fa-text-height',tool: 'fontSize',title: 'Font size'},
-    {class:'fas fa-palette toolbar-spacer',tool: 'foreColor',title: 'Font color'},
+    {class:'fas fa-indent',tool: 'indent',title: 'Indent'},
+    {class:'fas fa-outdent toolbar-spacer',tool: 'outdent',title: 'Outdent'},
     {class:'fas fa-align-center',tool: 'justifyCenter',title: 'Center'},
     {class:'fas fa-align-justify',tool: 'justifyFull',title: 'Justify'},
     {class:'fas fa-align-left',tool: 'justifyLeft',title: 'Aling left'},
     {class:'fas fa-align-right toolbar-spacer',tool: 'justifyRight',title: 'Align right'},
+    {class:'fas fa-minus toolbar-spacer',tool: 'hr',title: 'Horizontal rule'},
     {class:'fas fa-subscript',tool: 'sub',title: 'Subscript'},
     {class:'fas fa-superscript toolbar-spacer',tool: 'sup',title: 'Superscript'},
-    {class:'fas fa-minus-circle',tool: 'clearFormat',title: 'Clear all formatting'},
-    {class:'fas fa-code',tool: 'toggleCode',title: 'Toggle code view'},
 ];
 
 /**
@@ -146,6 +147,18 @@ const makeTextEditor = el => {
 
     //Toolbar div and tools
     const toolbar = $('<div class="toolbar">');
+    toolbar.append(`<div class="tiny-selector toolbar-spacer">
+    <select class="blockSelector">
+        <option value="p">P</option>
+        <option value="h1">H1</option>
+        <option value="h2">H2</option>
+        <option value="h3">H3</option>
+        <option value="h4">H4</option>
+        <option value="h5">H5</option>
+        <option value="h6">H6</option>
+        <option value="pre">PRE</option>
+</select>
+</div>`);
     $(toolsArray).each(function(index,item) {
         const tool = $('<i class="toolbar-button">');
         tool.addClass(item.class);
@@ -183,10 +196,16 @@ const makeTextEditor = el => {
                 case 'outdent':
                     execFormattingTool(item.tool,editArea,false);
                     break;
-                case 'fontSize':
-                    input = prompt('Text size:','(Integer from 1 to 7)');
+                case 'heading':
+                    input = prompt('Enter heading size','(Integer from 1 to 6)');
                     if(input) {
-                      document.execCommand(item.tool,false,input);
+                        const inputInteger = parseInt(input);
+                        if(isNaN(inputInteger) || 1 > inputInteger || 6 < inputInteger) {
+                            alert('Heading size can only be an integer between 1 and 6');
+                            return;
+                        }
+                        const tool = 'h' + inputInteger;
+                        execFormattingTool(tool,editArea);
                     }
                     break;
                 case 'foreColor':
@@ -219,9 +238,9 @@ const makeTextEditor = el => {
                     copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
                     codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
                     let buttonsToToggle = $(this).closest('.textEditorMasterDiv').find('.toolbar-button').not('.fa-code');
-                    let spacersToToggle = $(this).closest('.textEditorMasterDiv').find('.spacer');
+                    let selectorToToggle = $(this).closest('.textEditorMasterDiv').find('.tiny-selector');
                     buttonsToToggle.toggle();
-                    spacersToToggle.toggle();
+                    selectorToToggle.toggle();
                     copyDiv.toggle();
                     codeDiv.toggle();
                     break;
@@ -339,6 +358,11 @@ const makeTextEditor = el => {
     //Evaluate formatting on keyup, to catch deletions and so forth
     editArea.on('keyup',function(e) {
       evaluateFormatting($(this),e);
+    });
+
+    //Add change handler for blockSelector
+    editor.find('.blockSelector').off('change').on('change',function () {
+        updateBlockTag(jQuery(this));
     });
 
     editor.append(el);
@@ -727,15 +751,21 @@ const evaluateFormatting = (editArea,e) => {
     const range = window.getSelection().getRangeAt(0);
     const emptySelection = range.collapsed;
     if(emptySelection) {
-      const emptyMarker = $('<empty>'); //A fake element for the purposes finding ancestor elements with jQuery
-      range.surroundContents(emptyMarker[0]);
-      ancestorTools = [];
-      allTags.forEach(function(tag,index) {
-        const ancestor = emptyMarker.closest(tag);
-        if(ancestor.length) {
-          ancestorTools.push(tag);
+        const emptyMarker = $('<empty>'); //A fake element for the purposes finding ancestor elements with jQuery
+        range.surroundContents(emptyMarker[0]);
+        ancestorTools = [];
+        allTags.forEach(function(tag,index) {
+            const ancestor = emptyMarker.closest(tag);
+            if(ancestor.length) {
+                ancestorTools.push(tag);
+            }
+        });
+        //While we're hear, let's find the ancestorBlock
+        ancestorBlock = false;
+        const currentBlock = emptyMarker.closest(blockNodeNamesString);
+        if(currentBlock.length) {
+            ancestorBlock = currentBlock;
         }
-      });
         emptyMarker.remove();
         inactivateNonSelectedToolsDisplay(editArea);
         reconcileToolsDisplay(editArea);
@@ -794,33 +824,44 @@ const inactivateNonSelectedToolsDisplay = editArea => {
 * Reconcile user intention for tool-button status based on existing formatting and formatting commands from  clicks or ctrl-command
 */
 const reconcileToolsDisplay = editArea => {
-  logVitals('reconcileToolsDisplay');
-  $('.toolbar-button').removeClass('active');
-  //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
-  ancestorTools.forEach(function(tool,index) {
-    inactivateToolDisplay(editArea,tool);
-    if(selectedTools.indexOf(tool) === -1) {
-      activateToolDisplay(editArea,tool);
-    }
-  });
-  //For all formatting commands, we activate that the corresponding button unless reversed by ancestor formatting
-  selectedTools.forEach(function(tool,index) {
-    const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
-    inactivateToolDisplay(editArea,tool);
-    if(ancestorTools.indexOf(tool) === -1) {
-      activateToolDisplay(editArea,tool);
-    }
-  });
-  //For all active buttons, we inactivate 'em if they've been selected as the formatting action
-  activeTools.forEach(function(tool,index) {
-    const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
-    if(selectedTools.indexOf(tool) === -1 && ancestorTools.indexOf(tool) === -1) {
-      inactivateToolDisplay(editArea,tool);
-    }
-  });
-  reverseOrAddOnEmpty();
+    logVitals('reconcileToolsDisplay');
+    $('.toolbar-button').removeClass('active');
+    //If the selection has ancestor formatting, we make that tool button active unless a formatting command is reversing it
+    ancestorTools.forEach(function(tool,index) {
+        inactivateToolDisplay(editArea,tool);
+        if(selectedTools.indexOf(tool) === -1) {
+            activateToolDisplay(editArea,tool);
+        }
+    });
+    //For all formatting commands, we activate that the corresponding button unless reversed by ancestor formatting
+    selectedTools.forEach(function(tool,index) {
+        const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
+        inactivateToolDisplay(editArea,tool);
+        if(ancestorTools.indexOf(tool) === -1) {
+            activateToolDisplay(editArea,tool);
+        }
+    });
+    //For all active buttons, we inactivate 'em if they've been selected as the formatting action
+    activeTools.forEach(function(tool,index) {
+        const toolButton = editArea.closest('.textEditorMasterDiv').find(`[data-tool='${tool}']`);
+        if(selectedTools.indexOf(tool) === -1 && ancestorTools.indexOf(tool) === -1) {
+            inactivateToolDisplay(editArea,tool);
+        }
+    });
+    reverseOrAddOnEmpty();
 
-  logVitals('reconcileToolsDisplay',true);
+    //Now let's deal with the blockSelector
+    const selector = editArea.closest('.textEditorMasterDiv').find('.blockSelector');
+    if(ancestorBlock) {
+        const ancestorBlockNodeName = ancestorBlock[0].nodeName;
+        if(-1 < blockNodeNames.indexOf(ancestorBlockNodeName)) {
+            selector.val(ancestorBlockNodeName.toLowerCase());
+        } else {
+            selector.val('p');
+        }
+    }
+
+    logVitals('reconcileToolsDisplay',true);
 };
 
 /**
@@ -918,8 +959,6 @@ const cleanBadLists = editArea => {
             const badList = jQuery(this);
             const listParent = badList.parent();
             const targetRelative = listParent.find('li[style="list-style-type: none;"]');
-            console.log('targetRelative');
-            console.log(targetRelative);
             if(targetRelative.length) {
                 targetRelative.append(badList);
             } else {
@@ -1100,9 +1139,12 @@ const listifySelectedElement = (type = 'ordered', editArea) => {
 const handleIndentation = (direction = 'indent',editArea) => {
 
     const openMarker = editArea.find('#openMarker');
-    const openMarkerParent = openMarker.closest('li,p');
-    console.log('openMarkerParent');
-    console.log(openMarkerParent);
+    const openMarkerParent = openMarker.closest('li' + ',' + blockNodeNamesString);
+
+    //Bail if no open marker
+    if(!openMarkerParent.length) {
+        return;
+    }
 
     //Let us gather all the elements that need indenting
     const eligibleElements = getEligibleElements(editArea,openMarkerParent);
@@ -1110,7 +1152,13 @@ const handleIndentation = (direction = 'indent',editArea) => {
         const elNodeName = el[0].nodeName;
         switch(elNodeName) {
             case 'P':
-                indentParagraph(el,direction);
+            case 'H1':
+            case 'H2':
+            case 'H3':
+            case 'H4':
+            case 'H5':
+            case 'H6':
+                indentBlock(el,direction);
                 break;
             case 'LI':
                 indentListItem(el,direction);
@@ -1152,7 +1200,7 @@ const getEligibleElements = (editArea,openMarkerParent) => {
  * @param paragraph
  * @param direction
  */
-const indentParagraph = (paragraph,direction) => {
+const indentBlock = (paragraph,direction) => {
   const currentStyle = paragraph.css('margin-left');
   let indentPixels = parseInt(currentStyle.replace('px',''));
   if('indent' === direction) {
@@ -1174,8 +1222,6 @@ const indentParagraph = (paragraph,direction) => {
 const indentListItem = (item,direction) => {
 
     const itemParent = item.closest('ul,ol');
-    console.log('itemParent');
-    console.log(itemParent);
     const itemParentNodeName = itemParent[0].nodeName;
     let newList;
     switch(itemParentNodeName) {
@@ -1274,6 +1320,38 @@ $(document).on('keydown', function (e) {
         }
     }
 });
+
+const updateBlockTag = selector => {
+    const masterDiv = selector.closest('.textEditorMasterDiv');
+    const editArea = masterDiv.find('.fancy-text-div');
+    const selection = window.getSelection();
+    const selectionNode = selection.focusNode;
+    const selectionNodeName = selectionNode.nodeName;
+    let selectionEl = jQuery(selectionNode);
+
+    //In case our selected node is not block level, find the closest block-level element
+    if(-1 === blockNodeNames.indexOf(selectionNodeName)) {
+        selectionEl = selectionEl.closest(blockNodeNamesString);
+    }
+
+    //Bail if we have no selectionEl
+    if(!selectionEl.length) {
+        return;
+    }
+
+    //Bail if selection is in a different editor
+    if(!masterDiv.has(selectionEl).length) {
+        return;
+    }
+
+    const selectedVal = selector.val();
+    const newEl = jQuery('<' + selectedVal + '>').html(selectionEl.html());
+    selectionEl.replaceWith(newEl);
+
+    //Updated hidden input and code editor
+    masterDiv.find('.code-editor').val(editArea.html());
+    masterDiv.find('.text-editor').val(editArea.html());
+};
 
 /**
  * Init on load

@@ -38,6 +38,10 @@
             <label>Bio</label>
             <input type="hidden" name="bio" class="text-editor" value="" />
           </div>
+          <div class="cell pv10">
+            <label>Lies</label>
+            <input type="hidden" name="bio" class="text-editor" value="" />
+          </div>
         </div>
       </div>
     </form>

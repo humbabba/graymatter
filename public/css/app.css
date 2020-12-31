@@ -1171,6 +1171,13 @@ span.striped-odd:nth-child(odd) {
   margin-right: 10px;
 }
 
+.more-tools-container .tiny-selector,
+.more-tools-holder .tiny-selector,
+.toolbar .tiny-selector {
+  display: inline-block;
+  max-width: 80px;
+}
+
 .fancy-text-div {
   border: 1px solid #999999;
   border-radius: 5px;

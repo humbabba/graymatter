@@ -20,6 +20,11 @@
   .toolbar-spacer {
     margin-right: $margin-base;
   }
+
+    .tiny-selector {
+        display: inline-block;
+        max-width: 80px;
+    }
 }
 .fancy-text-div {
     border: 1px solid $secondary;
