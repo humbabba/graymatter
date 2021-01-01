@@ -773,11 +773,29 @@ const evaluateFormatting = (editArea,e) => {
         });
         //While we're here, let's find the ancestorBlock
         ancestorBlock = false;
-        const currentBlock = emptyMarker.closest(blockNodeNamesString);
+        const currentBlock = emptyMarker.closest(blockNodeNamesString + ',ul,ol');
+        console.log('currentBlock');
+        console.log(currentBlock);
         if(currentBlock.length) {
-            ancestorBlock = currentBlock;
+            const currentBlockNodeName = currentBlock[0].nodeName;
+            console.log('currentBlockNodeName');
+            console.log(currentBlockNodeName);
+            if('UL' === currentBlockNodeName || 'OL' === currentBlockNodeName) { //In the case of lists, we need to check for an aligning span
+                const aligningSpan = currentBlock.closest('span');
+                console.log('aligningSpan');
+                console.log(aligningSpan);
+                if(aligningSpan.length && 'block' === aligningSpan.css('display')) {
+                  ancestorBlock = aligningSpan;
+                } else {
+                    ancestorBlock = currentBlock;
+                }
+            } else {
+                ancestorBlock = currentBlock;
+            }
         }
         emptyMarker.remove();
+        console.log('ancestorBlock');
+        console.log(ancestorBlock);
         inactivateNonSelectedToolsDisplay(editArea);
         reconcileToolsDisplay(editArea);
     } else {
@@ -981,22 +999,29 @@ const cleanRedundantCode = editArea => {
  * @param editArea
  */
 const cleanBadLists = editArea => {
-    //Clean up bad lists
+    //Clean up badly nested lists
     const badLists = editArea.find('ul>ul').add('ol>ol');
-    if(badLists.length) {
-        badLists.each(function () {
-            const badList = $(this);
-            const listParent = badList.parent();
-            const targetRelative = listParent.find('li[style="list-style-type: none;"]');
-            if(targetRelative.length) {
-                targetRelative.append(badList);
-            } else {
-                const newListItem = $('<li style="list-style-type: none;">');
-                newListItem.append(badList);
-                listParent.append(newListItem);
-            }
-        });
-    }
+    badLists.each(function () {
+        const badList = $(this);
+        const listParent = badList.parent();
+        const targetRelative = listParent.find('li[style="list-style-type: none;"]');
+        if(targetRelative.length) {
+            targetRelative.append(badList);
+        } else {
+            const newListItem = $('<li style="list-style-type: none;">');
+            newListItem.append(badList);
+            listParent.append(newListItem);
+        }
+    });
+
+    //Clean up badly spanned lists from justifyList
+    const badSpans = editArea.find('ul span').add('ol span');
+    badSpans.each(function () {
+      const badSpan = $(this);
+      if('undefined' !== typeof badSpan) {
+        badSpan.html(badSpan.html());
+      }
+    });
 
     //Clean up empty lists
     editArea.find('ul:empty').add('ol:empty').remove();
@@ -1361,6 +1386,10 @@ const justifyBlocks = (format,editArea) => {
     const eligibleElements = getEligibleElements(editArea,parentBlock);
 
     eligibleElements.forEach((block) => {
+      const blockNodeName = block[0].nodeName;
+      if('UL' === blockNodeName || 'OL' === blockNodeName) {
+        justifyList(block,format,editArea);
+      } else {
         block.css('text-align','');
         switch (format) {
             case 'justifyCenter':
@@ -1380,7 +1409,59 @@ const justifyBlocks = (format,editArea) => {
                 activateToolDisplay(editArea,'justifyRight');
                 break;
         }
+      }
     });
+};
+
+const justifyList = (block,format,editArea) => {
+  const blockParent = block.parent();
+  const blockParentNodeName = blockParent[0].nodeName;
+  if('SPAN' === blockParentNodeName) {
+    blockParent.css('display','block');
+    switch (format) {
+        case 'justifyCenter':
+            blockParent.css('text-align','center');
+            activateToolDisplay(editArea,'justifyCenter');
+            break;
+        case 'justifyFull':
+            blockParent.css('text-align','justify');
+            activateToolDisplay(editArea,'justifyFull');
+            break;
+        case 'justifyLeft':
+            blockParent.css('text-align','left');
+            activateToolDisplay(editArea,'justifyLeft');
+            break;
+        case 'justifyRight':
+            blockParent.css('text-align','right');
+            activateToolDisplay(editArea,'justifyRight');
+            break;
+    }
+  } else {
+    const blockClone = block.clone();
+    const newSpan = $('<span style="display:block">');
+    switch (format) {
+        case 'justifyCenter':
+            newSpan.css('text-align','center');
+            activateToolDisplay(editArea,'justifyCenter');
+            break;
+        case 'justifyFull':
+            newSpan.css('text-align','justify');
+            activateToolDisplay(editArea,'justifyFull');
+            break;
+        case 'justifyLeft':
+            newSpan.css('text-align','left');
+            activateToolDisplay(editArea,'justifyLeft');
+            break;
+        case 'justifyRight':
+            newSpan.css('text-align','right');
+            activateToolDisplay(editArea,'justifyRight');
+            break;
+    }
+    blockClone.css('display','inline-block').css('text-align','left');
+    newSpan.append(blockClone);
+    block.replaceWith(newSpan);
+  }
+
 };
 
 /**

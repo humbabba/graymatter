@@ -12804,7 +12804,7 @@ return jQuery;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.20';
+  var VERSION = '4.17.19';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -28380,7 +28380,7 @@ return jQuery;
      * // => [{ 'a': 4, 'b': 5, 'c': 6 }]
      *
      * // Checking for several possible values
-     * _.filter(objects, _.overSome([_.matches({ 'a': 1 }), _.matches({ 'a': 4 })]));
+     * _.filter(users, _.overSome([_.matches({ 'a': 1 }), _.matches({ 'a': 4 })]));
      * // => [{ 'a': 1, 'b': 2, 'c': 3 }, { 'a': 4, 'b': 5, 'c': 6 }]
      */
     function matches(source) {
@@ -28417,7 +28417,7 @@ return jQuery;
      * // => { 'a': 4, 'b': 5, 'c': 6 }
      *
      * // Checking for several possible values
-     * _.filter(objects, _.overSome([_.matchesProperty('a', 1), _.matchesProperty('a', 4)]));
+     * _.filter(users, _.overSome([_.matchesProperty('a', 1), _.matchesProperty('a', 4)]));
      * // => [{ 'a': 1, 'b': 2, 'c': 3 }, { 'a': 4, 'b': 5, 'c': 6 }]
      */
     function matchesProperty(path, srcValue) {
@@ -31546,13 +31546,34 @@ var evaluateFormatting = function evaluateFormatting(editArea, e) {
       }); //While we're here, let's find the ancestorBlock
 
       ancestorBlock = false;
-      var currentBlock = emptyMarker.closest(blockNodeNamesString);
+      var currentBlock = emptyMarker.closest(blockNodeNamesString + ',ul,ol');
+      console.log('currentBlock');
+      console.log(currentBlock);
 
       if (currentBlock.length) {
-        ancestorBlock = currentBlock;
+        var currentBlockNodeName = currentBlock[0].nodeName;
+        console.log('currentBlockNodeName');
+        console.log(currentBlockNodeName);
+
+        if ('UL' === currentBlockNodeName || 'OL' === currentBlockNodeName) {
+          //In the case of lists, we need to check for an aligning span
+          var aligningSpan = currentBlock.closest('span');
+          console.log('aligningSpan');
+          console.log(aligningSpan);
+
+          if (aligningSpan.length && 'block' === aligningSpan.css('display')) {
+            ancestorBlock = aligningSpan;
+          } else {
+            ancestorBlock = currentBlock;
+          }
+        } else {
+          ancestorBlock = currentBlock;
+        }
       }
 
       emptyMarker.remove();
+      console.log('ancestorBlock');
+      console.log(ancestorBlock);
       inactivateNonSelectedToolsDisplay(editArea);
       reconcileToolsDisplay(editArea);
     } else {
@@ -31768,25 +31789,30 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
 
 
 var cleanBadLists = function cleanBadLists(editArea) {
-  //Clean up bad lists
+  //Clean up badly nested lists
   var badLists = editArea.find('ul>ul').add('ol>ol');
+  badLists.each(function () {
+    var badList = $(this);
+    var listParent = badList.parent();
+    var targetRelative = listParent.find('li[style="list-style-type: none;"]');
 
-  if (badLists.length) {
-    badLists.each(function () {
-      var badList = $(this);
-      var listParent = badList.parent();
-      var targetRelative = listParent.find('li[style="list-style-type: none;"]');
+    if (targetRelative.length) {
+      targetRelative.append(badList);
+    } else {
+      var newListItem = $('<li style="list-style-type: none;">');
+      newListItem.append(badList);
+      listParent.append(newListItem);
+    }
+  }); //Clean up badly spanned lists from justifyList
 
-      if (targetRelative.length) {
-        targetRelative.append(badList);
-      } else {
-        var newListItem = $('<li style="list-style-type: none;">');
-        newListItem.append(badList);
-        listParent.append(newListItem);
-      }
-    });
-  } //Clean up empty lists
+  var badSpans = editArea.find('ul span').add('ol span');
+  badSpans.each(function () {
+    var badSpan = $(this);
 
+    if ('undefined' !== typeof badSpan) {
+      badSpan.html(badSpan.html());
+    }
+  }); //Clean up empty lists
 
   editArea.find('ul:empty').add('ol:empty').remove();
   editArea.find('ul>li:empty').add('ol>li:empty').each(function () {
@@ -32200,30 +32226,96 @@ var justifyBlocks = function justifyBlocks(format, editArea) {
 
   var eligibleElements = getEligibleElements(editArea, parentBlock);
   eligibleElements.forEach(function (block) {
-    block.css('text-align', '');
+    var blockNodeName = block[0].nodeName;
+
+    if ('UL' === blockNodeName || 'OL' === blockNodeName) {
+      justifyList(block, format, editArea);
+    } else {
+      block.css('text-align', '');
+
+      switch (format) {
+        case 'justifyCenter':
+          block.css('text-align', 'center');
+          activateToolDisplay(editArea, 'justifyCenter');
+          break;
+
+        case 'justifyFull':
+          block.css('text-align', 'justify');
+          activateToolDisplay(editArea, 'justifyFull');
+          break;
+
+        case 'justifyLeft':
+          block.css('text-align', 'left');
+          activateToolDisplay(editArea, 'justifyLeft');
+          break;
+
+        case 'justifyRight':
+          block.css('text-align', 'right');
+          activateToolDisplay(editArea, 'justifyRight');
+          break;
+      }
+    }
+  });
+};
+
+var justifyList = function justifyList(block, format, editArea) {
+  var blockParent = block.parent();
+  var blockParentNodeName = blockParent[0].nodeName;
+
+  if ('SPAN' === blockParentNodeName) {
+    blockParent.css('display', 'block');
 
     switch (format) {
       case 'justifyCenter':
-        block.css('text-align', 'center');
+        blockParent.css('text-align', 'center');
         activateToolDisplay(editArea, 'justifyCenter');
         break;
 
       case 'justifyFull':
-        block.css('text-align', 'justify');
+        blockParent.css('text-align', 'justify');
         activateToolDisplay(editArea, 'justifyFull');
         break;
 
       case 'justifyLeft':
-        block.css('text-align', 'left');
+        blockParent.css('text-align', 'left');
         activateToolDisplay(editArea, 'justifyLeft');
         break;
 
       case 'justifyRight':
-        block.css('text-align', 'right');
+        blockParent.css('text-align', 'right');
         activateToolDisplay(editArea, 'justifyRight');
         break;
     }
-  });
+  } else {
+    var blockClone = block.clone();
+    var newSpan = $('<span style="display:block">');
+
+    switch (format) {
+      case 'justifyCenter':
+        newSpan.css('text-align', 'center');
+        activateToolDisplay(editArea, 'justifyCenter');
+        break;
+
+      case 'justifyFull':
+        newSpan.css('text-align', 'justify');
+        activateToolDisplay(editArea, 'justifyFull');
+        break;
+
+      case 'justifyLeft':
+        newSpan.css('text-align', 'left');
+        activateToolDisplay(editArea, 'justifyLeft');
+        break;
+
+      case 'justifyRight':
+        newSpan.css('text-align', 'right');
+        activateToolDisplay(editArea, 'justifyRight');
+        break;
+    }
+
+    blockClone.css('display', 'inline-block').css('text-align', 'left');
+    newSpan.append(blockClone);
+    block.replaceWith(newSpan);
+  }
 };
 /**
  * Handle keyboard shortcuts for text editor
@@ -32383,8 +32475,8 @@ window.deleteUser = function (id, name, formId) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\projects\graymatter\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\projects\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\graymatter\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
