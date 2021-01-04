@@ -32171,30 +32171,26 @@ var indentListItem = function indentListItem(item, direction) {
 var updateBlockTag = function updateBlockTag(selector) {
   var masterDiv = selector.closest('.textEditorMasterDiv');
   var editArea = masterDiv.find('.fancy-text-div');
-  var selection = window.getSelection();
-  selection.collapse(selection.anchorNode);
-  var selectionNode = selection.focusNode;
-  var selectionNodeName = selectionNode.nodeName;
-  var selectionEl = $(selectionNode); //In case our selected node is not block level, find the closest block-level element
+  var range = window.getSelection().getRangeAt(0);
+  insertOpenAndCloseMarkers(range);
+  var parentBlock = editArea.find('#openMarker').closest(blockNodeNamesString); //Bail if no block selected
 
-  if (-1 === blockNodeNames.indexOf(selectionNodeName)) {
-    selectionEl = selectionEl.closest(blockNodeNamesString);
-  } //Bail if we have no selectionEl
-
-
-  if (!selectionEl.length) {
-    return;
-  } //Bail if selection is in a different editor
-
-
-  if (!masterDiv.has(selectionEl).length) {
+  if (!parentBlock.length) {
     return;
   }
 
+  var eligibleElements = getEligibleElements(editArea, parentBlock);
   var selectedVal = selector.val();
-  var newEl = $('<' + selectedVal + '>').html(selectionEl.html());
-  newEl.css('text-align', selectionEl.css('text-align'));
-  selectionEl.replaceWith(newEl); //Updated hidden input and code editor
+  eligibleElements.forEach(function (el) {
+    var newEl = $('<' + selectedVal + '>').html(el.html());
+
+    if ('start' !== el.css('text-align')) {
+      newEl.css('text-align', el.css('text-align'));
+    }
+
+    el.replaceWith(newEl);
+  });
+  replaceMarkersWithSelection(editArea); //Updated hidden input and code editor
 
   masterDiv.find('.code-editor').val(editArea.html());
   masterDiv.find('.text-editor').val(editArea.html());
