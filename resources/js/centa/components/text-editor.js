@@ -774,16 +774,10 @@ const evaluateFormatting = (editArea,e) => {
         //While we're here, let's find the ancestorBlock
         ancestorBlock = false;
         const currentBlock = emptyMarker.closest(blockNodeNamesString + ',ul,ol');
-        console.log('currentBlock');
-        console.log(currentBlock);
         if(currentBlock.length) {
             const currentBlockNodeName = currentBlock[0].nodeName;
-            console.log('currentBlockNodeName');
-            console.log(currentBlockNodeName);
             if('UL' === currentBlockNodeName || 'OL' === currentBlockNodeName) { //In the case of lists, we need to check for an aligning span
                 const aligningSpan = currentBlock.closest('span');
-                console.log('aligningSpan');
-                console.log(aligningSpan);
                 if(aligningSpan.length && 'block' === aligningSpan.css('display')) {
                   ancestorBlock = aligningSpan;
                 } else {
@@ -794,8 +788,6 @@ const evaluateFormatting = (editArea,e) => {
             }
         }
         emptyMarker.remove();
-        console.log('ancestorBlock');
-        console.log(ancestorBlock);
         inactivateNonSelectedToolsDisplay(editArea);
         reconcileToolsDisplay(editArea);
     } else {
@@ -1336,6 +1328,7 @@ const updateBlockTag = selector => {
     const masterDiv = selector.closest('.textEditorMasterDiv');
     const editArea = masterDiv.find('.fancy-text-div');
     const selection = window.getSelection();
+    selection.collapse(selection.anchorNode);
     const selectionNode = selection.focusNode;
     const selectionNodeName = selectionNode.nodeName;
     let selectionEl = $(selectionNode);
