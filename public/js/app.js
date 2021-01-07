@@ -30250,24 +30250,50 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /*!*************************************!*\
   !*** ./resources/js/centa/centa.js ***!
   \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: modalConfigsPath, textEditorOnChangeCallback */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-//Define path to modal configs
-window.modalConfigsPath = '/centa/modal.json'; //Define the callback for changes in text-editor
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "modalConfigsPath", function() { return modalConfigsPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "textEditorOnChangeCallback", function() { return textEditorOnChangeCallback; });
+/* harmony import */ var _components_text_editor_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/text-editor.js */ "./resources/js/centa/components/text-editor.js");
+/* harmony import */ var _components_modal_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modal.js */ "./resources/js/centa/components/modal.js");
+//Import functions
+
+ //Define path to modal configs
+
+var modalConfigsPath = '/centa/modal.json'; //Define the callback for changes in text-editor
 //Set to false for no callback
 
-window.textEditorOnChangeCallback = function () {
+var textEditorOnChangeCallback = function textEditorOnChangeCallback() {
   if ('none' === $('.modal-background').css('display')) {
     //We don't want this running when the modal is visible
     console.log('showUnsavedFlag(documentForm)');
   }
 }; //Define the callback for insertImage command in text-editor. Callback should return image URL.
-//Set to false for no callback
-
 
 window.textEditorInsertImageCallback = function () {
   return console.log('Inserting!');
+}; //Define the callback for createLink command in text-editor. Callback should return URL.
+
+
+window.textEditorCreateLinkCallback = function (editArea) {
+  var range = window.getSelection().getRangeAt(0);
+  range = Object(_components_text_editor_js__WEBPACK_IMPORTED_MODULE_0__["insertOpenAndCloseMarkers"])(range);
+  console.log('Famous original MUTATED editArea.html()');
+  console.log(editArea.html());
+  var inputConfigs = {
+    title: 'Link destination',
+    content: '<p>Enter URL:</p><p><input type=\'text\' name=\'url\' /></p>',
+    paramDisplay: [],
+    paramInput: ['url'],
+    cancelText: 'Cancel',
+    confirmText: 'Go',
+    confirmFunction: 'execCreateLinkModal'
+  };
+  var params = [editArea, editArea.html()];
+  Object(_components_modal_js__WEBPACK_IMPORTED_MODULE_1__["renderModal"])(inputConfigs, params);
 }; //Included components
 
 
@@ -30311,12 +30337,15 @@ alerts.each(function (index, el) {
 /*!************************************************!*\
   !*** ./resources/js/centa/components/modal.js ***!
   \************************************************/
-/*! no exports provided */
+/*! exports provided: hideModal, renderModal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hideModal", function() { return hideModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderModal", function() { return renderModal; });
 /* harmony import */ var _text_editor_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./text-editor.js */ "./resources/js/centa/components/text-editor.js");
+/* harmony import */ var _centa_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../centa.js */ "./resources/js/centa/centa.js");
 var modalBackground = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
 
 var modalTriggers = $('[class*="modal+"]');
@@ -30328,6 +30357,7 @@ var modalCloser = modalBackground.find('.modal-closer');
 var modalContent = modalBackground.find('.modal-content');
 var modalCancel = modalBackground.find('.modal-cancel');
 var modalConfirm = modalBackground.find('.modal-confirm');
+
 
 $.ajaxSetup({
   cache: false
@@ -30348,6 +30378,8 @@ var checkForModalTriggers = function checkForModalTriggers() {
 
           el.on('click', function (e) {
             e.preventDefault();
+            console.log('modalFunctionDefines');
+            console.log(modalFunctionDefines);
             configureModal(modalFunctionDefines);
           });
         }
@@ -30381,7 +30413,6 @@ var hideModal = function hideModal() {
 }; //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
 //Configure this specific instance
 
-
 var configureModal = function configureModal(defines) {
   var params = '';
   var configName = defines.replace(/\(.*\)/, '');
@@ -30391,7 +30422,7 @@ var configureModal = function configureModal(defines) {
     this[index] = decodeURIComponent(item).replace('+', ' ');
   }, params); //Fetch the configs for the modal
 
-  $.getJSON(window.modalConfigsPath, configName, function (data) {
+  $.getJSON(_centa_js__WEBPACK_IMPORTED_MODULE_1__["modalConfigsPath"], configName, function (data) {
     var remoteConfigs = data[configName];
 
     if ('undefined' !== typeof remoteConfigs) {
@@ -30405,7 +30436,11 @@ var configureModal = function configureModal(defines) {
 
 var renderModal = function renderModal(configs, params) {
   if (configs) {
-    //Make sure all configs are present
+    console.log('configs');
+    console.log(configs);
+    console.log('params');
+    console.log(params); //Make sure all configs are present
+
     var neededValues = ['title', 'content', 'paramDisplay', 'paramInput', 'confirmFunction', 'confirmText', 'cancelText'];
 
     for (var _i = 0, _neededValues = neededValues; _i < _neededValues.length; _i++) {
@@ -30452,9 +30487,11 @@ var renderModal = function renderModal(configs, params) {
 
 
     modalConfirm.on('click', function (e) {
-      console.log('params:');
-      console.log(params);
-      window[configs.confirmFunction].apply(null, params);
+      try {
+        window[configs.confirmFunction].apply(null, params);
+      } catch (e) {
+        console.log('Centa modal confirmFunction error:\r\n' + e);
+      }
     }); //Finally, display it
 
     showModal(); //Init text editors in case there's one in the modal
@@ -30697,12 +30734,15 @@ addSortParams = function addSortParams(el, key) {
 /*!******************************************************!*\
   !*** ./resources/js/centa/components/text-editor.js ***!
   \******************************************************/
-/*! exports provided: initTextEditors */
+/*! exports provided: initTextEditors, insertOpenAndCloseMarkers */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initTextEditors", function() { return initTextEditors; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertOpenAndCloseMarkers", function() { return insertOpenAndCloseMarkers; });
+/* harmony import */ var _centa_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../centa.js */ "./resources/js/centa/centa.js");
+/* harmony import */ var _modal_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modal.js */ "./resources/js/centa/components/modal.js");
 /**
  * Globals
  */
@@ -30721,6 +30761,8 @@ var allTags = tags.concat(advancedTags);
 var advancedFormat = ['ul', 'ol', 'hr', 'indent', 'outdent', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight'];
 var blockNodeNames = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE'];
 var blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
+
+
 /**
  * Define rich-text editing tools
  */
@@ -30930,19 +30972,7 @@ var makeTextEditor = function makeTextEditor(el) {
           break;
 
         case 'createLink':
-          input = prompt('Enter URL:');
-
-          if (input) {
-            copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
-            codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
-            unlinkSelection(copyDiv, codeDiv, el);
-            var props = {
-              "href": input,
-              "target": "_blank"
-            };
-            execFormattingTool('a', editArea, true, props);
-          }
-
+          textEditorCreateLinkCallback(editArea);
           break;
 
         case 'unlink':
@@ -31047,7 +31077,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
   codeEditArea.val(paragraphize(el.val())); //Only check for changes in codeEditArea if we have a callback.
 
-  if (textEditorOnChangeCallback) {
+  if (_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"]) {
     codeEditArea.on('keydown', function () {
       this.editAreaContent = $(this).val();
     }).on('keyup', function () {
@@ -31055,7 +31085,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        textEditorOnChangeCallback();
+        Object(_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"])();
       }
     });
   } //Start editArea with a P element so the first line gets wrapped
@@ -31083,7 +31113,7 @@ var makeTextEditor = function makeTextEditor(el) {
     editArea.html(code);
   }); //Only check for changes in editArea if we have a callback.
 
-  if (textEditorOnChangeCallback) {
+  if (_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"]) {
     editArea.on('keydown', function () {
       this.editAreaContent = $(this).html();
     }).on('keyup', function () {
@@ -31091,7 +31121,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        textEditorOnChangeCallback();
+        Object(_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"])();
       }
     });
   } //Make sure we inactivate tools when exiting editArea
@@ -31222,7 +31252,6 @@ var insertOpenAndCloseMarkers = function insertOpenAndCloseMarkers(range) {
 /**
 * For basic text formatting
 */
-
 
 var execFormattingTool = function execFormattingTool(tool, editArea) {
   var format = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
@@ -32246,6 +32275,13 @@ var justifyBlocks = function justifyBlocks(format, editArea) {
     }
   });
 };
+/**
+ * Make a special wrapper for list elements when justifying
+ * @param block
+ * @param format
+ * @param editArea
+ */
+
 
 var justifyList = function justifyList(block, format, editArea) {
   var blockParent = block.parent();
@@ -32306,6 +32342,33 @@ var justifyList = function justifyList(block, format, editArea) {
     block.replaceWith(newSpan);
   }
 };
+
+window.execCreateLinkModal = function (editArea, editAreaHtml, input) {
+  console.log('input thingy or whatever');
+  console.log(input);
+  console.log('editAreaHtml thingy or whatever');
+  console.log(editAreaHtml);
+
+  if (input[0] instanceof jQuery) {
+    var url = input[0].val();
+    console.log('url');
+    console.log(url);
+
+    if ('' !== url) {
+      editArea.html(editAreaHtml);
+      replaceMarkersWithSelection(editArea);
+      Object(_modal_js__WEBPACK_IMPORTED_MODULE_1__["hideModal"])();
+      var codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
+      var hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
+      unlinkSelection(editArea, codeEditArea, hiddenInput);
+      var props = {
+        "href": url,
+        "target": "_blank"
+      };
+      execFormattingTool('a', editArea, true, props);
+    }
+  }
+};
 /**
  * Handle keyboard shortcuts for text editor
  */
@@ -32348,18 +32411,7 @@ $(document).on('keydown', function (e) {
         }
       } else if ('a' === tool) {
         e.preventDefault();
-        var input = prompt('Enter URL:');
-
-        if (input) {
-          var codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
-          var hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
-          unlinkSelection(editArea, codeEditArea, hiddenInput);
-          var props = {
-            "href": input,
-            "target": "_blank"
-          };
-          execFormattingTool('a', editArea, true, props);
-        }
+        textEditorCreateLinkCallback(editArea);
       }
     }
   }
@@ -32420,10 +32472,15 @@ var logVitals = function logVitals(func) {
 /*!********************************!*\
   !*** ./resources/js/script.js ***!
   \********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./centa/components/modal.js */ "./resources/js/centa/components/modal.js");
 //App-specific JS goes here
+
+
 window.suspendUser = function (id, name, formId, paramInput) {
   console.log('paramInput');
   console.log(paramInput);
@@ -32435,12 +32492,12 @@ window.suspendUser = function (id, name, formId, paramInput) {
     console.log(hiddenFormField);
     hiddenFormField.val(item.val());
   });
-  hideModal();
+  Object(_centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["hideModal"])();
   form.submit();
 };
 
 window.deleteUser = function (id, name, formId) {
-  hideModal();
+  Object(_centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["hideModal"])();
   $('#' + formId).submit();
 };
 

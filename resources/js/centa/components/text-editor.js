@@ -17,6 +17,9 @@ const advancedFormat = ['ul','ol','hr','indent','outdent','justifyCenter','justi
 const blockNodeNames = ['P','H1','H2','H3','H4','H5','H6','PRE'];
 const blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
 
+import { textEditorOnChangeCallback } from '../centa.js';
+import { hideModal } from './modal.js';
+
 /**
  * Define rich-text editing tools
  */
@@ -173,17 +176,7 @@ const makeTextEditor = el => {
                     insertImage(editArea);
                     break;
                 case 'createLink':
-                    input = prompt('Enter URL:');
-                    if(input) {
-                        copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
-                        codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
-                        unlinkSelection(copyDiv,codeDiv,el);
-                        const props = {
-                          "href":input,
-                          "target":"_blank"
-                        };
-                        execFormattingTool('a',editArea,true,props);
-                    }
+                    textEditorCreateLinkCallback(editArea);
                     break;
                 case 'unlink':
                     copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
@@ -436,7 +429,7 @@ const unlinkSelection = (copyDiv,codeDiv,hiddenInput) => {
  * @param range
  * @returns {*}
  */
-const insertOpenAndCloseMarkers = (range) => {
+export const insertOpenAndCloseMarkers = (range) => {
     //We create and will insert custom tags to act as "markers," so we can reset the selection after all formatting
     const openMarker = document.createElement('marker');
     $(openMarker).attr('id','openMarker');
@@ -1404,6 +1397,12 @@ const justifyBlocks = (format,editArea) => {
     });
 };
 
+/**
+ * Make a special wrapper for list elements when justifying
+ * @param block
+ * @param format
+ * @param editArea
+ */
 const justifyList = (block,format,editArea) => {
   const blockParent = block.parent();
   const blockParentNodeName = blockParent[0].nodeName;
@@ -1455,6 +1454,31 @@ const justifyList = (block,format,editArea) => {
 
 };
 
+window.execCreateLinkModal = (editArea,editAreaHtml,input) => {
+    console.log('input thingy or whatever');
+    console.log(input);
+    console.log('editAreaHtml thingy or whatever');
+    console.log(editAreaHtml);
+    if(input[0] instanceof jQuery) {
+        const url = input[0].val();
+        console.log('url');
+        console.log(url);
+        if('' !== url) {
+            editArea.html(editAreaHtml);
+            replaceMarkersWithSelection(editArea);
+            hideModal();
+            const codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
+            const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
+            unlinkSelection(editArea,codeEditArea,hiddenInput);
+            const props = {
+                "href":url,
+                "target":"_blank"
+            };
+            execFormattingTool('a',editArea,true,props);
+        }
+    }
+};
+
 /**
  * Handle keyboard shortcuts for text editor
  */
@@ -1487,17 +1511,7 @@ $(document).on('keydown', function (e) {
                 }
             } else if('a' === tool) {
                 e.preventDefault();
-                let input = prompt('Enter URL:');
-                if(input) {
-                    const codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
-                    const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
-                    unlinkSelection(editArea,codeEditArea,hiddenInput);
-                    const props = {
-                        "href":input,
-                        "target":"_blank"
-                    };
-                    execFormattingTool('a',editArea,true,props);
-                }
+                textEditorCreateLinkCallback(editArea);
             }
         }
     }

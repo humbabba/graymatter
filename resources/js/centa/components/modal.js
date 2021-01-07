@@ -9,6 +9,7 @@ let modalCancel = modalBackground.find('.modal-cancel');
 let modalConfirm = modalBackground.find('.modal-confirm');
 
 import { initTextEditors } from './text-editor.js';
+import { modalConfigsPath } from '../centa.js';
 
 $.ajaxSetup({ cache: false });
 
@@ -25,6 +26,8 @@ const checkForModalTriggers = () => {
             let modalFunctionDefines = modalFunctionDefinesArr.join('+'); //Rejoin items with URL encode +
             el.on('click',function(e) {
               e.preventDefault();
+              console.log('modalFunctionDefines');
+              console.log(modalFunctionDefines);
               configureModal(modalFunctionDefines);
             });
           }
@@ -50,7 +53,7 @@ addModalClickHandlers();
 //Show or hide
 const showModal = () => modalBackground.addClass('fade-in').css('display','');
 
-const hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() { modalCancel.css('display','inline-block'); }); //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
+export const hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() { modalCancel.css('display','inline-block'); }); //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
 
 //Configure this specific instance
 const configureModal = (defines) => {
@@ -65,7 +68,7 @@ const configureModal = (defines) => {
   },params);
 
   //Fetch the configs for the modal
-  $.getJSON(window.modalConfigsPath,configName,function(data) {
+  $.getJSON(modalConfigsPath,configName,function(data) {
     let remoteConfigs = data[configName];
     if('undefined' !== typeof remoteConfigs) { //Don't overwrite modalConfigs till we find good remoteConfigs
       modalConfigs = remoteConfigs;
@@ -74,10 +77,14 @@ const configureModal = (defines) => {
   .always(function() {
     renderModal(modalConfigs,params);
   });
-}
+};
 
-const renderModal = (configs,params) => {
+export const renderModal = (configs,params) => {
   if(configs) {
+      console.log('configs');
+      console.log(configs);
+      console.log('params');
+      console.log(params);
     //Make sure all configs are present
     let neededValues = ['title','content','paramDisplay','paramInput','confirmFunction','confirmText','cancelText'];
     for(let x of neededValues) {
@@ -119,9 +126,11 @@ const renderModal = (configs,params) => {
 
     //Set click handler
     modalConfirm.on('click',function(e) {
-      console.log('params:');
-      console.log(params);
-      window[configs.confirmFunction].apply(null,params);
+      try {
+          window[configs.confirmFunction].apply(null,params);
+      } catch(e) {
+          console.log('Centa modal confirmFunction error:\r\n' + e);
+      }
     });
 
     //Finally, display it
@@ -133,4 +142,4 @@ const renderModal = (configs,params) => {
   } else {
     console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
   }
-}
+};
