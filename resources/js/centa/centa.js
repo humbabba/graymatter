@@ -20,7 +20,7 @@ window.textEditorInsertImageCallback = () => console.log('Inserting!');
 
 window.textEditorCreateLinkCallback = editArea => {
     let range = window.getSelection().getRangeAt(0);
-    range = insertOpenAndCloseMarkers(range);
+    insertOpenAndCloseMarkers(range);
     console.log('Famous original MUTATED editArea.html()');
     console.log(editArea.html());
     const inputConfigs = {

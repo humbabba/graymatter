@@ -30280,7 +30280,7 @@ window.textEditorInsertImageCallback = function () {
 
 window.textEditorCreateLinkCallback = function (editArea) {
   var range = window.getSelection().getRangeAt(0);
-  range = Object(_components_text_editor_js__WEBPACK_IMPORTED_MODULE_0__["insertOpenAndCloseMarkers"])(range);
+  Object(_components_text_editor_js__WEBPACK_IMPORTED_MODULE_0__["insertOpenAndCloseMarkers"])(range);
   console.log('Famous original MUTATED editArea.html()');
   console.log(editArea.html());
   var inputConfigs = {
