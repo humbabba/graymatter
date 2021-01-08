@@ -1,3 +1,5 @@
+import {renderModal} from "./modal";
+
 /**
  * Globals
  */
@@ -18,7 +20,7 @@ const blockNodeNames = ['P','H1','H2','H3','H4','H5','H6','PRE'];
 const blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
 
 import { textEditorOnChangeCallback } from '../centa.js';
-import { hideModal } from './modal.js';
+import { CentaModal } from './modal.js';
 
 /**
  * Define rich-text editing tools
@@ -176,7 +178,7 @@ const makeTextEditor = el => {
                     insertImage(editArea);
                     break;
                 case 'createLink':
-                    textEditorCreateLinkCallback(editArea);
+                    renderInsertLinkModal(editArea);
                     break;
                 case 'unlink':
                     copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
@@ -1454,28 +1456,44 @@ const justifyList = (block,format,editArea) => {
 
 };
 
-window.execCreateLinkModal = (editArea,editAreaHtml,input) => {
-    console.log('input thingy or whatever');
-    console.log(input);
-    console.log('editAreaHtml thingy or whatever');
-    console.log(editAreaHtml);
-    if(input[0] instanceof jQuery) {
-        const url = input[0].val();
-        console.log('url');
-        console.log(url);
-        if('' !== url) {
-            editArea.html(editAreaHtml);
-            replaceMarkersWithSelection(editArea);
-            hideModal();
-            const codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
-            const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
-            unlinkSelection(editArea,codeEditArea,hiddenInput);
-            const props = {
-                "href":url,
-                "target":"_blank"
-            };
-            execFormattingTool('a',editArea,true,props);
-        }
+
+/**
+ * Creates modal for link insertion
+ * @param editArea
+ */
+const renderInsertLinkModal = editArea => {
+    const range = window.getSelection().getRangeAt(0);
+    insertOpenAndCloseMarkers(range);
+    const modalConfigs = {
+        titleText: 'Link destination',
+        contentHtml: '<p>Enter URL:</p><p><input type="text" name="url" /></p>',
+        params: [editArea,editArea.html()],
+        inputNames: ['url'],
+        cancelText: 'Cancel',
+        confirmText: 'Go'
+    };
+    const modal = new CentaModal(modalConfigs,insertLinkViaModal);
+    modal.render();
+};
+
+/**
+ * Callback from insert-link modal, applies the link to the selected text
+ * @param editArea
+ * @param editAreaHtml
+ * @param url
+ */
+const insertLinkViaModal = (editArea,editAreaHtml,url) => {
+    if('' !== url) {
+        editArea.html(editAreaHtml);
+        replaceMarkersWithSelection(editArea);
+        const codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
+        const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
+        unlinkSelection(editArea,codeEditArea,hiddenInput);
+        const props = {
+            "href":url,
+            "target":"_blank"
+        };
+        execFormattingTool('a',editArea,true,props);
     }
 };
 
@@ -1511,7 +1529,7 @@ $(document).on('keydown', function (e) {
                 }
             } else if('a' === tool) {
                 e.preventDefault();
-                textEditorCreateLinkCallback(editArea);
+                renderInsertLinkModal(editArea);
             }
         }
     }

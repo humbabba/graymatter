@@ -30257,12 +30257,8 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "modalConfigsPath", function() { return modalConfigsPath; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "textEditorOnChangeCallback", function() { return textEditorOnChangeCallback; });
-/* harmony import */ var _components_text_editor_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/text-editor.js */ "./resources/js/centa/components/text-editor.js");
-/* harmony import */ var _components_modal_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modal.js */ "./resources/js/centa/components/modal.js");
 //Import functions
-
- //Define path to modal configs
-
+//Define path to modal configs
 var modalConfigsPath = '/centa/modal.json'; //Define the callback for changes in text-editor
 //Set to false for no callback
 
@@ -30275,25 +30271,6 @@ var textEditorOnChangeCallback = function textEditorOnChangeCallback() {
 
 window.textEditorInsertImageCallback = function () {
   return console.log('Inserting!');
-}; //Define the callback for createLink command in text-editor. Callback should return URL.
-
-
-window.textEditorCreateLinkCallback = function (editArea) {
-  var range = window.getSelection().getRangeAt(0);
-  Object(_components_text_editor_js__WEBPACK_IMPORTED_MODULE_0__["insertOpenAndCloseMarkers"])(range);
-  console.log('Famous original MUTATED editArea.html()');
-  console.log(editArea.html());
-  var inputConfigs = {
-    title: 'Link destination',
-    content: '<p>Enter URL:</p><p><input type=\'text\' name=\'url\' /></p>',
-    paramDisplay: [],
-    paramInput: ['url'],
-    cancelText: 'Cancel',
-    confirmText: 'Go',
-    confirmFunction: 'execCreateLinkModal'
-  };
-  var params = [editArea, editArea.html()];
-  Object(_components_modal_js__WEBPACK_IMPORTED_MODULE_1__["renderModal"])(inputConfigs, params);
 }; //Included components
 
 
@@ -30337,170 +30314,126 @@ alerts.each(function (index, el) {
 /*!************************************************!*\
   !*** ./resources/js/centa/components/modal.js ***!
   \************************************************/
-/*! exports provided: hideModal, renderModal */
+/*! exports provided: CentaModal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hideModal", function() { return hideModal; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderModal", function() { return renderModal; });
-/* harmony import */ var _text_editor_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./text-editor.js */ "./resources/js/centa/components/text-editor.js");
-/* harmony import */ var _centa_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../centa.js */ "./resources/js/centa/centa.js");
-var modalBackground = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CentaModal", function() { return CentaModal; });
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-var modalTriggers = $('[class*="modal+"]');
-var modalConfigs = null; //This is overwritten in configureModal if valid modal configs are found
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-var modalContainer = modalBackground.find('.modal-container');
-var modalTitleText = modalBackground.find('.modal-title-text');
-var modalCloser = modalBackground.find('.modal-closer');
-var modalContent = modalBackground.find('.modal-content');
-var modalCancel = modalBackground.find('.modal-cancel');
-var modalConfirm = modalBackground.find('.modal-confirm');
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
 
-$.ajaxSetup({
-  cache: false
-});
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
-var checkForModalTriggers = function checkForModalTriggers() {
-  //Confirm elements are Centa modalBackground triggers, then process
-  if (modalTriggers.length) {
-    modalTriggers.each(function (index, element) {
-      var el = $(element);
-      var classes = el.prop('class').split(/\s+/);
-      $(classes).each(function (index, elClass) {
-        if (elClass.startsWith('modal+')) {
-          var elModalClass = elClass.split('+');
-          var modalFunctionDefinesArr = elModalClass.splice(1); //Get an array of everything after first +, assuming there will be more than one due to URL encoding in the view
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-          var modalFunctionDefines = modalFunctionDefinesArr.join('+'); //Rejoin items with URL encode +
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-          el.on('click', function (e) {
-            e.preventDefault();
-            console.log('modalFunctionDefines');
-            console.log(modalFunctionDefines);
-            configureModal(modalFunctionDefines);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+ * A class to create then destroy a modal.
+ * @param configs - an object to override default modal properties
+ * @param callback - optional callback function
+ *
+ * If no callback is specific, only a confirm button will be displayed. Otherwise, both confirm and cancel are display.
+ * Elements of the array in the params property will be passed back to the callback, in the oder they're given.
+ * The inputNames property is an array of the names of inputs included in contentHtml; values entered will be added, in order listed in inputNames, to the params property before all are passed to callback.
+ */
+var CentaModal = /*#__PURE__*/function () {
+  function CentaModal() {
+    var configs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    _classCallCheck(this, CentaModal);
+
+    //Set defaults for configs, override any that are passed in configs param
+    Object.assign(this, {
+      titleText: 'Modal title',
+      contentHtml: '<p>Modal content.</p>',
+      params: [],
+      inputNames: [],
+      cancelText: 'Cancel',
+      confirmText: 'OK'
+    }, configs); //Strip HTML from titleText
+
+    this.titleText = $('<p>').html(this.titleText).text(); //Set additional properties
+
+    this.callback = callback; //Define modal template
+
+    this.template = "<div style=\"display:none\">\n    <div class=\"modal-background\">\n      <div class=\"modal-container\">\n        <div class=\"modal-title\">\n          <div class=\"modal-closer\">\n            <i class=\"fas fa-times\"></i>\n          </div>\n          <div class=\"modal-title-text\">".concat(this.titleText, "</div>\n        </div>\n        <div class=\"modal-content\">\n          ").concat(this.contentHtml, "\n        </div>\n        <div class=\"centum\">\n          <div class=\"cell btn-wrap align-center\">\n            <div class=\"btn modal-confirm\">").concat(this.confirmText, "</div>");
+
+    if (this.callback) {
+      this.template += "\n            <div class=\"btn modal-cancel\">".concat(this.cancelText, "</div>");
+    }
+
+    this.template += "\n            </div>\n        </div>\n      </div>\n    </div>\n</div>";
+  }
+
+  _createClass(CentaModal, [{
+    key: "render",
+    value: function render() {
+      var _this = this;
+
+      var modalTemplate = $(this.template); //Stop clicks on main container from closing modal
+
+      modalTemplate.find('.modal-container').on('click', function (e) {
+        e.stopPropagation();
+      }); //Make clicks on closer elements close modal
+
+      modalTemplate.find('.modal-background,.modal-cancel,.modal-closer,.modal-confirm').on('click', function () {
+        modalTemplate.fadeOut(400, function () {
+          return modalTemplate.remove();
+        });
+      }); //Exec callback on confirm, if there's a callback
+
+      if (this.callback) {
+        var confirmButton = modalTemplate.find('.modal-confirm');
+        confirmButton.on('click', function () {
+          _this.inputNames.forEach(function (name) {
+            var matchingInput = $('input[name="' + name + '"]');
+
+            if (matchingInput.length) {
+              _this.params.push(matchingInput.val());
+            }
+
+            var matchingTextarea = $('textarea[name="' + name + '"]');
+
+            if (matchingTextarea.length) {
+              _this.params.push(matchingTextarea.val());
+            }
           });
+
+          _this.callback.apply(_this, _toConsumableArray(_this.params));
+        });
+        modalTemplate.find('input').on('keydown', function (e) {
+          if (13 === e.keyCode) {
+            confirmButton.click();
+          }
+        });
+      } //Add modal to body element
+
+
+      $('body').append(modalTemplate);
+      modalTemplate.fadeIn({
+        duration: 400,
+        complete: function complete() {
+          //Focus on first input element
+          modalTemplate.find('input,textarea').first().focus();
         }
       });
-    });
-  }
-}; //Click handlers
-
-
-var addModalClickHandlers = function addModalClickHandlers() {
-  modalContainer.on('click', function (e) {
-    e.stopPropagation();
-  });
-  modalBackground.add(modalCloser).add(modalCancel).on('click', function () {
-    hideModal();
-  });
-}; //Init
-
-
-checkForModalTriggers();
-addModalClickHandlers(); //Show or hide
-
-var showModal = function showModal() {
-  return modalBackground.addClass('fade-in').css('display', '');
-};
-
-var hideModal = function hideModal() {
-  return modalBackground.removeClass('fade-in').fadeOut(400, function () {
-    modalCancel.css('display', 'inline-block');
-  });
-}; //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
-//Configure this specific instance
-
-var configureModal = function configureModal(defines) {
-  var params = '';
-  var configName = defines.replace(/\(.*\)/, '');
-  params = defines.match(/\((.*)\)/)[1].split(','); //Remove URL encoding
-
-  params.forEach(function (item, index) {
-    this[index] = decodeURIComponent(item).replace('+', ' ');
-  }, params); //Fetch the configs for the modal
-
-  $.getJSON(_centa_js__WEBPACK_IMPORTED_MODULE_1__["modalConfigsPath"], configName, function (data) {
-    var remoteConfigs = data[configName];
-
-    if ('undefined' !== typeof remoteConfigs) {
-      //Don't overwrite modalConfigs till we find good remoteConfigs
-      modalConfigs = remoteConfigs;
     }
-  }).always(function () {
-    renderModal(modalConfigs, params);
-  });
-};
+  }]);
 
-var renderModal = function renderModal(configs, params) {
-  if (configs) {
-    console.log('configs');
-    console.log(configs);
-    console.log('params');
-    console.log(params); //Make sure all configs are present
-
-    var neededValues = ['title', 'content', 'paramDisplay', 'paramInput', 'confirmFunction', 'confirmText', 'cancelText'];
-
-    for (var _i = 0, _neededValues = neededValues; _i < _neededValues.length; _i++) {
-      var x = _neededValues[_i];
-
-      if ('undefined' === typeof configs[x]) {
-        console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
-        return;
-      }
-    } //Set modal values
-
-
-    modalTitleText.html(configs.title);
-    modalContent.html(configs.content);
-    modalConfirm.html(configs.confirmText);
-
-    if (configs.cancelText) {
-      modalCancel.html(configs.cancelText);
-    } else {
-      modalCancel.css('display', 'none'); //Hide cancel button; its display is reset to inline-block by hideModal
-    } //Now let's see if any changes to the modal content to display parameters are called for
-
-
-    var paramDisplay = configs.paramDisplay;
-
-    if (paramDisplay.length && params.length) {
-      paramDisplay.forEach(function (item, index) {
-        $('.' + item).html(params[index]);
-      });
-    } //Check for special inputs in the modal content
-
-
-    var paramInput = configs.paramInput;
-
-    if (paramInput.length) {
-      //Add each paramInput to an array
-      var paramInputArray = [];
-      paramInput.forEach(function (item, index) {
-        paramInputArray.push(modalContent.find('*[name="' + item + '"]'));
-      }); //Add said array to params for passing to confirm function
-
-      params.push(paramInputArray);
-    } //Set click handler
-
-
-    modalConfirm.on('click', function (e) {
-      try {
-        window[configs.confirmFunction].apply(null, params);
-      } catch (e) {
-        console.log('Centa modal confirmFunction error:\r\n' + e);
-      }
-    }); //Finally, display it
-
-    showModal(); //Init text editors in case there's one in the modal
-
-    Object(_text_editor_js__WEBPACK_IMPORTED_MODULE_0__["initTextEditors"])();
-  } else {
-    console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
-  }
-};
+  return CentaModal;
+}();
 
 /***/ }),
 
@@ -30741,11 +30674,13 @@ addSortParams = function addSortParams(el, key) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initTextEditors", function() { return initTextEditors; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertOpenAndCloseMarkers", function() { return insertOpenAndCloseMarkers; });
-/* harmony import */ var _centa_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../centa.js */ "./resources/js/centa/centa.js");
-/* harmony import */ var _modal_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modal.js */ "./resources/js/centa/components/modal.js");
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal */ "./resources/js/centa/components/modal.js");
+/* harmony import */ var _centa_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../centa.js */ "./resources/js/centa/centa.js");
+
 /**
  * Globals
  */
+
 var currentGeneration, selectionObject;
 var ancestorBlock = false;
 var ancestorTools = [];
@@ -30972,7 +30907,7 @@ var makeTextEditor = function makeTextEditor(el) {
           break;
 
         case 'createLink':
-          textEditorCreateLinkCallback(editArea);
+          renderInsertLinkModal(editArea);
           break;
 
         case 'unlink':
@@ -31077,7 +31012,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
   codeEditArea.val(paragraphize(el.val())); //Only check for changes in codeEditArea if we have a callback.
 
-  if (_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"]) {
+  if (_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"]) {
     codeEditArea.on('keydown', function () {
       this.editAreaContent = $(this).val();
     }).on('keyup', function () {
@@ -31085,7 +31020,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        Object(_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"])();
+        Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"])();
       }
     });
   } //Start editArea with a P element so the first line gets wrapped
@@ -31113,7 +31048,7 @@ var makeTextEditor = function makeTextEditor(el) {
     editArea.html(code);
   }); //Only check for changes in editArea if we have a callback.
 
-  if (_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"]) {
+  if (_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"]) {
     editArea.on('keydown', function () {
       this.editAreaContent = $(this).html();
     }).on('keyup', function () {
@@ -31121,7 +31056,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        Object(_centa_js__WEBPACK_IMPORTED_MODULE_0__["textEditorOnChangeCallback"])();
+        Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"])();
       }
     });
   } //Make sure we inactivate tools when exiting editArea
@@ -32342,31 +32277,46 @@ var justifyList = function justifyList(block, format, editArea) {
     block.replaceWith(newSpan);
   }
 };
+/**
+ * Creates modal for link insertion
+ * @param editArea
+ */
 
-window.execCreateLinkModal = function (editArea, editAreaHtml, input) {
-  console.log('input thingy or whatever');
-  console.log(input);
-  console.log('editAreaHtml thingy or whatever');
-  console.log(editAreaHtml);
 
-  if (input[0] instanceof jQuery) {
-    var url = input[0].val();
-    console.log('url');
-    console.log(url);
+var renderInsertLinkModal = function renderInsertLinkModal(editArea) {
+  var range = window.getSelection().getRangeAt(0);
+  insertOpenAndCloseMarkers(range);
+  var modalConfigs = {
+    titleText: 'Link destination',
+    contentHtml: '<p>Enter URL:</p><p><input type="text" name="url" /></p>',
+    params: [editArea, editArea.html()],
+    inputNames: ['url'],
+    cancelText: 'Cancel',
+    confirmText: 'Go'
+  };
+  var modal = new _modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"](modalConfigs, insertLinkViaModal);
+  modal.render();
+};
+/**
+ * Callback from insert-link modal, applies the link to the selected text
+ * @param editArea
+ * @param editAreaHtml
+ * @param url
+ */
 
-    if ('' !== url) {
-      editArea.html(editAreaHtml);
-      replaceMarkersWithSelection(editArea);
-      Object(_modal_js__WEBPACK_IMPORTED_MODULE_1__["hideModal"])();
-      var codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
-      var hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
-      unlinkSelection(editArea, codeEditArea, hiddenInput);
-      var props = {
-        "href": url,
-        "target": "_blank"
-      };
-      execFormattingTool('a', editArea, true, props);
-    }
+
+var insertLinkViaModal = function insertLinkViaModal(editArea, editAreaHtml, url) {
+  if ('' !== url) {
+    editArea.html(editAreaHtml);
+    replaceMarkersWithSelection(editArea);
+    var codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
+    var hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
+    unlinkSelection(editArea, codeEditArea, hiddenInput);
+    var props = {
+      "href": url,
+      "target": "_blank"
+    };
+    execFormattingTool('a', editArea, true, props);
   }
 };
 /**
@@ -32411,7 +32361,7 @@ $(document).on('keydown', function (e) {
         }
       } else if ('a' === tool) {
         e.preventDefault();
-        textEditorCreateLinkCallback(editArea);
+        renderInsertLinkModal(editArea);
       }
     }
   }
@@ -32492,14 +32442,28 @@ window.suspendUser = function (id, name, formId, paramInput) {
     console.log(hiddenFormField);
     hiddenFormField.val(item.val());
   });
-  Object(_centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["hideModal"])();
+  hideModal();
   form.submit();
 };
 
 window.deleteUser = function (id, name, formId) {
-  Object(_centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["hideModal"])();
+  hideModal();
   $('#' + formId).submit();
+}; //Test button on /test
+
+
+var thing = function thing(url) {
+  return alert('I got: ' + url);
 };
+
+$('#testButton').on('click', function () {
+  var modal = new _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["CentaModal"]({
+    titleText: '<h1>Link destination</h1>',
+    contentHtml: '<label>Enter URL:</label><input type="text" name="url" />',
+    inputNames: ['url']
+  }, thing);
+  modal.render();
+});
 
 /***/ }),
 

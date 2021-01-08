@@ -1,6 +1,6 @@
 //App-specific JS goes here
 
-import { hideModal } from './centa/components/modal.js';
+import { CentaModal } from './centa/components/modal.js';
 
 window.suspendUser = (id,name,formId,paramInput) => {
   console.log('paramInput');
@@ -21,3 +21,17 @@ window.deleteUser = (id,name,formId) => {
   hideModal();
   $('#' + formId).submit();
 };
+
+//Test button on /test
+
+const thing = url => alert('I got: ' + url);
+
+$('#testButton').on('click',() => {
+    let modal = new CentaModal({
+        titleText:'<h1>Link destination</h1>',
+        contentHtml: '<label>Enter URL:</label><input type="text" name="url" />',
+        inputNames: ['url']
+    }
+    ,thing);
+    modal.render();
+});

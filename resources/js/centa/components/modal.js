@@ -1,145 +1,101 @@
-let modalBackground = $('.modal-background').first(); //Only get first in case multipls present. There shouldn't be.
-let modalTriggers = $('[class*="modal+"]');
-let modalConfigs = null; //This is overwritten in configureModal if valid modal configs are found
-let modalContainer = modalBackground.find('.modal-container');
-let modalTitleText = modalBackground.find('.modal-title-text');
-let modalCloser = modalBackground.find('.modal-closer');
-let modalContent = modalBackground.find('.modal-content');
-let modalCancel = modalBackground.find('.modal-cancel');
-let modalConfirm = modalBackground.find('.modal-confirm');
+/**
+ * A class to create then destroy a modal.
+ * @param configs - an object to override default modal properties
+ * @param callback - optional callback function
+ *
+ * If no callback is specific, only a confirm button will be displayed. Otherwise, both confirm and cancel are display.
+ * Elements of the array in the params property will be passed back to the callback, in the oder they're given.
+ * The inputNames property is an array of the names of inputs included in contentHtml; values entered will be added, in order listed in inputNames, to the params property before all are passed to callback.
+ */
+export class CentaModal {
+    constructor(configs = {},callback = false) {
+        //Set defaults for configs, override any that are passed in configs param
+        Object.assign(this, {
+            titleText: 'Modal title',
+            contentHtml: '<p>Modal content.</p>',
+            params: [],
+            inputNames: [],
+            cancelText: 'Cancel',
+            confirmText: 'OK',
+        }, configs);
+        //Strip HTML from titleText
+        this.titleText = $('<p>').html(this.titleText).text();
 
-import { initTextEditors } from './text-editor.js';
-import { modalConfigsPath } from '../centa.js';
+        //Set additional properties
+        this.callback = callback;
 
-$.ajaxSetup({ cache: false });
+        //Define modal template
+        this.template = `<div style="display:none">
+    <div class="modal-background">
+      <div class="modal-container">
+        <div class="modal-title">
+          <div class="modal-closer">
+            <i class="fas fa-times"></i>
+          </div>
+          <div class="modal-title-text">${this.titleText}</div>
+        </div>
+        <div class="modal-content">
+          ${this.contentHtml}
+        </div>
+        <div class="centum">
+          <div class="cell btn-wrap align-center">
+            <div class="btn modal-confirm">${this.confirmText}</div>`;
+        if(this.callback) {
+            this.template += `
+            <div class="btn modal-cancel">${this.cancelText}</div>`;
+        }
+      this.template += `
+            </div>
+        </div>
+      </div>
+    </div>
+</div>`;
+    }
 
-const checkForModalTriggers = () => {
-  //Confirm elements are Centa modalBackground triggers, then process
-  if(modalTriggers.length) {
-    modalTriggers.each(function(index,element) {
-      let el = $(element);
-      var classes = el.prop('class').split(/\s+/);
-      $(classes).each(function(index,elClass) {
-          if(elClass.startsWith('modal+')) {
-            let elModalClass = elClass.split('+');
-            let modalFunctionDefinesArr = elModalClass.splice(1); //Get an array of everything after first +, assuming there will be more than one due to URL encoding in the view
-            let modalFunctionDefines = modalFunctionDefinesArr.join('+'); //Rejoin items with URL encode +
-            el.on('click',function(e) {
-              e.preventDefault();
-              console.log('modalFunctionDefines');
-              console.log(modalFunctionDefines);
-              configureModal(modalFunctionDefines);
-            });
-          }
+    render() {
+        const modalTemplate = $(this.template);
+
+        //Stop clicks on main container from closing modal
+        modalTemplate.find('.modal-container').on('click',e => {
+            e.stopPropagation();
         });
-    });
-  }
-};
 
-//Click handlers
-const addModalClickHandlers = () => {
-  modalContainer.on('click',function(e) {
-    e.stopPropagation();
-  });
-  modalBackground.add(modalCloser).add(modalCancel).on('click',function() {
-    hideModal();
-  });
-};
+        //Make clicks on closer elements close modal
+        modalTemplate.find('.modal-background,.modal-cancel,.modal-closer,.modal-confirm').on('click',() => {
+            modalTemplate.fadeOut(400,() => modalTemplate.remove());
+        });
 
-//Init
-checkForModalTriggers();
-addModalClickHandlers();
+        //Exec callback on confirm, if there's a callback
+        if(this.callback) {
+            const confirmButton = modalTemplate.find('.modal-confirm');
+            confirmButton.on('click',() => {
+                this.inputNames.forEach(name => {
+                    const matchingInput = $('input[name="' + name + '"]');
+                    if(matchingInput.length) {
+                        this.params.push(matchingInput.val());
+                    }
+                    const matchingTextarea = $('textarea[name="' + name + '"]');
+                    if(matchingTextarea.length) {
+                        this.params.push(matchingTextarea.val());
+                    }
+                });
+                this.callback(...this.params);
+            });
 
-//Show or hide
-const showModal = () => modalBackground.addClass('fade-in').css('display','');
+            modalTemplate.find('input').on('keydown',e => {
+                if(13 === e.keyCode) {
+                    confirmButton.click();
+                }
+            });
+        }
 
-export const hideModal = () => modalBackground.removeClass('fade-in').fadeOut(400,function() { modalCancel.css('display','inline-block'); }); //We reset modalCanel to inline-block display in case it was set to none by false cancelText in modal configs
-
-//Configure this specific instance
-const configureModal = (defines) => {
-  let params = '';
-  let configName = defines.replace(/\(.*\)/,'');
-
-  params = defines.match(/\((.*)\)/)[1].split(',');
-
-  //Remove URL encoding
-  params.forEach(function(item,index) {
-    this[index] = decodeURIComponent(item).replace('+',' ');
-  },params);
-
-  //Fetch the configs for the modal
-  $.getJSON(modalConfigsPath,configName,function(data) {
-    let remoteConfigs = data[configName];
-    if('undefined' !== typeof remoteConfigs) { //Don't overwrite modalConfigs till we find good remoteConfigs
-      modalConfigs = remoteConfigs;
+        //Add modal to body element
+        $('body').append(modalTemplate);
+        modalTemplate.fadeIn({
+            duration: 400,
+            complete: () => { //Focus on first input element
+                modalTemplate.find('input,textarea').first().focus();
+            }
+        });
     }
-  })
-  .always(function() {
-    renderModal(modalConfigs,params);
-  });
-};
-
-export const renderModal = (configs,params) => {
-  if(configs) {
-      console.log('configs');
-      console.log(configs);
-      console.log('params');
-      console.log(params);
-    //Make sure all configs are present
-    let neededValues = ['title','content','paramDisplay','paramInput','confirmFunction','confirmText','cancelText'];
-    for(let x of neededValues) {
-      if('undefined' === typeof configs[x]) {
-        console.log('Centa modal error: Requried value "' + x + '" missing from modal config.');
-        return;
-      }
-    }
-
-    //Set modal values
-    modalTitleText.html(configs.title);
-    modalContent.html(configs.content);
-    modalConfirm.html(configs.confirmText);
-    if(configs.cancelText) {
-      modalCancel.html(configs.cancelText);
-    } else {
-      modalCancel.css('display','none'); //Hide cancel button; its display is reset to inline-block by hideModal
-    }
-
-    //Now let's see if any changes to the modal content to display parameters are called for
-    let paramDisplay = configs.paramDisplay;
-    if(paramDisplay.length && params.length) {
-      paramDisplay.forEach(function(item,index) {
-        $('.' + item).html(params[index]);
-      });
-    }
-
-    //Check for special inputs in the modal content
-    let paramInput = configs.paramInput;
-    if(paramInput.length) {
-      //Add each paramInput to an array
-      let paramInputArray = [];
-      paramInput.forEach(function(item,index) {
-        paramInputArray.push(modalContent.find('*[name="' + item + '"]'));
-      });
-      //Add said array to params for passing to confirm function
-      params.push(paramInputArray);
-    }
-
-    //Set click handler
-    modalConfirm.on('click',function(e) {
-      try {
-          window[configs.confirmFunction].apply(null,params);
-      } catch(e) {
-          console.log('Centa modal confirmFunction error:\r\n' + e);
-      }
-    });
-
-    //Finally, display it
-    showModal();
-
-    //Init text editors in case there's one in the modal
-    initTextEditors();
-
-  } else {
-    console.log('Centa modal error:\r\nEither the modal configs where not found or the JSON is invalid.');
-  }
-};
+}

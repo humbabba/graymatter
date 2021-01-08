@@ -27,6 +27,10 @@ Route::middleware(['verified','suspended'])->group(function() {
         return view('info');
     })->name('info');
 
+    Route::get('/test', function () {
+        return view('test');
+    })->name('test');
+
     Route::get('users/{id}/suspend', 'UserController@suspend')->name('users.suspend');
 
     Route::resource('users', 'UserController');
