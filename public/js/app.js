@@ -30320,6 +30320,7 @@ alerts.each(function (index, el) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CentaModal", function() { return CentaModal; });
+/* harmony import */ var _text_editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./text-editor */ "./resources/js/centa/components/text-editor.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -30347,6 +30348,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * Elements of the array in the params property will be passed back to the callback, in the oder they're given.
  * The inputNames property is an array of the names of inputs included in contentHtml; values entered will be added, in order listed in inputNames, to the params property before all are passed to callback.
  */
+
 var CentaModal = /*#__PURE__*/function () {
   function CentaModal() {
     var configs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -30398,13 +30400,13 @@ var CentaModal = /*#__PURE__*/function () {
         var confirmButton = modalTemplate.find('.modal-confirm');
         confirmButton.on('click', function () {
           _this.inputNames.forEach(function (name) {
-            var matchingInput = $('input[name="' + name + '"]');
+            var matchingInput = modalTemplate.find('input[name="' + name + '"]');
 
             if (matchingInput.length) {
               _this.params.push(matchingInput.val());
             }
 
-            var matchingTextarea = $('textarea[name="' + name + '"]');
+            var matchingTextarea = modalTemplate.find('textarea[name="' + name + '"]');
 
             if (matchingTextarea.length) {
               _this.params.push(matchingTextarea.val());
@@ -30426,6 +30428,7 @@ var CentaModal = /*#__PURE__*/function () {
         duration: 400,
         complete: function complete() {
           //Focus on first input element
+          Object(_text_editor__WEBPACK_IMPORTED_MODULE_0__["initTextEditors"])();
           modalTemplate.find('input,textarea').first().focus();
         }
       });
@@ -32428,29 +32431,42 @@ var logVitals = function logVitals(func) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./centa/components/modal.js */ "./resources/js/centa/components/modal.js");
-//App-specific JS goes here
+/**
+ * App-specific JS goes here
+ */
+//Imports
+ //User suspension
 
-
-window.suspendUser = function (id, name, formId, paramInput) {
-  console.log('paramInput');
-  console.log(paramInput);
-  var form = $('#' + formId); //Match the modal inputs to the hidden form fields with the same names, set their values based on modal input
-
-  paramInput.forEach(function (item, index) {
-    var hiddenFormField = form.find('[name="' + item.prop('name') + '"]');
-    console.log('hiddenFormField');
-    console.log(hiddenFormField);
-    hiddenFormField.val(item.val());
-  });
-  hideModal();
+var suspendUser = function suspendUser(userId, form, suspendedDays, suspendedMessage) {
+  console.log('Suspend func stuff');
+  console.log(userId);
+  console.log(form);
+  console.log(suspendedDays);
+  console.log(suspendedMessage);
+  form.find('input[name="suspendedDays"]').val(suspendedDays);
+  form.find('input[name="suspendedMessage"]').val(suspendedMessage);
   form.submit();
 };
 
-window.deleteUser = function (id, name, formId) {
-  hideModal();
-  $('#' + formId).submit();
-}; //Test button on /test
-
+$('.suspendUser').each(function (index, el) {
+  var button = $(el);
+  var form = button.closest('form');
+  var userName = form.find('input[name="suspendedUserName"]').val();
+  var userId = form.find('input[name="suspendUserId"]').val();
+  var modalContent = "<p>Suspend user <span class=\"username\">".concat(userName, "</span> (ID: <span class=\"userId\">").concat(userId, "</span>) for:</p>\n<p><input type=\"number\" name=\"suspendedDays\" class=\"short-field\" step=\"1\" min=\"0\" value=\"1\"></p>\n<p>days.</p>\n<p>Suspension message for user:</p>\n<input type=\"hidden\" name=\"suspendedMessage\" class=\"text-editor\">");
+  button.on('click', function (e) {
+    e.preventDefault();
+    var modal = new _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["CentaModal"]({
+      titleText: 'Suspend this user?',
+      contentHtml: modalContent,
+      params: [userId, form],
+      inputNames: ['suspendedDays', 'suspendedMessage'],
+      cancelText: 'Cancel',
+      confirmText: 'Suspend'
+    }, suspendUser);
+    modal.render();
+  });
+}); //Test button on /test
 
 var thing = function thing(url) {
   return alert('I got: ' + url);

@@ -7,6 +7,8 @@
  * Elements of the array in the params property will be passed back to the callback, in the oder they're given.
  * The inputNames property is an array of the names of inputs included in contentHtml; values entered will be added, in order listed in inputNames, to the params property before all are passed to callback.
  */
+import {initTextEditors} from "./text-editor";
+
 export class CentaModal {
     constructor(configs = {},callback = false) {
         //Set defaults for configs, override any that are passed in configs param
@@ -70,11 +72,11 @@ export class CentaModal {
             const confirmButton = modalTemplate.find('.modal-confirm');
             confirmButton.on('click',() => {
                 this.inputNames.forEach(name => {
-                    const matchingInput = $('input[name="' + name + '"]');
+                    const matchingInput = modalTemplate.find('input[name="' + name + '"]');
                     if(matchingInput.length) {
                         this.params.push(matchingInput.val());
                     }
-                    const matchingTextarea = $('textarea[name="' + name + '"]');
+                    const matchingTextarea = modalTemplate.find('textarea[name="' + name + '"]');
                     if(matchingTextarea.length) {
                         this.params.push(matchingTextarea.val());
                     }
@@ -94,6 +96,7 @@ export class CentaModal {
         modalTemplate.fadeIn({
             duration: 400,
             complete: () => { //Focus on first input element
+                initTextEditors();
                 modalTemplate.find('input,textarea').first().focus();
             }
         });

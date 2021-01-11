@@ -117,16 +117,20 @@
           </div>
           <div class="cell x20 btn-wrap">
             <a class="btn" href="{{ route('users.edit', $user->id) }}">Edit</a>
-            <form class="inline" action="{{ route('users.suspend', $user->id) }}" method="get" id="suspendUser{{ $user->id }}">
+            <form class="inline" action="{{ route('users.suspend', $user->id) }}" method="get">
               @csrf
               <input type="hidden" name="suspendedDays" value="" />
               <input type="hidden" name="suspendedMessage" value="" />
-              <input type="submit" class="btn secondary modal+suspendUser({{ $user->id }},{{ rawurlencode($user->name) }},suspendUser{{ $user->id }})" value="Suspend" />
+              <input type="hidden" name="suspendUserId" value="{{ $user->id }}" />
+              <input type="hidden" name="suspendedUserName" value="{{ $user->name }}" />
+              <input type="submit" class="btn secondary suspendUser" value="Suspend" />
             </form>
-            <form class="inline" action="{{ route('users.destroy', $user->id) }}" method="post" id="deleteUser{{ $user->id }}">
+            <form class="inline" action="{{ route('users.destroy', $user->id) }}" method="post">
               @method('DELETE')
               @csrf
-              <input type="submit" class="btn danger modal+deleteUser({{ $user->id }},{{ rawurlencode($user->name) }},deleteUser{{ $user->id }})" value="Delete" />
+                <input type="hidden" name="suspendUserId" value="{{ $user->id }}" />
+                <input type="hidden" name="suspendedUserName" value="{{ $user->name }}" />
+              <input type="submit" class="btn danger deleteUser" value="Delete" />
             </form>
           </div>
         </div>
