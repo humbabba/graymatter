@@ -30790,7 +30790,7 @@ var toolsArray = [{
   title: 'Insert image'
 }, {
   "class": 'fas fa-palette toolbar-spacer',
-  tool: 'foreColor',
+  tool: 'textColor',
   title: 'Font color'
 }, {
   "class": 'fas fa-list-ol',
@@ -30998,13 +30998,8 @@ var makeTextEditor = function makeTextEditor(el) {
           execFormattingTool(item.tool, editArea, false);
           break;
 
-        case 'foreColor':
-          input = prompt('Hexidecimal color value for text:', '#000000');
-
-          if (input) {
-            document.execCommand(item.tool, false, input);
-          }
-
+        case 'textColor':
+          renderTextColorModal(editArea);
           break;
 
         case 'clearFormat':
@@ -31740,7 +31735,10 @@ var getCleanContent = function getCleanContent(content) {
 
 
 var cleanRedundantCode = function cleanRedundantCode(editArea) {
-  logVitals('cleanRedundantCode');
+  logVitals('cleanRedundantCode'); //First let's remove any empty tags
+
+  editArea.find('*:empty').not('marker').remove(); //Now we get specific
+
   tags.forEach(function (tag) {
     var inspectedElements = editArea.find(tag);
 
@@ -31774,9 +31772,7 @@ var cleanRedundantCode = function cleanRedundantCode(editArea) {
     editAreaString = editAreaString.replace(redundantCloseOpen, '');
   }); //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
 
-  editAreaString = editAreaString.replace(/<strong>/gi, '<b>').replace(/<\/strong>/gi, '</b>').replace(/<em>/gi, '<i>').replace(/<\/em>/gi, '</i>'); //Case: Empty paragraphs
-
-  editAreaString = editAreaString.replace(/<p><\/p>/gi, ''); //Case: Divs
+  editAreaString = editAreaString.replace(/<strong>/gi, '<b>').replace(/<\/strong>/gi, '</b>').replace(/<em>/gi, '<i>').replace(/<\/em>/gi, '</i>'); //Case: Divs
 
   editAreaString = editAreaString.replace(/<div/gi, '<p').replace(/<\/div>/gi, '</p>'); //Case: Trailing BR tags
 
@@ -32367,6 +32363,44 @@ var insertLinkViaModal = function insertLinkViaModal(editArea, editAreaHtml, url
       "target": "_blank"
     };
     execFormattingTool('a', editArea, true, props);
+  }
+};
+/**
+ * Creates modal for textColor
+ * @param editArea
+ */
+
+
+var renderTextColorModal = function renderTextColorModal(editArea) {
+  var range = window.getSelection().getRangeAt(0);
+  insertOpenAndCloseMarkers(range);
+  var modalConfigs = {
+    titleText: 'Change text color',
+    contentHtml: '<p>Enter desired color in hex, rgb, or rgba format:</p><p><input type="text" name="color" value="#000000"/></p>',
+    params: [editArea, editArea.html()],
+    inputNames: ['color'],
+    cancelText: 'Cancel',
+    confirmText: 'Go'
+  };
+  var modal = new _modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"](modalConfigs, insertTextColorViaModal);
+  modal.render();
+};
+/**
+ * Callback from text-color modal, applies styled span to the selected text
+ * @param editArea
+ * @param editAreaHtml
+ * @param color
+ */
+
+
+var insertTextColorViaModal = function insertTextColorViaModal(editArea, editAreaHtml, color) {
+  if ('' !== color) {
+    editArea.html(editAreaHtml);
+    replaceMarkersWithSelection(editArea);
+    var props = {
+      "style": 'color:' + color
+    };
+    execFormattingTool('span', editArea, true, props);
   }
 };
 /**

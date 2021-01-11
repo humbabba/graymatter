@@ -35,7 +35,7 @@ const toolsArray = [
     {class:'fas fa-link',tool: 'createLink',title: 'Link (ctrl-k)'},
     {class:'fas fa-unlink toolbar-spacer',tool: 'unlink',title: 'Unlink'},
     {class:'fas fa-image toolbar-spacer',tool: 'insertImage',title: 'Insert image'},
-    {class:'fas fa-palette toolbar-spacer',tool: 'foreColor',title: 'Font color'},
+    {class:'fas fa-palette toolbar-spacer',tool: 'textColor',title: 'Font color'},
     {class:'fas fa-list-ol',tool: 'ol',title: 'Ordered list'},
     {class:'fas fa-list-ul toolbar-spacer',tool: 'ul',title: 'Unordered list'},
     {class:'fas fa-indent',tool: 'indent',title: 'Indent'},
@@ -209,11 +209,8 @@ const makeTextEditor = el => {
                 case 'justifyRight':
                     execFormattingTool(item.tool,editArea,false);
                     break;
-                case 'foreColor':
-                    input = prompt('Hexidecimal color value for text:','#000000');
-                    if(input) {
-                      document.execCommand(item.tool,false,input);
-                    }
+                case 'textColor':
+                    renderTextColorModal(editArea);
                     break;
                 case 'clearFormat':
                     copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
@@ -924,6 +921,11 @@ const getCleanContent = content => {
 */
 const cleanRedundantCode = editArea => {
   logVitals('cleanRedundantCode');
+
+    //First let's remove any empty tags
+    editArea.find('*:empty').not('marker').remove();
+
+    //Now we get specific
     tags.forEach(function(tag) {
         const inspectedElements = editArea.find(tag);
         if(inspectedElements.length) {
@@ -961,9 +963,6 @@ const cleanRedundantCode = editArea => {
     //Case: <strong> and <em> tags perhaps pasted in from elsewhere.
     editAreaString = editAreaString.replace(/<strong>/gi,'<b>').replace(/<\/strong>/gi,'</b>')
         .replace(/<em>/gi,'<i>').replace(/<\/em>/gi,'</i>');
-
-    //Case: Empty paragraphs
-    editAreaString = editAreaString.replace(/<p><\/p>/gi,'');
 
     //Case: Divs
     editAreaString = editAreaString.replace(/<div/gi,'<p').replace(/<\/div>/gi,'</p>');
@@ -1453,9 +1452,7 @@ const justifyList = (block,format,editArea) => {
     newSpan.append(blockClone);
     block.replaceWith(newSpan);
   }
-
 };
-
 
 /**
  * Creates modal for link insertion
@@ -1494,6 +1491,42 @@ const insertLinkViaModal = (editArea,editAreaHtml,url) => {
             "target":"_blank"
         };
         execFormattingTool('a',editArea,true,props);
+    }
+};
+
+/**
+ * Creates modal for textColor
+ * @param editArea
+ */
+const renderTextColorModal = editArea => {
+    const range = window.getSelection().getRangeAt(0);
+    insertOpenAndCloseMarkers(range);
+    const modalConfigs = {
+        titleText: 'Change text color',
+        contentHtml: '<p>Enter desired color in hex, rgb, or rgba format:</p><p><input type="text" name="color" value="#000000"/></p>',
+        params: [editArea,editArea.html()],
+        inputNames: ['color'],
+        cancelText: 'Cancel',
+        confirmText: 'Go'
+    };
+    const modal = new CentaModal(modalConfigs,insertTextColorViaModal);
+    modal.render();
+};
+
+/**
+ * Callback from text-color modal, applies styled span to the selected text
+ * @param editArea
+ * @param editAreaHtml
+ * @param color
+ */
+const insertTextColorViaModal = (editArea,editAreaHtml,color) => {
+    if('' !== color) {
+        editArea.html(editAreaHtml);
+        replaceMarkersWithSelection(editArea);
+        const props = {
+            "style":'color:' + color
+        };
+        execFormattingTool('span',editArea,true,props);
     }
 };
 
