@@ -30417,7 +30417,7 @@ var CentaModal = /*#__PURE__*/function () {
 
     this.callback = callback; //Define modal template
 
-    this.template = "<div style=\"display:none\">\n    <div class=\"modal-background\">\n      <div class=\"modal-container\">\n        <div class=\"modal-title\">\n          <div class=\"modal-closer\">\n            <i class=\"fas fa-times\"></i>\n          </div>\n          <div class=\"modal-title-text\">".concat(this.titleText, "</div>\n        </div>\n        <div class=\"modal-content\">\n          ").concat(this.contentHtml, "\n        </div>\n        <div class=\"centum\">\n          <div class=\"cell btn-wrap align-center\">\n            <div class=\"btn modal-confirm\">").concat(this.confirmText, "</div>");
+    this.template = "<div class=\"modal-master\" style=\"display:none\">\n    <div class=\"modal-background\">\n      <div class=\"modal-container\">\n        <div class=\"modal-title\">\n          <div class=\"modal-closer\">\n            <i class=\"fas fa-times\"></i>\n          </div>\n          <div class=\"modal-title-text\">".concat(this.titleText, "</div>\n        </div>\n        <div class=\"modal-content\">\n          ").concat(this.contentHtml, "\n        </div>\n        <div class=\"centum\">\n          <div class=\"cell btn-wrap align-center\">\n            <div class=\"btn modal-confirm\">").concat(this.confirmText, "</div>");
 
     if (this.callback) {
       this.template += "\n            <div class=\"btn modal-cancel\">".concat(this.cancelText, "</div>");
@@ -30438,9 +30438,7 @@ var CentaModal = /*#__PURE__*/function () {
       }); //Make clicks on closer elements close modal
 
       modalTemplate.find('.modal-background,.modal-cancel,.modal-closer,.modal-confirm').on('click', function () {
-        modalTemplate.fadeOut(400, function () {
-          return modalTemplate.remove();
-        });
+        modalTemplate.remove();
       }); //Exec callback on confirm, if there's a callback
 
       if (this.callback) {
@@ -30464,26 +30462,53 @@ var CentaModal = /*#__PURE__*/function () {
         });
         modalTemplate.find('input').on('keydown', function (e) {
           if (13 === e.keyCode) {
+            e.preventDefault();
             confirmButton.click();
           }
         });
-      } //Add modal to body element
+      } //Check for existing modals
 
+
+      var existingModals = $('.modal-master');
+      console.log('existingModals');
+      console.log(existingModals); //Add modal to body element
 
       $('body').append(modalTemplate);
-      modalTemplate.fadeIn({
-        duration: 400,
-        complete: function complete() {
-          //Focus on first input element
-          Object(_text_editor__WEBPACK_IMPORTED_MODULE_0__["initTextEditors"])();
-          modalTemplate.find('input,textarea').first().focus();
-        }
-      });
+
+      if (existingModals.length) {
+        //Since we've already got one, appear instantly with no background color
+        modalTemplate.find('.modal-background').css('background-color', 'transparent');
+        modalTemplate.show();
+        finishModalRender(modalTemplate);
+      } else {
+        //First modal, so fade in
+        modalTemplate.fadeIn({
+          duration: 400,
+          complete: function complete() {
+            //Focus on first input element
+            finishModalRender(modalTemplate);
+          }
+        });
+      }
     }
   }]);
 
   return CentaModal;
 }();
+/**
+ * A couple finishing touches to fire up any rich-text editors and make sure cursor appears after default input, if any
+ * @param modalTemplate
+ */
+
+var finishModalRender = function finishModalRender(modalTemplate) {
+  Object(_text_editor__WEBPACK_IMPORTED_MODULE_0__["initTextEditors"])();
+  var firstInput = modalTemplate.find('input,textarea').first();
+
+  if (firstInput.length) {
+    var firstInputVal = firstInput.val();
+    firstInput.focus().val('').val(firstInputVal);
+  }
+};
 
 /***/ }),
 
@@ -31735,7 +31760,7 @@ var getCleanContent = function getCleanContent(content) {
 
 
 var cleanRedundantCode = function cleanRedundantCode(editArea) {
-  logVitals('cleanRedundantCode'); //First let's remove any empty tags
+  logVitals('cleanRedundantCode'); //First let's remove any empty tags (except markers, which we need for restoring selection)
 
   editArea.find('*:empty').not('marker').remove(); //Now we get specific
 
@@ -32330,7 +32355,12 @@ var justifyList = function justifyList(block, format, editArea) {
 
 
 var renderInsertLinkModal = function renderInsertLinkModal(editArea) {
-  var range = window.getSelection().getRangeAt(0);
+  var range = window.getSelection().getRangeAt(0); //Bail if range collapsed
+
+  if (range.collapsed) {
+    return;
+  }
+
   insertOpenAndCloseMarkers(range);
   var modalConfigs = {
     titleText: 'Link destination',
@@ -32372,7 +32402,12 @@ var insertLinkViaModal = function insertLinkViaModal(editArea, editAreaHtml, url
 
 
 var renderTextColorModal = function renderTextColorModal(editArea) {
-  var range = window.getSelection().getRangeAt(0);
+  var range = window.getSelection().getRangeAt(0); //Bail if range collapsed
+
+  if (range.collapsed) {
+    return;
+  }
+
   insertOpenAndCloseMarkers(range);
   var modalConfigs = {
     titleText: 'Change text color',

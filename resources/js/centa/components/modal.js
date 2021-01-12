@@ -27,7 +27,7 @@ export class CentaModal {
         this.callback = callback;
 
         //Define modal template
-        this.template = `<div style="display:none">
+        this.template = `<div class="modal-master" style="display:none">
     <div class="modal-background">
       <div class="modal-container">
         <div class="modal-title">
@@ -64,7 +64,7 @@ export class CentaModal {
 
         //Make clicks on closer elements close modal
         modalTemplate.find('.modal-background,.modal-cancel,.modal-closer,.modal-confirm').on('click',() => {
-            modalTemplate.fadeOut(400,() => modalTemplate.remove());
+            modalTemplate.remove();
         });
 
         //Exec callback on confirm, if there's a callback
@@ -86,19 +86,45 @@ export class CentaModal {
 
             modalTemplate.find('input').on('keydown',e => {
                 if(13 === e.keyCode) {
+                    e.preventDefault();
                     confirmButton.click();
                 }
             });
         }
 
+        //Check for existing modals
+        const existingModals = $('.modal-master');
+
+        console.log('existingModals');
+        console.log(existingModals);
+
         //Add modal to body element
         $('body').append(modalTemplate);
-        modalTemplate.fadeIn({
-            duration: 400,
-            complete: () => { //Focus on first input element
-                initTextEditors();
-                modalTemplate.find('input,textarea').first().focus();
-            }
-        });
+
+        if(existingModals.length) { //Since we've already got one, appear instantly with no background color
+            modalTemplate.find('.modal-background').css('background-color','transparent');
+            modalTemplate.show();
+            finishModalRender(modalTemplate);
+        } else { //First modal, so fade in
+            modalTemplate.fadeIn({
+                duration: 400,
+                complete: () => { //Focus on first input element
+                    finishModalRender(modalTemplate);
+                }
+            });
+        }
     }
 }
+
+/**
+ * A couple finishing touches to fire up any rich-text editors and make sure cursor appears after default input, if any
+ * @param modalTemplate
+ */
+const finishModalRender = modalTemplate => {
+    initTextEditors();
+    const firstInput = modalTemplate.find('input,textarea').first();
+    if(firstInput.length) {
+        const firstInputVal = firstInput.val();
+        firstInput.focus().val('').val(firstInputVal);
+    }
+};

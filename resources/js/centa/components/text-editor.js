@@ -922,7 +922,7 @@ const getCleanContent = content => {
 const cleanRedundantCode = editArea => {
   logVitals('cleanRedundantCode');
 
-    //First let's remove any empty tags
+    //First let's remove any empty tags (except markers, which we need for restoring selection)
     editArea.find('*:empty').not('marker').remove();
 
     //Now we get specific
@@ -1460,6 +1460,10 @@ const justifyList = (block,format,editArea) => {
  */
 const renderInsertLinkModal = editArea => {
     const range = window.getSelection().getRangeAt(0);
+    //Bail if range collapsed
+    if(range.collapsed) {
+        return;
+    }
     insertOpenAndCloseMarkers(range);
     const modalConfigs = {
         titleText: 'Link destination',
@@ -1500,6 +1504,10 @@ const insertLinkViaModal = (editArea,editAreaHtml,url) => {
  */
 const renderTextColorModal = editArea => {
     const range = window.getSelection().getRangeAt(0);
+    //Bail if range collapsed
+    if(range.collapsed) {
+        return;
+    }
     insertOpenAndCloseMarkers(range);
     const modalConfigs = {
         titleText: 'Change text color',
