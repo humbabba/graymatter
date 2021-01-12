@@ -1,7 +1,8 @@
 //Define the callback for changes in text-editor
 //Set to false for no callback
 export const textEditorOnChangeCallback = () => {
-    if('none' === $('.modal-background').css('display')) { //We don't want this running when the modal is visible
+    const modalMaster = $('.modal-master');
+    if(!modalMaster.length || 'none' === modalMaster.css('display')) { //We don't want this running when the modal is visible
         console.log('showUnsavedFlag(documentForm)');
     }
 };

@@ -30306,7 +30306,9 @@ __webpack_require__.r(__webpack_exports__);
 //Define the callback for changes in text-editor
 //Set to false for no callback
 var textEditorOnChangeCallback = function textEditorOnChangeCallback() {
-  if ('none' === $('.modal-background').css('display')) {
+  var modalMaster = $('.modal-master');
+
+  if (!modalMaster.length || 'none' === modalMaster.css('display')) {
     //We don't want this running when the modal is visible
     console.log('showUnsavedFlag(documentForm)');
   }
@@ -30460,9 +30462,7 @@ var CentaModal = /*#__PURE__*/function () {
       } //Check for existing modals
 
 
-      var existingModals = $('.modal-master');
-      console.log('existingModals');
-      console.log(existingModals); //Add modal to body element
+      var existingModals = $('.modal-master'); //Add modal to body element
 
       $('body').append(modalTemplate);
 
@@ -30969,7 +30969,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       switch (item.tool) {
         case 'insertImage':
-          insertImage(editArea);
+          renderInsertImageModal(editArea);
           break;
 
         case 'createLink':
@@ -31076,6 +31076,7 @@ var makeTextEditor = function makeTextEditor(el) {
   if (_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"]) {
     codeEditArea.on('keydown', function () {
       this.editAreaContent = $(this).val();
+      console.log(this.editAreaContent);
     }).on('keyup', function () {
       this.newEditAreaContent = $(this).val();
 
@@ -31176,10 +31177,6 @@ var makeTextEditor = function makeTextEditor(el) {
   });
   editor.append(el);
   return editor;
-};
-
-var insertImage = function insertImage(editArea) {
-  return false;
 };
 /**
  * Remove all links in the selection
@@ -32384,6 +32381,29 @@ var insertLinkViaModal = function insertLinkViaModal(editArea, editAreaHtml, url
       "target": "_blank"
     };
     execFormattingTool('a', editArea, true, props);
+  }
+};
+
+var renderInsertImageModal = function renderInsertImageModal(editArea) {
+  var range = window.getSelection().getRangeAt(0);
+  insertOpenAndCloseMarkers(range);
+  var modalConfigs = {
+    titleText: 'Insert image',
+    contentHtml: '<p>Enter image URL:</p><p><input type="text" name="url" /></p><p><input class="btn" type="button" name="upload" value="Upload image" /></p>',
+    params: [editArea, editArea.html()],
+    inputNames: ['url'],
+    cancelText: 'Cancel',
+    confirmText: 'Go'
+  };
+  var modal = new _modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"](modalConfigs, insertImageViaModal);
+  modal.render();
+};
+
+var insertImageViaModal = function insertImageViaModal(editArea, editAreaHtml, url) {
+  if ('' !== url) {
+    editArea.html(editAreaHtml); //Insert image!
+
+    replaceMarkersWithSelection(editArea);
   }
 };
 /**

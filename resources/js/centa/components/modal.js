@@ -95,9 +95,6 @@ export class CentaModal {
         //Check for existing modals
         const existingModals = $('.modal-master');
 
-        console.log('existingModals');
-        console.log(existingModals);
-
         //Add modal to body element
         $('body').append(modalTemplate);
 

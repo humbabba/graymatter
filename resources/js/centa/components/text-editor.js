@@ -175,7 +175,7 @@ const makeTextEditor = el => {
             let copyDiv,codeDiv;
             switch(item.tool) {
                 case 'insertImage':
-                    insertImage(editArea);
+                    renderInsertImageModal(editArea);
                     break;
                 case 'createLink':
                     renderInsertLinkModal(editArea);
@@ -266,6 +266,7 @@ const makeTextEditor = el => {
     if(textEditorOnChangeCallback) {
         codeEditArea.on('keydown',function() {
           this.editAreaContent = $(this).val();
+            console.log(this.editAreaContent);
         }).on('keyup',function() {
           this.newEditAreaContent = $(this).val();
           if(this.editAreaContent != this.newEditAreaContent) { //We have changes to content, so run the callback
@@ -365,10 +366,6 @@ const makeTextEditor = el => {
 
     editor.append(el);
     return editor;
-};
-
-const insertImage = (editArea) => {
-  return false;
 };
 
 /**
@@ -1495,6 +1492,30 @@ const insertLinkViaModal = (editArea,editAreaHtml,url) => {
             "target":"_blank"
         };
         execFormattingTool('a',editArea,true,props);
+    }
+};
+
+const renderInsertImageModal = editArea => {
+    const range = window.getSelection().getRangeAt(0);
+
+    insertOpenAndCloseMarkers(range);
+    const modalConfigs = {
+        titleText: 'Insert image',
+        contentHtml: '<p>Enter image URL:</p><p><input type="text" name="url" /></p><p><input class="btn" type="button" name="upload" value="Upload image" /></p>',
+        params: [editArea,editArea.html()],
+        inputNames: ['url'],
+        cancelText: 'Cancel',
+        confirmText: 'Go'
+    };
+    const modal = new CentaModal(modalConfigs,insertImageViaModal);
+    modal.render();
+};
+
+const insertImageViaModal = (editArea,editAreaHtml,url) => {
+    if('' !== url) {
+        editArea.html(editAreaHtml);
+        //Insert image!
+        replaceMarkersWithSelection(editArea);
     }
 };
 
