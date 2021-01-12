@@ -30297,29 +30297,20 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /*!*************************************!*\
   !*** ./resources/js/centa/centa.js ***!
   \*************************************/
-/*! exports provided: modalConfigsPath, textEditorOnChangeCallback */
+/*! exports provided: textEditorOnChangeCallback */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "modalConfigsPath", function() { return modalConfigsPath; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "textEditorOnChangeCallback", function() { return textEditorOnChangeCallback; });
-//Import functions
-//Define path to modal configs
-var modalConfigsPath = '/centa/modal.json'; //Define the callback for changes in text-editor
+//Define the callback for changes in text-editor
 //Set to false for no callback
-
 var textEditorOnChangeCallback = function textEditorOnChangeCallback() {
   if ('none' === $('.modal-background').css('display')) {
     //We don't want this running when the modal is visible
     console.log('showUnsavedFlag(documentForm)');
   }
-}; //Define the callback for insertImage command in text-editor. Callback should return image URL.
-
-window.textEditorInsertImageCallback = function () {
-  return console.log('Inserting!');
 }; //Included components
-
 
 __webpack_require__(/*! ./components/alerts */ "./resources/js/centa/components/alerts.js");
 
@@ -31760,9 +31751,9 @@ var getCleanContent = function getCleanContent(content) {
 
 
 var cleanRedundantCode = function cleanRedundantCode(editArea) {
-  logVitals('cleanRedundantCode'); //First let's remove any empty tags (except markers, which we need for restoring selection)
+  logVitals('cleanRedundantCode'); //First let's remove any empty tags (except markers and misc. normally empty tags, which we need for restoring selection)
 
-  editArea.find('*:empty').not('marker').remove(); //Now we get specific
+  editArea.find('*:empty').not('marker,hr,br,img').remove(); //Now we get specific
 
   tags.forEach(function (tag) {
     var inspectedElements = editArea.find(tag);

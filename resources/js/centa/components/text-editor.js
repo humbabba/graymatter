@@ -922,8 +922,8 @@ const getCleanContent = content => {
 const cleanRedundantCode = editArea => {
   logVitals('cleanRedundantCode');
 
-    //First let's remove any empty tags (except markers, which we need for restoring selection)
-    editArea.find('*:empty').not('marker').remove();
+    //First let's remove any empty tags (except markers and misc. normally empty tags, which we need for restoring selection)
+    editArea.find('*:empty').not('marker,hr,br,img').remove();
 
     //Now we get specific
     tags.forEach(function(tag) {

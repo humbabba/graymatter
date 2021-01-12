@@ -1,8 +1,3 @@
-//Import functions
-
-//Define path to modal configs
-export const modalConfigsPath = '/centa/modal.json';
-
 //Define the callback for changes in text-editor
 //Set to false for no callback
 export const textEditorOnChangeCallback = () => {
@@ -10,9 +5,6 @@ export const textEditorOnChangeCallback = () => {
         console.log('showUnsavedFlag(documentForm)');
     }
 };
-
-//Define the callback for insertImage command in text-editor. Callback should return image URL.
-window.textEditorInsertImageCallback = () => console.log('Inserting!');
 
 //Included components
 require('./components/alerts');
