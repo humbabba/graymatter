@@ -1501,9 +1501,10 @@ const renderInsertImageModal = editArea => {
     insertOpenAndCloseMarkers(range);
     const modalConfigs = {
         titleText: 'Insert image',
-        contentHtml: '<p>Enter image URL:</p><p><input type="text" name="url" /></p><p><input class="btn" type="button" name="upload" value="Upload image" /></p>',
+        contentHtml: '<p>Enter a URL for your image, or upload one from your device:</p><p><input type="text" name="url" placeholder="Image URL"/></p><p><label><span class="btn">Upload image</span><input type="file" name="upload" data-send-url-to="url" style="display:none" /></label></p>',
         params: [editArea,editArea.html()],
         inputNames: ['url'],
+        fileInputNames: ['upload'],
         cancelText: 'Cancel',
         confirmText: 'Go'
     };

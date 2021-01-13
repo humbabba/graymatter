@@ -30387,6 +30387,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * If no callback is specific, only a confirm button will be displayed. Otherwise, both confirm and cancel are display.
  * Elements of the array in the params property will be passed back to the callback, in the oder they're given.
  * The inputNames property is an array of the names of inputs included in contentHtml; values entered will be added, in order listed in inputNames, to the params property before all are passed to callback.
+ * The fileInputNames property is an array of inputNames that are meant to be populated by the frontend URL of a file after it is uploaded; the input name must be in both arrays, inputNames and fileInputNames. File inputs should occur in contentHtml in the same order they're listed in the fileInputNames array.
  */
 
 var CentaModal = /*#__PURE__*/function () {
@@ -30402,6 +30403,7 @@ var CentaModal = /*#__PURE__*/function () {
       contentHtml: '<p>Modal content.</p>',
       params: [],
       inputNames: [],
+      fileInputNames: [],
       cancelText: 'Cancel',
       confirmText: 'OK'
     }, configs); //Strip HTML from titleText
@@ -30435,23 +30437,14 @@ var CentaModal = /*#__PURE__*/function () {
       }); //Exec callback on confirm, if there's a callback
 
       if (this.callback) {
+        if (this.fileInputNames.length) {
+          //We have files to upload before we can run callback
+          modalUploadFiles(this, modalTemplate);
+        }
+
         var confirmButton = modalTemplate.find('.modal-confirm');
         confirmButton.on('click', function () {
-          _this.inputNames.forEach(function (name) {
-            var matchingInput = modalTemplate.find('input[name="' + name + '"]');
-
-            if (matchingInput.length) {
-              _this.params.push(matchingInput.val());
-            }
-
-            var matchingTextarea = modalTemplate.find('textarea[name="' + name + '"]');
-
-            if (matchingTextarea.length) {
-              _this.params.push(matchingTextarea.val());
-            }
-          });
-
-          _this.callback.apply(_this, _toConsumableArray(_this.params));
+          modalExecCallback(_this, modalTemplate);
         });
         modalTemplate.find('input').on('keydown', function (e) {
           if (13 === e.keyCode) {
@@ -30487,9 +30480,72 @@ var CentaModal = /*#__PURE__*/function () {
   return CentaModal;
 }();
 /**
+ * Upload files via AJAX, populate designated inputs with their new URLs.
+ * @param modalInstance
+ * @param modalTemplate
+ */
+
+var modalUploadFiles = function modalUploadFiles(modalInstance, modalTemplate) {
+  modalInstance.fileInputNames.forEach(function (name) {
+    var matchingInput = modalTemplate.find('input[name="' + name + '"]');
+
+    if (matchingInput.length) {
+      matchingInput.on('change', function (e) {
+        var files = e.target.files;
+
+        if (files.length) {
+          var fileData = files[0];
+          var formData = new FormData();
+          formData.append('file', fileData);
+          $.ajax({
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: 'POST',
+            url: '/upload_image',
+            contentType: false,
+            processData: false,
+            data: formData
+          }).done(function (data) {
+            console.log('Done');
+            console.log(data);
+          }).fail(function (error) {
+            console.log('Error');
+            console.log(error);
+          });
+        }
+      });
+    }
+  });
+};
+/**
+ * Execute the callback with the modal input values added, if any.
+ * @param modalInstance
+ * @param modalTemplate
+ */
+
+
+var modalExecCallback = function modalExecCallback(modalInstance, modalTemplate) {
+  modalInstance.inputNames.forEach(function (name) {
+    var matchingInput = modalTemplate.find('input[name="' + name + '"]');
+
+    if (matchingInput.length) {
+      modalInstance.params.push(matchingInput.val());
+    }
+
+    var matchingTextarea = modalTemplate.find('textarea[name="' + name + '"]');
+
+    if (matchingTextarea.length) {
+      modalInstance.params.push(matchingTextarea.val());
+    }
+  });
+  modalInstance.callback.apply(modalInstance, _toConsumableArray(modalInstance.params));
+};
+/**
  * A couple finishing touches to fire up any rich-text editors and make sure cursor appears after default input, if any
  * @param modalTemplate
  */
+
 
 var finishModalRender = function finishModalRender(modalTemplate) {
   Object(_text_editor__WEBPACK_IMPORTED_MODULE_0__["initTextEditors"])();
@@ -32389,9 +32445,10 @@ var renderInsertImageModal = function renderInsertImageModal(editArea) {
   insertOpenAndCloseMarkers(range);
   var modalConfigs = {
     titleText: 'Insert image',
-    contentHtml: '<p>Enter image URL:</p><p><input type="text" name="url" /></p><p><input class="btn" type="button" name="upload" value="Upload image" /></p>',
+    contentHtml: '<p>Enter a URL for your image, or upload one from your device:</p><p><input type="text" name="url" placeholder="Image URL"/></p><p><label><span class="btn">Upload image</span><input type="file" name="upload" data-send-url-to="url" style="display:none" /></label></p>',
     params: [editArea, editArea.html()],
     inputNames: ['url'],
+    fileInputNames: ['upload'],
     cancelText: 'Cancel',
     confirmText: 'Go'
   };

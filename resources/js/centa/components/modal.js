@@ -6,6 +6,7 @@
  * If no callback is specific, only a confirm button will be displayed. Otherwise, both confirm and cancel are display.
  * Elements of the array in the params property will be passed back to the callback, in the oder they're given.
  * The inputNames property is an array of the names of inputs included in contentHtml; values entered will be added, in order listed in inputNames, to the params property before all are passed to callback.
+ * The fileInputNames property is an array of inputNames that are meant to be populated by the frontend URL of a file after it is uploaded; the input name must be in both arrays, inputNames and fileInputNames. File inputs should occur in contentHtml in the same order they're listed in the fileInputNames array.
  */
 import {initTextEditors} from "./text-editor";
 
@@ -17,6 +18,7 @@ export class CentaModal {
             contentHtml: '<p>Modal content.</p>',
             params: [],
             inputNames: [],
+            fileInputNames: [],
             cancelText: 'Cancel',
             confirmText: 'OK',
         }, configs);
@@ -69,19 +71,13 @@ export class CentaModal {
 
         //Exec callback on confirm, if there's a callback
         if(this.callback) {
+            if(this.fileInputNames.length) { //We have files to upload before we can run callback
+                modalUploadFiles(this,modalTemplate);
+            }
+
             const confirmButton = modalTemplate.find('.modal-confirm');
             confirmButton.on('click',() => {
-                this.inputNames.forEach(name => {
-                    const matchingInput = modalTemplate.find('input[name="' + name + '"]');
-                    if(matchingInput.length) {
-                        this.params.push(matchingInput.val());
-                    }
-                    const matchingTextarea = modalTemplate.find('textarea[name="' + name + '"]');
-                    if(matchingTextarea.length) {
-                        this.params.push(matchingTextarea.val());
-                    }
-                });
-                this.callback(...this.params);
+                modalExecCallback(this,modalTemplate);
             });
 
             modalTemplate.find('input').on('keydown',e => {
@@ -112,6 +108,62 @@ export class CentaModal {
         }
     }
 }
+
+/**
+ * Upload files via AJAX, populate designated inputs with their new URLs.
+ * @param modalInstance
+ * @param modalTemplate
+ */
+const modalUploadFiles = (modalInstance,modalTemplate) => {
+    modalInstance.fileInputNames.forEach((name) => {
+        const matchingInput = modalTemplate.find('input[name="' + name + '"]');
+        if(matchingInput.length) {
+            matchingInput.on('change',e => {
+                const files = e.target.files;
+                if(files.length) {
+                    const fileData = files[0];
+                    let formData = new FormData();
+                    formData.append('file',fileData);
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST',
+                        url: '/upload_image',
+                        contentType: false,
+                        processData: false,
+                        data: formData
+                    }).done(data => {
+                        console.log('Done');
+                        console.log(data);
+                    }).fail(error => {
+                        console.log('Error');
+                        console.log(error);
+                    })
+                }
+            });
+        }
+    });
+};
+
+/**
+ * Execute the callback with the modal input values added, if any.
+ * @param modalInstance
+ * @param modalTemplate
+ */
+const modalExecCallback = (modalInstance,modalTemplate) => {
+    modalInstance.inputNames.forEach(name => {
+        const matchingInput = modalTemplate.find('input[name="' + name + '"]');
+        if(matchingInput.length) {
+            modalInstance.params.push(matchingInput.val());
+        }
+        const matchingTextarea = modalTemplate.find('textarea[name="' + name + '"]');
+        if(matchingTextarea.length) {
+            modalInstance.params.push(matchingTextarea.val());
+        }
+    });
+    modalInstance.callback(...modalInstance.params);
+};
 
 /**
  * A couple finishing touches to fire up any rich-text editors and make sure cursor appears after default input, if any
