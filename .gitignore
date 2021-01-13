@@ -3,7 +3,6 @@
 /public/storage
 /public/error_log
 /storage/*.key
-/storage/app/media
 /vendor
 .env
 .env.backup
@@ -14,3 +13,4 @@ npm-debug.log
 yarn-error.log
 error_log
 .idea
+media
