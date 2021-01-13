@@ -1497,6 +1497,10 @@ const insertLinkViaModal = (editArea,editAreaHtml,url) => {
     }
 };
 
+/**
+ * Creates modal for image insertion
+ * @param editArea
+ */
 const renderInsertImageModal = editArea => {
     const range = window.getSelection().getRangeAt(0);
 
@@ -1514,23 +1518,26 @@ const renderInsertImageModal = editArea => {
     modal.render();
 };
 
+/**
+ * Callback from modal in renderInsertImageModal to actually add the image to the editArea
+ * @param editArea
+ * @param editAreaHtml
+ * @param url
+ */
 const insertImageViaModal = (editArea,editAreaHtml,url) => {
     if('' !== url) {
         editArea.html(editAreaHtml);
         //Insert image!
         replaceMarkersWithSelection(editArea);
         const img = $('<img>');
-        img.prop('src',url).css('max-width','100%');
-        let sel,range;
-        if (window.getSelection) {
-            sel = window.getSelection();
-            if (sel.rangeCount) {
-                range = sel.getRangeAt(0);
-                range.deleteContents();
-                range.insertNode(img[0]);
-            }
-        }
+        img.prop('src', url).css('max-width', '100%');
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(img[0]);
     }
+    //Update code editor
+    editArea.closest('.textEditorMasterDiv').find('.code-editor').val(editArea.html());
 };
 
 /**

@@ -32473,6 +32473,11 @@ var insertLinkViaModal = function insertLinkViaModal(editArea, editAreaHtml, url
     execFormattingTool('a', editArea, true, props);
   }
 };
+/**
+ * Creates modal for image insertion
+ * @param editArea
+ */
+
 
 var renderInsertImageModal = function renderInsertImageModal(editArea) {
   var range = window.getSelection().getRangeAt(0);
@@ -32489,6 +32494,13 @@ var renderInsertImageModal = function renderInsertImageModal(editArea) {
   var modal = new _modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"](modalConfigs, insertImageViaModal);
   modal.render();
 };
+/**
+ * Callback from modal in renderInsertImageModal to actually add the image to the editArea
+ * @param editArea
+ * @param editAreaHtml
+ * @param url
+ */
+
 
 var insertImageViaModal = function insertImageViaModal(editArea, editAreaHtml, url) {
   if ('' !== url) {
@@ -32497,18 +32509,14 @@ var insertImageViaModal = function insertImageViaModal(editArea, editAreaHtml, u
     replaceMarkersWithSelection(editArea);
     var img = $('<img>');
     img.prop('src', url).css('max-width', '100%');
-    var sel, range;
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(img[0]);
+  } //Update code editor
 
-    if (window.getSelection) {
-      sel = window.getSelection();
 
-      if (sel.rangeCount) {
-        range = sel.getRangeAt(0);
-        range.deleteContents();
-        range.insertNode(img[0]);
-      }
-    }
-  }
+  editArea.closest('.textEditorMasterDiv').find('.code-editor').val(editArea.html());
 };
 /**
  * Creates modal for textColor
