@@ -20,7 +20,7 @@ Route::middleware(['verified','suspended'])->group(function() {
 
   //User stuff
   Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
-  Route::post('/upload_image', 'FileController@writeFile');
+  Route::post('/upload/{directory}', 'FileController@writeFile');
 
   //Admin stuff
   Route::middleware('role:admin')->group(function() {

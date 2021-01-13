@@ -124,22 +124,48 @@ const modalUploadFiles = (modalInstance,modalTemplate) => {
                     const fileData = files[0];
                     let formData = new FormData();
                     formData.append('file',fileData);
+                    modalTemplate.find('.modal-container').hide();
+                    modalTemplate.find('.modal-background').append('<span class="temploader" style="background-color: #fff; padding: 5px 10px">Uploading ...</span>');
                     $.ajax({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         type: 'POST',
-                        url: '/upload_image',
+                        url: '/upload/images',
                         contentType: false,
                         processData: false,
                         data: formData
-                    }).done(data => {
-                        console.log('Done');
-                        console.log(data);
+                    }).done(path => {
+                        //We should have a data-send-url-to attribute with each file input; we're expecting a URL back from the server, so where in the form do we want it?
+                        const targetInputName = matchingInput.data('sendUrlTo');
+                        const targetInput = modalTemplate.find('input[name="' + targetInputName + '"]');
+                        if(targetInput.length) {
+                            targetInput.val(path);
+                        }
                     }).fail(error => {
-                        console.log('Error');
+                        if(422 === error.status) { //Failed validation
+                            const modalConfigs = {
+                                titleText: 'Validation failed',
+                                contentHtml: '<p>The chosen file failed validation; please select a .jpg, .jpeg, .gif, or .png no greater than 2MB in size.</p>',
+                                confirmText: 'OK'
+                            };
+                            const modal = new CentaModal(modalConfigs);
+                            modal.render();
+                        } else {
+                            const modalConfigs = {
+                                titleText: 'Upload error',
+                                contentHtml: '<p>Error in modalUploadFiles. See dev console for details.</p>',
+                                confirmText: 'OK'
+                            };
+                            const modal = new CentaModal(modalConfigs);
+                            modal.render();
+                        }
+                        console.log('Error in modalUploadFiles:');
                         console.log(error);
-                    })
+                    }).always(() => {
+                            $('span.temploader').remove();
+                            modalTemplate.find('.modal-container').show();
+                    });
                 }
             });
         }

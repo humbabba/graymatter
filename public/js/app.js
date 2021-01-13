@@ -30497,21 +30497,52 @@ var modalUploadFiles = function modalUploadFiles(modalInstance, modalTemplate) {
           var fileData = files[0];
           var formData = new FormData();
           formData.append('file', fileData);
+          modalTemplate.find('.modal-container').hide();
+          modalTemplate.find('.modal-background').append('<span class="temploader" style="background-color: #fff; padding: 5px 10px">Uploading ...</span>');
           $.ajax({
             headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             type: 'POST',
-            url: '/upload_image',
+            url: '/upload/images',
             contentType: false,
             processData: false,
             data: formData
-          }).done(function (data) {
-            console.log('Done');
-            console.log(data);
+          }).done(function (path) {
+            //We should have a data-send-url-to attribute with each file input; we're expecting a URL back from the server, so where in the form do we want it?
+            var targetInputName = matchingInput.data('sendUrlTo');
+            var targetInput = modalTemplate.find('input[name="' + targetInputName + '"]');
+
+            if (targetInput.length) {
+              targetInput.val(path);
+            }
           }).fail(function (error) {
-            console.log('Error');
+            if (422 === error.status) {
+              //Failed validation
+              var modalConfigs = {
+                titleText: 'Validation failed',
+                contentHtml: '<p>The chosen file failed validation; please select a .jpg, .jpeg, .gif, or .png no greater than 2MB in size.</p>',
+                confirmText: 'OK'
+              };
+              var modal = new CentaModal(modalConfigs);
+              modal.render();
+            } else {
+              var _modalConfigs = {
+                titleText: 'Upload error',
+                contentHtml: '<p>Error in modalUploadFiles. See dev console for details.</p>',
+                confirmText: 'OK'
+              };
+
+              var _modal = new CentaModal(_modalConfigs);
+
+              _modal.render();
+            }
+
+            console.log('Error in modalUploadFiles:');
             console.log(error);
+          }).always(function () {
+            $('span.temploader').remove();
+            modalTemplate.find('.modal-container').show();
           });
         }
       });

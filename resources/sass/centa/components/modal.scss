@@ -13,6 +13,7 @@
   z-index: 10000;
   .modal-container {
     background-color: $white;
+    box-shadow: 5px 5px 8px $black;
     width: 95vw;
     @media only screen and (min-width: $break) {
       max-width: $modal-max-width;

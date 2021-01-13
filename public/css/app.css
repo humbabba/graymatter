@@ -796,6 +796,7 @@ a:hover {
 
 .modal-background .modal-container {
   background-color: #fff;
+  box-shadow: 5px 5px 8px #000;
   width: 95vw;
 }
 
