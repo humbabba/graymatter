@@ -3,6 +3,7 @@
 /public/storage
 /public/error_log
 /storage/*.key
+/storage/app/media
 /vendor
 .env
 .env.backup
