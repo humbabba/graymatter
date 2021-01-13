@@ -31056,11 +31056,17 @@ var makeTextEditor = function makeTextEditor(el) {
 
       switch (item.tool) {
         case 'insertImage':
-          renderInsertImageModal(editArea);
+          if (editArea.is(':focus')) {
+            renderInsertImageModal(editArea);
+          }
+
           break;
 
         case 'createLink':
-          renderInsertLinkModal(editArea);
+          if (editArea.is(':focus')) {
+            renderInsertLinkModal(editArea);
+          }
+
           break;
 
         case 'unlink':
@@ -31073,23 +31079,8 @@ var makeTextEditor = function makeTextEditor(el) {
         case 'ul':
         case 'indent':
         case 'outdent':
-          execFormattingTool(item.tool, editArea, false);
-          break;
-
-        case 'heading':
-          input = prompt('Enter heading size', '(Integer from 1 to 6)');
-
-          if (input) {
-            var inputInteger = parseInt(input);
-
-            if (isNaN(inputInteger) || 1 > inputInteger || 6 < inputInteger) {
-              alert('Heading size can only be an integer between 1 and 6');
-              return;
-            }
-
-            var _tool = 'h' + inputInteger;
-
-            execFormattingTool(_tool, editArea);
+          if (editArea.is(':focus')) {
+            execFormattingTool(item.tool, editArea, false);
           }
 
           break;
@@ -31098,37 +31089,46 @@ var makeTextEditor = function makeTextEditor(el) {
         case 'justifyFull':
         case 'justifyLeft':
         case 'justifyRight':
-          execFormattingTool(item.tool, editArea, false);
+          if (editArea.is(':focus')) {
+            execFormattingTool(item.tool, editArea, false);
+          }
+
           break;
 
         case 'textColor':
-          renderTextColorModal(editArea);
+          if (editArea.is(':focus')) {
+            renderTextColorModal(editArea);
+          }
+
           break;
 
         case 'clearFormat':
-          copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
-          codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
-          var numberOfLinks = copyDiv.find('a').length;
-          var targetInput = copyDiv.next('.text-editor');
-          var x = 0;
+          if (editArea.is(':focus')) {
+            copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
+            codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
+            var numberOfLinks = copyDiv.find('a').length;
+            var targetInput = copyDiv.next('.text-editor');
+            var x = 0;
 
-          while (copyDiv.find('*').length > numberOfLinks) {
-            copyDiv.children().each(function (index, el) {
-              stripTags(el);
-            });
-            x++;
+            while (copyDiv.find('*').length > numberOfLinks) {
+              copyDiv.children().each(function (index, el) {
+                stripTags(el);
+              });
+              x++;
 
-            if (x > 30) {
-              break;
+              if (x > 30) {
+                break;
+              }
             }
+
+            copyDiv.html('<p>' + copyDiv.html().replace(/&nbsp;/g, ' ').replace(/\s\s/g, ' ').trim() + '</p>'); //Put the stripped code back inside a p tag
+
+            codeDiv.val(copyDiv.html()); //Put the stripped code into the editor
+
+            targetInput.val(copyDiv.html());
+            showUnsavedFlag();
           }
 
-          copyDiv.html('<p>' + copyDiv.html().replace(/&nbsp;/g, ' ').replace(/\s\s/g, ' ').trim() + '</p>'); //Put the stripped code back inside a p tag
-
-          codeDiv.val(copyDiv.html()); //Put the stripped code into the editor
-
-          targetInput.val(copyDiv.html());
-          showUnsavedFlag();
           break;
 
         case 'toggleCode':
@@ -31143,7 +31143,10 @@ var makeTextEditor = function makeTextEditor(el) {
           break;
 
         default:
-          execFormattingTool(item.tool, editArea);
+          if (editArea.is(':focus')) {
+            execFormattingTool(item.tool, editArea);
+          }
+
           break;
       }
     });
@@ -32492,6 +32495,19 @@ var insertImageViaModal = function insertImageViaModal(editArea, editAreaHtml, u
     editArea.html(editAreaHtml); //Insert image!
 
     replaceMarkersWithSelection(editArea);
+    var img = $('<img>');
+    img.prop('src', url).css('max-width', '100%');
+    var sel, range;
+
+    if (window.getSelection) {
+      sel = window.getSelection();
+
+      if (sel.rangeCount) {
+        range = sel.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(img[0]);
+      }
+    }
   }
 };
 /**
