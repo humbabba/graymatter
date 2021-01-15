@@ -18,42 +18,38 @@ Auth::routes(['verify' => true,'register' => config('users.new.register')]);
 // Apply verified middleware to most routes
 Route::middleware(['verified','suspended'])->group(function() {
 
-  //User stuff
-  Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
-  Route::post('/upload/{directory}', 'FileController@writeFile');
+    //User stuff
+    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+    Route::post('/upload/{directory}', 'FileController@writeFile');
 
-  //Admin stuff
-  Route::middleware('role:admin')->group(function() {
-    Route::get('/info', function () {
-        return view('info');
-    })->name('info');
+    Route::get('users/profile/{id}', 'UserController@show')->name('users.profile');
 
-    Route::get('/test', function () {
-        return view('test');
-    })->name('test');
+    //Admin stuff
+    Route::middleware('role:admin')->group(function() {
+        Route::get('/info', function () {
+            return view('info');
+        })->name('info');
 
-    Route::get('users/{id}/suspend', 'UserController@suspend')->name('users.suspend');
+        Route::get('/test', function () {
+            return view('test');
+        })->name('test');
 
-    Route::resource('users', UserController::class)->only([
-        'show'
-    ]);
-  });
+        Route::get('users/{id}/suspend', 'UserController@suspend')->name('users.suspend');
 
-  //Access denied
-  Route::get('/not_authorized', function () {
-      return view('not_authorized');
-  })->name('not_authorized');
+        Route::resource('users', UserController::class)->except([
+            'show'
+        ]);
 
-  Route::get('/suspended', 'SuspendedController@index')->name('suspended')->withoutMiddleware('suspended');
+    });
+
+    //Access denied
+    Route::get('/not_authorized', function () {
+        return view('not_authorized');
+    })->name('not_authorized');
+
+    Route::get('/suspended', 'SuspendedController@index')->name('suspended')->withoutMiddleware('suspended');
 
 });
-
-//Admin-only routes
-//Route::middleware(['role:admin','suspended'])->group(function() {
-//    Route::resource('users', UserController::class)->except([
-//        'show'
-//    ]);
-//});
 
 //Public routes
 Route::get('/', function () {
