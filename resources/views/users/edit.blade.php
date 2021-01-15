@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('view_title','Edit user ' . $output->user->name .')
+@section('view_title','Edit user ' . $output->user->name)
 
 @section('content')
   <div class="centum ph10">
@@ -13,7 +13,7 @@
     {{-- End messages --}}
 
     {{-- Begin rows --}}
-
+        <p>Yo!</p>
     {{-- End rows --}}
   </div>
 @endsection

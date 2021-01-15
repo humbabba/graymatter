@@ -10,10 +10,8 @@ class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $msg = [])
     {
         //Deal with filter params
         $search = $request->get('search');
@@ -55,19 +53,20 @@ class UserController extends Controller
         $output->role = $role;
         $output->from = $from;
         $output->to = $to;
-        $output->msg = [];
+        $output->msg = $msg;
 
 
         if(0 === $output->users->total()) {
           $output->msg[] = ['notice' => 'No users found. Try <a href="' . route('users.index') . '">clearing the filters</a>.'];
         }
+
         return view('users.index',compact('output'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create()
     {
@@ -87,18 +86,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $output = new \stdClass();
+        $output->user = User::find(1);
+        return view('users.edit',compact('output'));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
      */
     public function show($id)
     {
-        //
+        $user = User::find($id);
+
+        if(is_null($user)) { //User not found
+            return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
+        }
+        return view('users.show',compact('user'));
     }
 
     /**

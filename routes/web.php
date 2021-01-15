@@ -34,7 +34,9 @@ Route::middleware(['verified','suspended'])->group(function() {
 
     Route::get('users/{id}/suspend', 'UserController@suspend')->name('users.suspend');
 
-    Route::resource('users', 'UserController');
+    Route::resource('users', UserController::class)->only([
+        'show'
+    ]);
   });
 
   //Access denied
@@ -45,6 +47,13 @@ Route::middleware(['verified','suspended'])->group(function() {
   Route::get('/suspended', 'SuspendedController@index')->name('suspended')->withoutMiddleware('suspended');
 
 });
+
+//Admin-only routes
+//Route::middleware(['role:admin','suspended'])->group(function() {
+//    Route::resource('users', UserController::class)->except([
+//        'show'
+//    ]);
+//});
 
 //Public routes
 Route::get('/', function () {

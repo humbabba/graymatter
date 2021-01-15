@@ -14,6 +14,7 @@
 
     {{-- Begin form --}}
     <form class="centum input-spacing" action="{{ route('users.store') }}" method="post">
+      @csrf
       <div class="cell x-max700 p0">
         <div class="centum">
           <div class="cell x50">
@@ -40,9 +41,12 @@
           </div>
           <div class="cell pv10">
             <label>Lies</label>
-            <input type="hidden" name="bio" class="text-editor" value="" />
+            <input type="hidden" name="lies" class="text-editor" value="" />
           </div>
         </div>
+      </div>
+      <div class="cell">
+        <input type="submit" class="btn" value="Create" />
       </div>
     </form>
     {{-- End form --}}
