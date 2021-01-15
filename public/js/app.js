@@ -30297,14 +30297,27 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 /*!*************************************!*\
   !*** ./resources/js/centa/centa.js ***!
   \*************************************/
-/*! exports provided: textEditorOnChangeCallback */
+/*! exports provided: textEditorOnChangeCallback, renderInsertLinkUi, renderInsertImageUi, renderTextColorUi */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "textEditorOnChangeCallback", function() { return textEditorOnChangeCallback; });
-//Define the callback for changes in text-editor
-//Set to false for no callback
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderInsertLinkUi", function() { return renderInsertLinkUi; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderInsertImageUi", function() { return renderInsertImageUi; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderTextColorUi", function() { return renderTextColorUi; });
+/* harmony import */ var _components_text_editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/text-editor */ "./resources/js/centa/components/text-editor.js");
+/* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modal */ "./resources/js/centa/components/modal.js");
+/**
+ * Imports
+ */
+
+
+/**
+ * Define the callback for changes in text-editor.
+ * Set to false for no callback.
+ */
+
 var textEditorOnChangeCallback = function textEditorOnChangeCallback() {
   var modalMaster = $('.modal-master');
 
@@ -30312,7 +30325,117 @@ var textEditorOnChangeCallback = function textEditorOnChangeCallback() {
     //We don't want this running when the modal is visible
     console.log('showUnsavedFlag(documentForm)');
   }
-}; //Included components
+};
+/**
+ * Creates UI for link insertion.
+ * Must call back insertLinkViaUi in text-editor.js with params editArea, editAreaHtml, and url.
+ * Param editAreaHtml may be set to false if no manipulation is done and editArea focus is not changed - otherwise it's necessary to restore selection in insertLinkViaUi.
+ * @param editArea
+ */
+
+var renderInsertLinkUi = function renderInsertLinkUi(editArea) {
+  var range = window.getSelection().getRangeAt(0); //Bail if range collapsed
+
+  if (range.collapsed) {
+    return;
+  }
+
+  Object(_components_text_editor__WEBPACK_IMPORTED_MODULE_0__["insertOpenAndCloseMarkers"])(range);
+  var modalConfigs = {
+    titleText: 'Link destination',
+    contentHtml: '<p>Enter URL:</p><p><input type="text" name="url" /></p>',
+    params: [editArea, editArea.html()],
+    inputNames: ['url'],
+    cancelText: 'Cancel',
+    confirmText: 'Go'
+  };
+  var modal = new _components_modal__WEBPACK_IMPORTED_MODULE_1__["CentaModal"](modalConfigs, _components_text_editor__WEBPACK_IMPORTED_MODULE_0__["insertLinkViaUi"]);
+  modal.render();
+};
+/**
+ * Browser-prompt version of the above, by way of example of an alternate UI for link insertion.
+ * @param editArea
+ */
+// export const renderInsertLinkUi = editArea => {
+//     const url = prompt('Enter URL:');
+//     if('' !== url) {
+//         insertLinkViaUi(editArea,false,url);
+//     }
+// };
+
+/**
+ * Creates UI for image insertion.
+ * Must call back insertImageViaUi in text-editor.js with params editArea, editAreaHtml, and url.
+ * Param editAreaHtml may be set to false if no manipulation is done and editArea focus is not changed - otherwise it's necessary to restore selection in insertImageViaUi.
+ * @param editArea
+ */
+
+var renderInsertImageUi = function renderInsertImageUi(editArea) {
+  var range = window.getSelection().getRangeAt(0);
+  Object(_components_text_editor__WEBPACK_IMPORTED_MODULE_0__["insertOpenAndCloseMarkers"])(range);
+  var modalConfigs = {
+    titleText: 'Insert image',
+    contentHtml: '<p>Enter a URL for your image, or upload one from your device:</p><p><input type="text" name="url" placeholder="Image URL"/></p><p><label><span class="btn">Upload image</span><input type="file" name="upload" data-send-url-to="url" style="display:none" /></label></p>',
+    params: [editArea, editArea.html()],
+    inputNames: ['url'],
+    fileInputNames: ['upload'],
+    cancelText: 'Cancel',
+    confirmText: 'Go'
+  };
+  var modal = new _components_modal__WEBPACK_IMPORTED_MODULE_1__["CentaModal"](modalConfigs, _components_text_editor__WEBPACK_IMPORTED_MODULE_0__["insertImageViaUi"]);
+  modal.render();
+};
+/**
+ * Browser-prompt version of the above, by way of example of an alternate UI for image insertion.
+ * @param editArea
+ */
+// export const renderInsertImageUi = editArea => {
+//     const url = prompt('Enter URL:');
+//     if('' !== url) {
+//         insertImageViaUi(editArea,false,url);
+//     }
+// };
+
+/**
+ * Creates UI for text color.
+ * Must call back insertTextColorViaUi in text-editor.js with params editArea, editAreaHtml, and color.
+ * Param editAreaHtml may be set to false if no manipulation is done and editArea focus is not changed - otherwise it's necessary to restore selection in insertTextColorViaUi.
+ * @param editArea
+ */
+
+var renderTextColorUi = function renderTextColorUi(editArea) {
+  var range = window.getSelection().getRangeAt(0); //Bail if range collapsed
+
+  if (range.collapsed) {
+    return;
+  }
+
+  Object(_components_text_editor__WEBPACK_IMPORTED_MODULE_0__["insertOpenAndCloseMarkers"])(range);
+  var modalConfigs = {
+    titleText: 'Change text color',
+    contentHtml: '<p>Enter desired color in hex, rgb, or rgba format:</p><p><input type="text" name="color" value="#000000"/></p>',
+    params: [editArea, editArea.html()],
+    inputNames: ['color'],
+    cancelText: 'Cancel',
+    confirmText: 'Go'
+  };
+  var modal = new _components_modal__WEBPACK_IMPORTED_MODULE_1__["CentaModal"](modalConfigs, _components_text_editor__WEBPACK_IMPORTED_MODULE_0__["insertTextColorViaUi"]);
+  modal.render();
+};
+/**
+ * Browser-prompt version of the above, by way of example of an alternate UI for text-color.
+ * @param editArea
+ */
+// export const renderTextColorUi = editArea => {
+//     const color = prompt('Enter color hex:','#000000');
+//     if('' !== color) {
+//         insertTextColorViaUi(editArea,false,color);
+//     }
+// };
+
+/**
+ * Included components
+ */
 
 __webpack_require__(/*! ./components/alerts */ "./resources/js/centa/components/alerts.js");
 
@@ -30820,13 +30943,16 @@ addSortParams = function addSortParams(el, key) {
 /*!******************************************************!*\
   !*** ./resources/js/centa/components/text-editor.js ***!
   \******************************************************/
-/*! exports provided: initTextEditors, insertOpenAndCloseMarkers */
+/*! exports provided: initTextEditors, insertOpenAndCloseMarkers, insertLinkViaUi, insertImageViaUi, insertTextColorViaUi */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initTextEditors", function() { return initTextEditors; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertOpenAndCloseMarkers", function() { return insertOpenAndCloseMarkers; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertLinkViaUi", function() { return insertLinkViaUi; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertImageViaUi", function() { return insertImageViaUi; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertTextColorViaUi", function() { return insertTextColorViaUi; });
 /* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal */ "./resources/js/centa/components/modal.js");
 /* harmony import */ var _centa_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../centa.js */ "./resources/js/centa/centa.js");
 
@@ -30849,7 +30975,6 @@ var allTags = tags.concat(advancedTags);
 var advancedFormat = ['ul', 'ol', 'hr', 'indent', 'outdent', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight'];
 var blockNodeNames = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE'];
 var blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
-
 
 /**
  * Define rich-text editing tools
@@ -31057,14 +31182,14 @@ var makeTextEditor = function makeTextEditor(el) {
       switch (item.tool) {
         case 'insertImage':
           if (editArea.is(':focus')) {
-            renderInsertImageModal(editArea);
+            Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["renderInsertImageUi"])(editArea);
           }
 
           break;
 
         case 'createLink':
           if (editArea.is(':focus')) {
-            renderInsertLinkModal(editArea);
+            Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["renderInsertLinkUi"])(editArea);
           }
 
           break;
@@ -31097,7 +31222,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
         case 'textColor':
           if (editArea.is(':focus')) {
-            renderTextColorModal(editArea);
+            Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["renderTextColorUi"])(editArea);
           }
 
           break;
@@ -32427,42 +32552,20 @@ var justifyList = function justifyList(block, format, editArea) {
   }
 };
 /**
- * Creates modal for link insertion
- * @param editArea
- */
-
-
-var renderInsertLinkModal = function renderInsertLinkModal(editArea) {
-  var range = window.getSelection().getRangeAt(0); //Bail if range collapsed
-
-  if (range.collapsed) {
-    return;
-  }
-
-  insertOpenAndCloseMarkers(range);
-  var modalConfigs = {
-    titleText: 'Link destination',
-    contentHtml: '<p>Enter URL:</p><p><input type="text" name="url" /></p>',
-    params: [editArea, editArea.html()],
-    inputNames: ['url'],
-    cancelText: 'Cancel',
-    confirmText: 'Go'
-  };
-  var modal = new _modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"](modalConfigs, insertLinkViaModal);
-  modal.render();
-};
-/**
- * Callback from insert-link modal, applies the link to the selected text
+ * Callback from renderInsertLinkUi in center.js, applies the link to the selected text.
  * @param editArea
  * @param editAreaHtml
  * @param url
  */
 
 
-var insertLinkViaModal = function insertLinkViaModal(editArea, editAreaHtml, url) {
+var insertLinkViaUi = function insertLinkViaUi(editArea, editAreaHtml, url) {
   if ('' !== url) {
-    editArea.html(editAreaHtml);
-    replaceMarkersWithSelection(editArea);
+    if (editAreaHtml) {
+      editArea.html(editAreaHtml);
+      replaceMarkersWithSelection(editArea);
+    }
+
     var codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
     var hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
     unlinkSelection(editArea, codeEditArea, hiddenInput);
@@ -32474,39 +32577,19 @@ var insertLinkViaModal = function insertLinkViaModal(editArea, editAreaHtml, url
   }
 };
 /**
- * Creates modal for image insertion
- * @param editArea
- */
-
-
-var renderInsertImageModal = function renderInsertImageModal(editArea) {
-  var range = window.getSelection().getRangeAt(0);
-  insertOpenAndCloseMarkers(range);
-  var modalConfigs = {
-    titleText: 'Insert image',
-    contentHtml: '<p>Enter a URL for your image, or upload one from your device:</p><p><input type="text" name="url" placeholder="Image URL"/></p><p><label><span class="btn">Upload image</span><input type="file" name="upload" data-send-url-to="url" style="display:none" /></label></p>',
-    params: [editArea, editArea.html()],
-    inputNames: ['url'],
-    fileInputNames: ['upload'],
-    cancelText: 'Cancel',
-    confirmText: 'Go'
-  };
-  var modal = new _modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"](modalConfigs, insertImageViaModal);
-  modal.render();
-};
-/**
- * Callback from modal in renderInsertImageModal to actually add the image to the editArea
+ * Callback from UI in renderInsertImageUi to actually add the image to the editArea.
  * @param editArea
  * @param editAreaHtml
  * @param url
  */
 
-
-var insertImageViaModal = function insertImageViaModal(editArea, editAreaHtml, url) {
+var insertImageViaUi = function insertImageViaUi(editArea, editAreaHtml, url) {
   if ('' !== url) {
-    editArea.html(editAreaHtml); //Insert image!
+    if (editAreaHtml) {
+      editArea.html(editAreaHtml);
+      replaceMarkersWithSelection(editArea);
+    }
 
-    replaceMarkersWithSelection(editArea);
     var img = $('<img>');
     img.prop('src', url).css('max-width', '100%');
     var selection = window.getSelection();
@@ -32519,42 +32602,19 @@ var insertImageViaModal = function insertImageViaModal(editArea, editAreaHtml, u
   editArea.closest('.textEditorMasterDiv').find('.code-editor').val(editArea.html());
 };
 /**
- * Creates modal for textColor
- * @param editArea
- */
-
-
-var renderTextColorModal = function renderTextColorModal(editArea) {
-  var range = window.getSelection().getRangeAt(0); //Bail if range collapsed
-
-  if (range.collapsed) {
-    return;
-  }
-
-  insertOpenAndCloseMarkers(range);
-  var modalConfigs = {
-    titleText: 'Change text color',
-    contentHtml: '<p>Enter desired color in hex, rgb, or rgba format:</p><p><input type="text" name="color" value="#000000"/></p>',
-    params: [editArea, editArea.html()],
-    inputNames: ['color'],
-    cancelText: 'Cancel',
-    confirmText: 'Go'
-  };
-  var modal = new _modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"](modalConfigs, insertTextColorViaModal);
-  modal.render();
-};
-/**
  * Callback from text-color modal, applies styled span to the selected text
  * @param editArea
  * @param editAreaHtml
  * @param color
  */
 
-
-var insertTextColorViaModal = function insertTextColorViaModal(editArea, editAreaHtml, color) {
+var insertTextColorViaUi = function insertTextColorViaUi(editArea, editAreaHtml, color) {
   if ('' !== color) {
-    editArea.html(editAreaHtml);
-    replaceMarkersWithSelection(editArea);
+    if (editAreaHtml) {
+      editArea.html(editAreaHtml);
+      replaceMarkersWithSelection(editArea);
+    }
+
     var props = {
       "style": 'color:' + color
     };
@@ -32564,7 +32624,6 @@ var insertTextColorViaModal = function insertTextColorViaModal(editArea, editAre
 /**
  * Handle keyboard shortcuts for text editor
  */
-
 
 $(document).on('keydown', function (e) {
   if (e.metaKey || e.ctrlKey) {
@@ -32603,7 +32662,7 @@ $(document).on('keydown', function (e) {
         }
       } else if ('a' === tool) {
         e.preventDefault();
-        renderInsertLinkModal(editArea);
+        Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["renderInsertLinkUi"])(editArea);
       }
     }
   }
@@ -32670,10 +32729,12 @@ var logVitals = function logVitals(func) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./centa/components/modal.js */ "./resources/js/centa/components/modal.js");
+/* harmony import */ var _centa_components_text_editor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./centa/components/text-editor */ "./resources/js/centa/components/text-editor.js");
 /**
  * App-specific JS goes here
  */
 //Imports
+
  //User suspension
 
 var suspendUser = function suspendUser(form, suspendedDays, suspendedMessage) {

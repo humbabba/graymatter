@@ -19,8 +19,7 @@ const advancedFormat = ['ul','ol','hr','indent','outdent','justifyCenter','justi
 const blockNodeNames = ['P','H1','H2','H3','H4','H5','H6','PRE'];
 const blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
 
-import { textEditorOnChangeCallback } from '../centa.js';
-import { CentaModal } from './modal.js';
+import { textEditorOnChangeCallback,renderInsertLinkUi,renderInsertImageUi,renderTextColorUi } from '../centa.js';
 
 /**
  * Define rich-text editing tools
@@ -176,12 +175,12 @@ const makeTextEditor = el => {
             switch(item.tool) {
                 case 'insertImage':
                     if(editArea.is(':focus')) {
-                        renderInsertImageModal(editArea);
+                        renderInsertImageUi(editArea);
                     }
                     break;
                 case 'createLink':
                     if(editArea.is(':focus')) {
-                        renderInsertLinkModal(editArea);
+                        renderInsertLinkUi(editArea);
                     }
                     break;
                 case 'unlink':
@@ -207,7 +206,7 @@ const makeTextEditor = el => {
                     break;
                 case 'textColor':
                     if(editArea.is(':focus')) {
-                        renderTextColorModal(editArea);
+                        renderTextColorUi(editArea);
                     }
                     break;
                 case 'clearFormat':
@@ -1454,38 +1453,17 @@ const justifyList = (block,format,editArea) => {
 };
 
 /**
- * Creates modal for link insertion
- * @param editArea
- */
-const renderInsertLinkModal = editArea => {
-    const range = window.getSelection().getRangeAt(0);
-    //Bail if range collapsed
-    if(range.collapsed) {
-        return;
-    }
-    insertOpenAndCloseMarkers(range);
-    const modalConfigs = {
-        titleText: 'Link destination',
-        contentHtml: '<p>Enter URL:</p><p><input type="text" name="url" /></p>',
-        params: [editArea,editArea.html()],
-        inputNames: ['url'],
-        cancelText: 'Cancel',
-        confirmText: 'Go'
-    };
-    const modal = new CentaModal(modalConfigs,insertLinkViaModal);
-    modal.render();
-};
-
-/**
- * Callback from insert-link modal, applies the link to the selected text
+ * Callback from renderInsertLinkUi in center.js, applies the link to the selected text.
  * @param editArea
  * @param editAreaHtml
  * @param url
  */
-const insertLinkViaModal = (editArea,editAreaHtml,url) => {
+export const insertLinkViaUi = (editArea,editAreaHtml,url) => {
     if('' !== url) {
-        editArea.html(editAreaHtml);
-        replaceMarkersWithSelection(editArea);
+        if(editAreaHtml) {
+            editArea.html(editAreaHtml);
+            replaceMarkersWithSelection(editArea);
+        }
         const codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
         const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
         unlinkSelection(editArea,codeEditArea,hiddenInput);
@@ -1498,37 +1476,17 @@ const insertLinkViaModal = (editArea,editAreaHtml,url) => {
 };
 
 /**
- * Creates modal for image insertion
- * @param editArea
- */
-const renderInsertImageModal = editArea => {
-    const range = window.getSelection().getRangeAt(0);
-
-    insertOpenAndCloseMarkers(range);
-    const modalConfigs = {
-        titleText: 'Insert image',
-        contentHtml: '<p>Enter a URL for your image, or upload one from your device:</p><p><input type="text" name="url" placeholder="Image URL"/></p><p><label><span class="btn">Upload image</span><input type="file" name="upload" data-send-url-to="url" style="display:none" /></label></p>',
-        params: [editArea,editArea.html()],
-        inputNames: ['url'],
-        fileInputNames: ['upload'],
-        cancelText: 'Cancel',
-        confirmText: 'Go'
-    };
-    const modal = new CentaModal(modalConfigs,insertImageViaModal);
-    modal.render();
-};
-
-/**
- * Callback from modal in renderInsertImageModal to actually add the image to the editArea
+ * Callback from UI in renderInsertImageUi to actually add the image to the editArea.
  * @param editArea
  * @param editAreaHtml
  * @param url
  */
-const insertImageViaModal = (editArea,editAreaHtml,url) => {
+export const insertImageViaUi = (editArea, editAreaHtml, url) => {
     if('' !== url) {
-        editArea.html(editAreaHtml);
-        //Insert image!
-        replaceMarkersWithSelection(editArea);
+        if(editAreaHtml) {
+            editArea.html(editAreaHtml);
+            replaceMarkersWithSelection(editArea);
+        }
         const img = $('<img>');
         img.prop('src', url).css('max-width', '100%');
         const selection = window.getSelection();
@@ -1541,38 +1499,17 @@ const insertImageViaModal = (editArea,editAreaHtml,url) => {
 };
 
 /**
- * Creates modal for textColor
- * @param editArea
- */
-const renderTextColorModal = editArea => {
-    const range = window.getSelection().getRangeAt(0);
-    //Bail if range collapsed
-    if(range.collapsed) {
-        return;
-    }
-    insertOpenAndCloseMarkers(range);
-    const modalConfigs = {
-        titleText: 'Change text color',
-        contentHtml: '<p>Enter desired color in hex, rgb, or rgba format:</p><p><input type="text" name="color" value="#000000"/></p>',
-        params: [editArea,editArea.html()],
-        inputNames: ['color'],
-        cancelText: 'Cancel',
-        confirmText: 'Go'
-    };
-    const modal = new CentaModal(modalConfigs,insertTextColorViaModal);
-    modal.render();
-};
-
-/**
  * Callback from text-color modal, applies styled span to the selected text
  * @param editArea
  * @param editAreaHtml
  * @param color
  */
-const insertTextColorViaModal = (editArea,editAreaHtml,color) => {
+export const insertTextColorViaUi = (editArea,editAreaHtml,color) => {
     if('' !== color) {
-        editArea.html(editAreaHtml);
-        replaceMarkersWithSelection(editArea);
+        if(editAreaHtml) {
+            editArea.html(editAreaHtml);
+            replaceMarkersWithSelection(editArea);
+        }
         const props = {
             "style":'color:' + color
         };
@@ -1612,7 +1549,7 @@ $(document).on('keydown', function (e) {
                 }
             } else if('a' === tool) {
                 e.preventDefault();
-                renderInsertLinkModal(editArea);
+                renderInsertLinkUi(editArea);
             }
         }
     }

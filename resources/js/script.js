@@ -4,6 +4,7 @@
 
 //Imports
 import { CentaModal } from './centa/components/modal.js';
+import {insertLinkViaUi, insertOpenAndCloseMarkers} from "./centa/components/text-editor";
 
 //User suspension
 const suspendUser = (form,suspendedDays,suspendedMessage) => {
