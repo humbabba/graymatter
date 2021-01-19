@@ -36,7 +36,7 @@ Route::middleware(['verified','suspended'])->group(function() {
 
         Route::get('users/{id}/suspend', 'UserController@suspend')->name('users.suspend');
 
-        Route::resource('users', UserController::class)->except([
+        Route::resource('users', 'UserController')->except([
             'show'
         ]);
 

@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\User;
 use App\Roles\UserRoles;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * @param Request $request
+     * @param array $msg
+     * @return Factory|View
      */
     public function index(Request $request, $msg = [])
     {
@@ -66,36 +74,48 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function create()
     {
         //Check if user creation is allowed
         abort_if(!config('users.new.create'),404);
 
-        $output = new \stdClass();
-        $output->roles = UserRoles::getRoleList();
-        return view('users.create',compact('output'));
+        $roles = UserRoles::getRoleList();
+        return view('users.create',compact('roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return void
      */
     public function store(Request $request)
     {
-        $output = new \stdClass();
-        $output->user = User::find(1);
-        return view('users.edit',compact('output'));
+        $request->validate([
+            'name' => 'required',
+            'email'=>'required|email|unique:users,email,',
+            'password' => 'required|confirmed|regex:/^(?=\P{Ll}*\p{Ll})(?=\P{Lu}*\p{Lu})(?=\P{N}*\p{N})(?=[\p{L}\p{N}]*[^\p{L}\p{N}])[\s\S]{8,}$/',
+        ]);
+
+        $user = new User([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('password')),
+            'role' => $request->get('role'),
+            'bio' => $request->get('bio'),
+            'email_verified_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $user->save();
     }
 
     /**
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     * @return Factory|RedirectResponse|Redirector|View
      */
     public function show($id)
     {
@@ -115,13 +135,19 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $user = User::find($id);
+
+        if(is_null($user)) { //User not found
+            return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
+        }
+        $roles = UserRoles::getRoleList();
+        return view('users.edit',compact('user','roles'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -149,7 +175,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
      * @param  int  $days
      * @return \Illuminate\Http\Response
