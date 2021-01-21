@@ -1,3 +1,5 @@
 {
-    "E-Mail Address":"Email address"
+    "E-Mail Address":"Email address",
+    "Verify Email Address": "Verify email address",
+    "Please click the button below to verify your email address.": "Please click the button below to verify your email address. You'll be taken to the login screen, or your dashboard if already logged in."
 }

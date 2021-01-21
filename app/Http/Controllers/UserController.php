@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\User;
 use App\Roles\UserRoles;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
@@ -105,10 +107,14 @@ class UserController extends Controller
             'password' => Hash::make($request->get('password')),
             'role' => $request->get('role'),
             'bio' => $request->get('bio'),
-            'email_verified_at' => date('Y-m-d H:i:s'),
         ]);
 
         $user->save();
+
+        event(new Registered($user));
+
+        return redirect(route('users.edit',$user->id));
+
     }
 
     /**
@@ -131,7 +137,7 @@ class UserController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -149,7 +155,7 @@ class UserController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -160,16 +166,17 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse|Redirector
      */
     public function destroy($id)
     {
         $user = User::find($id);
-        if($user) {
+        if(!is_null($user)) {
           $userName = $user->name;
           $user->delete();
           return redirect(route('users.index'))->with('success','Successfully deleted user "' . $userName . '" (ID: ' . $id .').');
         }
+        return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
     }
 
     /**
@@ -178,12 +185,12 @@ class UserController extends Controller
      * @param Request $request
      * @param  int  $id
      * @param  int  $days
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function suspend(Request $request, $id)
     {
       $user = User::find($id);
-      if($user) {
+      if(!is_null($user)) {
         $days = $request->get('suspendedDays');
         if(!is_numeric($days)) {
           return redirect(route('users.index'))->with('error','No suspension duration input found.');
