@@ -159,7 +159,26 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::find($id);
+
+        if(is_null($user)) { //User not found
+            return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
+        }
+
+        $user->name = $request->get('name');
+        $user->email = $request->get('email');
+        $updatedPassword = $request->get('password');
+        if(!empty($updatedPassword)) {
+            $user->password =  Hash::make($updatedPassword);
+        }
+        $user->role = $request->get('role');
+        $user->bio = $request->get('bio');
+
+        $user->save();
+
+        $roles = UserRoles::getRoleList();
+
+        return redirect(route('users.edit',$user->id));
     }
 
     /**

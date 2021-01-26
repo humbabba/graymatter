@@ -1,10 +1,9 @@
 /**
- * App-specific JS goes here
+ * Script for users index page
  */
 
 //Imports
-import { CentaModal } from './centa/components/modal.js';
-import {insertLinkViaUi, insertOpenAndCloseMarkers} from "./centa/components/text-editor";
+import { CentaModal } from '../centa/components/modal';
 
 //User suspension
 const suspendUser = (form,suspendedDays,suspendedMessage) => {
@@ -62,17 +61,4 @@ $('.deleteUser').each((index,el) => {
         modal.render();
     });
 
-});
-
-//Test button on /test
-const thing = url => alert('I got: ' + url);
-
-$('#testButton').on('click',() => {
-    let modal = new CentaModal({
-            titleText:'<h1>Link destination</h1>',
-            contentHtml: '<label>Enter URL:</label><input type="text" name="url" />',
-            inputNames: ['url']
-        }
-        ,thing);
-    modal.render();
 });

@@ -30261,9 +30261,13 @@ module.exports = function(module) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js"); //App-specific scripts
 
-__webpack_require__(/*! ./script */ "./resources/js/script.js");
+
+__webpack_require__(/*! ./components/user */ "./resources/js/components/user.js");
+
+__webpack_require__(/*! ./components/users */ "./resources/js/components/users.js"); //Centa scripts
+
 
 __webpack_require__(/*! ./centa/centa */ "./resources/js/centa/centa.js");
 
@@ -32719,22 +32723,45 @@ var logVitals = function logVitals(func) {
 
 /***/ }),
 
-/***/ "./resources/js/script.js":
-/*!********************************!*\
-  !*** ./resources/js/script.js ***!
-  \********************************/
+/***/ "./resources/js/components/user.js":
+/*!*****************************************!*\
+  !*** ./resources/js/components/user.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Script for user create/edit page
+ */
+var passwordInputDiv = $('#passwordInputDiv');
+var passwordResetButton = passwordInputDiv.find('button');
+var passwordTemplateDiv = $('#passwordTemplateDiv'); //Handlers
+
+passwordResetButton.on('click', function (e) {
+  e.preventDefault();
+  showPasswordResetInputs();
+});
+
+var showPasswordResetInputs = function showPasswordResetInputs() {
+  passwordInputDiv.removeClass('align-center').html(passwordTemplateDiv.html());
+};
+
+/***/ }),
+
+/***/ "./resources/js/components/users.js":
+/*!******************************************!*\
+  !*** ./resources/js/components/users.js ***!
+  \******************************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./centa/components/modal.js */ "./resources/js/centa/components/modal.js");
-/* harmony import */ var _centa_components_text_editor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./centa/components/text-editor */ "./resources/js/centa/components/text-editor.js");
+/* harmony import */ var _centa_components_modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../centa/components/modal */ "./resources/js/centa/components/modal.js");
 /**
- * App-specific JS goes here
+ * Script for users index page
  */
 //Imports
-
  //User suspension
 
 var suspendUser = function suspendUser(form, suspendedDays, suspendedMessage) {
@@ -32752,7 +32779,7 @@ $('.suspendUser').each(function (index, el) {
   var modalContent = "<p>Suspend user <span class=\"username\">".concat(userName, "</span> (ID: <span class=\"userId\">").concat(userId, "</span>) for:</p>\n<p><input type=\"number\" name=\"suspendedDays\" class=\"short-field\" step=\"1\" min=\"0\" value=\"1\"></p>\n<p>days.</p>\n<p>Suspension message for user:</p>\n<input type=\"hidden\" name=\"suspendedMessage\" class=\"text-editor\">");
   button.on('click', function (e) {
     e.preventDefault();
-    var modal = new _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["CentaModal"]({
+    var modal = new _centa_components_modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"]({
       titleText: 'Suspend this user?',
       contentHtml: modalContent,
       params: [form],
@@ -32777,7 +32804,7 @@ $('.deleteUser').each(function (index, el) {
   var modalContent = "<p>Do you really want to delete user <span class=\"username\">".concat(userName, "</span> (ID: <span class=\"userId\">").concat(userId, "</span>)?</p>");
   button.on('click', function (e) {
     e.preventDefault();
-    var modal = new _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["CentaModal"]({
+    var modal = new _centa_components_modal__WEBPACK_IMPORTED_MODULE_0__["CentaModal"]({
       titleText: 'Delete this user?',
       contentHtml: modalContent,
       params: [form],
@@ -32787,19 +32814,6 @@ $('.deleteUser').each(function (index, el) {
     }, deleteUser);
     modal.render();
   });
-}); //Test button on /test
-
-var thing = function thing(url) {
-  return alert('I got: ' + url);
-};
-
-$('#testButton').on('click', function () {
-  var modal = new _centa_components_modal_js__WEBPACK_IMPORTED_MODULE_0__["CentaModal"]({
-    titleText: '<h1>Link destination</h1>',
-    contentHtml: '<label>Enter URL:</label><input type="text" name="url" />',
-    inputNames: ['url']
-  }, thing);
-  modal.render();
 });
 
 /***/ }),

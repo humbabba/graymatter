@@ -14,6 +14,7 @@
 
         {{-- Begin form --}}
         <form class="centum input-spacing" action="{{ route('users.update',$user->id) }}" method="post">
+            @method('PATCH')
             @csrf
             <div class="cell x-max700 p0">
                 <div class="centum">
@@ -29,12 +30,12 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="cell x50">
-                        <label>Password</label>
-                        <input type="password" />
-                        <label>Confirm password</label>
-                        <input type="password" />
-                        @include('partials.password_rules')
+                    <div class="cell x50 align-center" id="passwordInputDiv">
+                        <span class="center-v">
+                            <button class="btn secondary">
+                                Reset password
+                            </button>
+                        </span>
                     </div>
                     <div class="cell pv0">
                         <label>Bio</label>
@@ -47,9 +48,16 @@
                 </div>
             </div>
             <div class="cell">
-                <input type="submit" class="btn" value="Create" />
+                <input type="submit" class="btn" value="Update" />
             </div>
         </form>
+        <div id="passwordTemplateDiv" style="display:none">
+            <label>Password</label>
+            <input type="password" required />
+            <label>Confirm password</label>
+            <input type="password" required />
+            @include('partials.password_rules')
+        </div>
         {{-- End form --}}
     </div>
 @endsection

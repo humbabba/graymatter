@@ -31,9 +31,9 @@
                     </div>
                     <div class="cell x50">
                         <label>Password</label>
-                        <input type="password" name="password"/>
+                        <input type="password" name="password" required/>
                         <label>Confirm password</label>
-                        <input type="password" name="password_confirmation" />
+                        <input type="password" name="password_confirmation" required />
                         @include('partials.password_rules')
                     </div>
                     <div class="cell pv0">
