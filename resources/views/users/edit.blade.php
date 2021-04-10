@@ -8,10 +8,6 @@
             <h1>@yield('view_title')</h1>
         </div>
 
-        {{-- Begin messages --}}
-        @include('partials.messages')
-        {{-- End messages --}}
-
         {{-- Begin form --}}
         <form class="centum input-spacing" action="{{ route('users.update',$user->id) }}" method="post">
             @method('PATCH')
@@ -26,7 +22,7 @@
                         <label>Role</label>
                         <select name="role" name="role">
                             @foreach($roles as $index => $value)
-                                <option value="{{ $index }}"{{ (old('role','user') === $index)? ' selected':'' }}>{{ $value }}</option>
+                                <option value="{{ $index }}"{{ ($user->role === $index)? ' selected':'' }}>{{ $value }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -36,14 +32,17 @@
                                 Reset password
                             </button>
                         </span>
+                        <div id="passwordTemplateDiv" style="display:none">
+                            <label>Password</label>
+                            <input type="password" name="password" />
+                            <label>Confirm password</label>
+                            <input type="password" name="confirmPassowrd" />
+                            @include('partials.password_rules')
+                        </div>
                     </div>
                     <div class="cell pv0">
                         <label>Bio</label>
-                        <input type="hidden" name="bio" class="text-editor" value="" />
-                    </div>
-                    <div class="cell pv10">
-                        <label>Lies</label>
-                        <input type="hidden" name="lies" class="text-editor" value="" />
+                        <input type="hidden" name="bio" class="text-editor" value="{{ $user->bio }}" />
                     </div>
                 </div>
             </div>
@@ -51,13 +50,6 @@
                 <input type="submit" class="btn" value="Update" />
             </div>
         </form>
-        <div id="passwordTemplateDiv" style="display:none">
-            <label>Password</label>
-            <input type="password" required />
-            <label>Confirm password</label>
-            <input type="password" required />
-            @include('partials.password_rules')
-        </div>
         {{-- End form --}}
     </div>
 @endsection

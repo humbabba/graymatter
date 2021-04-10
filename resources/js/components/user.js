@@ -13,5 +13,6 @@ passwordResetButton.on('click',(e) => {
 });
 
 const showPasswordResetInputs = () => {
-    passwordInputDiv.removeClass('align-center').html(passwordTemplateDiv.html());
+    passwordInputDiv.removeClass('align-center').find('span').remove();
+    passwordTemplateDiv.fadeIn();
 };

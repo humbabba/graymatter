@@ -8,10 +8,6 @@
             <h1>@yield('view_title')</h1>
         </div>
 
-        {{-- Begin messages --}}
-        @include('partials.messages')
-        {{-- End messages --}}
-
         {{-- Begin content --}}
         <div class="cell x-max700 p0">
             <div class="centum">

@@ -21,6 +21,10 @@
         </nav>
 
         <main>
+          {{-- Begin messages --}}
+          @include('partials.messages')
+          {{-- End messages --}}
+
           @yield('content')
         </main>
 

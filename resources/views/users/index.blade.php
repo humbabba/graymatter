@@ -8,10 +8,6 @@
       <h1>@yield('view_title')</h1>
     </div>
 
-    {{-- Begin messages --}}
-    @include('partials.messages')
-    {{-- End messages --}}
-
     {{-- Begin search filters --}}
     <div class="cell p0">
       <form action="" method="get">

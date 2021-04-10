@@ -8,10 +8,6 @@
             <h1>@yield('view_title')</h1>
         </div>
 
-        {{-- Begin messages --}}
-        @include('partials.messages')
-        {{-- End messages --}}
-
         {{-- Begin form --}}
         <form class="centum input-spacing" action="{{ route('users.store') }}" method="post">
             @csrf
