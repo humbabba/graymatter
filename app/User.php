@@ -17,7 +17,16 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role','bio','last_login', 'suspended_till'
+        'name',
+        'email',
+        'password',
+        'role',
+        'gender',
+        'image',
+        'bio',
+        'last_login',
+        'suspended_till',
+        'suspended_message'
     ];
 
     /**
@@ -75,12 +84,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isSuspended()
     {
       $date = date('Y-m-d H:i:s');
-      return $this->suspended_till > $date;
+      return $this->getAttribute('suspended_till') > $date;
     }
 
     public function nullSuspended()
     {
-      $this->suspended_till = null;
+      $this->setAttribute('suspended_till',null);
       $this->save();
     }
 }
