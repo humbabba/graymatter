@@ -6,12 +6,14 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Http\Roles\UserRoles;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use App\Http\Requests\UserStoreRequest;
 
 class UserController extends Controller
 {
@@ -38,8 +40,7 @@ class UserController extends Controller
         //Check if user creation is allowed
         abort_if(!config('users.new.create'),404);
 
-        $roles = UserRoles::getRoleList();
-        return view('users.create',compact('roles'));
+        return view('users.create')->with('roles',UserRoles::getRoleList());
     }
 
     /**
@@ -48,28 +49,16 @@ class UserController extends Controller
      * @param Request $request
      * @return void
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'email'=>'required|email|unique:users,email,',
-            'password' => 'required|confirmed|regex:/^(?=\P{Ll}*\p{Ll})(?=\P{Lu}*\p{Lu})(?=\P{N}*\p{N})(?=[\p{L}\p{N}]*[^\p{L}\p{N}])[\s\S]{8,}$/',
-        ]);
-
-        $user = new User([
-            'name' => $request->get('name'),
-            'email' => $request->get('email'),
-            'password' => Hash::make($request->get('password')),
-            'role' => $request->get('role'),
-            'bio' => $request->get('bio'),
-        ]);
-
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+        $user = new User($data);
         $user->save();
-
+        $user->writeNewUserLogger();
         event(new Registered($user));
 
-        return redirect(route('users.edit',$user->id));
-
+        return redirect(route('users.edit', $user->id))->with('success', "User '{$user->name}' created. A verification email was sent to '{$user->email}.'");
     }
 
     /**

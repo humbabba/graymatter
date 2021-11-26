@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.narrow')
 
 @section('view_title','Edit user ' . $user->name)
 
-@section('content')
-    <div class="centum ph10">
-        <div class="cell x60 pv0">
+@section('content.narrow')
+    <div class="centum">
+        <div class="cell">
             <h1>@yield('view_title')</h1>
         </div>
 

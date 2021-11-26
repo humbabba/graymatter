@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Http\Roles\UserRoles;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -166,5 +167,35 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return $output;
+    }
+
+    /**
+     * Writes a logger for a new user being created.
+     */
+    public function writeNewUserLogger()
+    {
+        $name = $this->name;
+        $email = $this->email;
+        $id = $this->id;
+        $profileLink = route('users.profile',$id);
+        $role = $this->getRole();
+
+        $actingUser = Auth::user();
+
+        $loggerNotes = "New user: '<a href='$profileLink'>$name</a>' ($role, <a href='mailto:$email' target='_blank'>$email</a>).";
+
+        $logger = new Logger(
+            [
+                'username' => $actingUser->name,
+                'user_id' => $actingUser->id,
+                'model' => 'User',
+                'model_id' => $id,
+                'model_link' => $profileLink,
+                'action' => 'Create',
+                'notes' => $loggerNotes
+            ]
+        );
+
+        $logger->save();
     }
 }

@@ -1,15 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.narrow')
 
 @section('view_title','Create user')
 
-@section('content')
-    <div class="centum ph10">
-        <div class="cell x60 pv0">
+@section('content.narrow')
+    <div class="centum">
+        <div class="cell">
             <h1>@yield('view_title')</h1>
         </div>
 
         {{-- Begin form --}}
-        <form class="centum input-spacing" action="{{ route('users.store') }}" method="post">
+        <form class="input-spacing" action="{{ route('users.store') }}" method="post">
             @csrf
             <div class="cell x-max700 p0">
                 <div class="centum">
@@ -32,13 +32,9 @@
                         <input type="password" name="password_confirmation" required />
                         @include('partials.password_rules')
                     </div>
-                    <div class="cell pv0">
+                    <div class="cell pt0">
                         <label>Bio</label>
                         <input type="hidden" name="bio" class="text-editor" value="" />
-                    </div>
-                    <div class="cell pv10">
-                        <label>Lies</label>
-                        <input type="hidden" name="lies" class="text-editor" value="" />
                     </div>
                 </div>
             </div>

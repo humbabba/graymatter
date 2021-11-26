@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.narrow')
 
-@section('content')
+@section('content.narrow')
   <div class="centum">
-     <div class="cell x30 center-h">
+     <div class="cell x-max700 center-h">
         <h1 class="pv15">{{ __('Verify your email address') }}</h1>
         @if (session('resent'))
           <div class="alert success" style="display: none">

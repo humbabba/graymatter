@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.narrow')
 
-@section('content')
+@section('content.narrow')
   <div class="centum bold giant">
       <div class="cell align-center">
           Hi
