@@ -1,128 +1,625 @@
 //Centa and cells
 .centum {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  width: 100%;
-  & > .cell {
-    &:last-child {
-      padding-bottom: $padding-base;
-    }
-  }
-  .cell {
-    display: block;
-    padding: $padding-base $padding-base 0 $padding-base;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     width: 100%;
-    word-wrap: normal;
-    @media only screen and (min-width: $break) {
-      padding-bottom: $padding-base;
-    }
-  }
-  .x95 {
-    @media only screen and (min-width: $break) {
-      max-width: 95%;
-    }
-  }
-  .x90 {
-    @media only screen and (min-width: $break) {
-      max-width: 90%;
-    }
-  }
-  .x85 {
-    @media only screen and (min-width: $break) {
-      max-width: 85%;
-    }
-  }
-  .x80 {
-    @media only screen and (min-width: $break) {
-      max-width: 80%;
-    }
-  }
-  .x75 {
-    @media only screen and (min-width: $break) {
-      max-width: 75%;
-    }
-  }
-  .x70 {
-    @media only screen and (min-width: $break) {
-      max-width: 70%;
-    }
-  }
-  .x65 {
-    @media only screen and (min-width: $break) {
-      max-width: 65%;
-    }
-  }
-  .x60 {
-    @media only screen and (min-width: $break) {
-      max-width: 60%;
-    }
-  }
-  .x55 {
-    @media only screen and (min-width: $break) {
-      max-width: 55%;
-    }
-  }
-  .x50 {
-    @media only screen and (min-width: $break) {
-      max-width: 50%;
-    }
-  }
-  .x45 {
-    @media only screen and (min-width: $break) {
-      max-width: 45%;
-    }
-  }
-  .x40 {
-    @media only screen and (min-width: $break) {
-      max-width: 40%;
-    }
-  }
-  .x35 {
-    @media only screen and (min-width: $break) {
-      max-width: 35%;
-    }
-  }
-  .x33 {
-    @media only screen and (min-width: $break) {
-      max-width: 33.33%;
-    }
-  }
-  .x30 {
-    @media only screen and (min-width: $break) {
-      max-width: 30%;
-    }
-  }
-  .x25 {
-    @media only screen and (min-width: $break) {
-      max-width: 25%;
-    }
-  }
-  .x20 {
-    @media only screen and (min-width: $break) {
-      max-width: 20%;
-    }
-  }
-  .x15 {
-    @media only screen and (min-width: $break) {
-      max-width: 15%;
-    }
-  }
-  .x10 {
-    @media only screen and (min-width: $break) {
-      max-width: 10%;
-    }
-  }
-  .x5 {
-    @media only screen and (min-width: $break) {
-      max-width: 5%;
-    }
-  }
 
-  [class*="shift+"] {
-    unicode-bidi: normal;
-    @media only screen and (min-width: $break) {
-      unicode-bidi: isolate;
+    & > .cell {
+        &:last-child {
+            padding-bottom: $padding-base;
+        }
     }
-  }
+
+    .cell {
+        display: block;
+        overflow: hidden;
+        padding: $padding-base $padding-base 0 $padding-base;
+        width: 100%;
+        word-wrap: normal;
+        @media only screen and (min-width: $break) {
+            padding-bottom: $padding-base;
+        }
+    }
+
+    .x99 {
+        @media only screen and (min-width: $break) {
+            max-width: 99%;
+        }
+    }
+
+    .x98 {
+        @media only screen and (min-width: $break) {
+            max-width: 98%;
+        }
+    }
+
+    .x97 {
+        @media only screen and (min-width: $break) {
+            max-width: 97%;
+        }
+    }
+
+    .x96 {
+        @media only screen and (min-width: $break) {
+            max-width: 96%;
+        }
+    }
+
+    .x95 {
+        @media only screen and (min-width: $break) {
+            max-width: 95%;
+        }
+    }
+
+    .x94 {
+        @media only screen and (min-width: $break) {
+            max-width: 94%;
+        }
+    }
+
+    .x93 {
+        @media only screen and (min-width: $break) {
+            max-width: 93%;
+        }
+    }
+
+    .x92 {
+        @media only screen and (min-width: $break) {
+            max-width: 92%;
+        }
+    }
+
+    .x91 {
+        @media only screen and (min-width: $break) {
+            max-width: 91%;
+        }
+    }
+
+    .x90 {
+        @media only screen and (min-width: $break) {
+            max-width: 90%;
+        }
+    }
+
+    .x89 {
+        @media only screen and (min-width: $break) {
+            max-width: 89%;
+        }
+    }
+
+    .x88 {
+        @media only screen and (min-width: $break) {
+            max-width: 88%;
+        }
+    }
+
+    .x87 {
+        @media only screen and (min-width: $break) {
+            max-width: 87%;
+        }
+    }
+
+    .x86 {
+        @media only screen and (min-width: $break) {
+            max-width: 86%;
+        }
+    }
+
+    .x85 {
+        @media only screen and (min-width: $break) {
+            max-width: 85%;
+        }
+    }
+
+    .x84 {
+        @media only screen and (min-width: $break) {
+            max-width: 84%;
+        }
+    }
+
+    .x83 {
+        @media only screen and (min-width: $break) {
+            max-width: 83%;
+        }
+    }
+
+    .x82 {
+        @media only screen and (min-width: $break) {
+            max-width: 82%;
+        }
+    }
+
+    .x81 {
+        @media only screen and (min-width: $break) {
+            max-width: 81%;
+        }
+    }
+
+    .x80 {
+        @media only screen and (min-width: $break) {
+            max-width: 80%;
+        }
+    }
+
+    .x79 {
+        @media only screen and (min-width: $break) {
+            max-width: 79%;
+        }
+    }
+
+    .x78 {
+        @media only screen and (min-width: $break) {
+            max-width: 78%;
+        }
+    }
+
+    .x77 {
+        @media only screen and (min-width: $break) {
+            max-width: 77%;
+        }
+    }
+
+    .x76 {
+        @media only screen and (min-width: $break) {
+            max-width: 76%;
+        }
+    }
+
+    .x75 {
+        @media only screen and (min-width: $break) {
+            max-width: 75%;
+        }
+    }
+
+    .x74 {
+        @media only screen and (min-width: $break) {
+            max-width: 74%;
+        }
+    }
+
+    .x73 {
+        @media only screen and (min-width: $break) {
+            max-width: 73%;
+        }
+    }
+
+    .x72 {
+        @media only screen and (min-width: $break) {
+            max-width: 72%;
+        }
+    }
+
+    .x71 {
+        @media only screen and (min-width: $break) {
+            max-width: 71%;
+        }
+    }
+
+    .x70 {
+        @media only screen and (min-width: $break) {
+            max-width: 70%;
+        }
+    }
+
+    .x69 {
+        @media only screen and (min-width: $break) {
+            max-width: 69%;
+        }
+    }
+
+    .x68 {
+        @media only screen and (min-width: $break) {
+            max-width: 68%;
+        }
+    }
+
+    .x67 {
+        @media only screen and (min-width: $break) {
+            max-width: 67%;
+        }
+    }
+
+    .x66 {
+        @media only screen and (min-width: $break) {
+            max-width: 66%;
+        }
+    }
+
+    .x65 {
+        @media only screen and (min-width: $break) {
+            max-width: 65%;
+        }
+    }
+
+    .x64 {
+        @media only screen and (min-width: $break) {
+            max-width: 64%;
+        }
+    }
+
+    .x63 {
+        @media only screen and (min-width: $break) {
+            max-width: 63%;
+        }
+    }
+
+    .x62 {
+        @media only screen and (min-width: $break) {
+            max-width: 62%;
+        }
+    }
+
+    .x61 {
+        @media only screen and (min-width: $break) {
+            max-width: 61%;
+        }
+    }
+
+    .x60 {
+        @media only screen and (min-width: $break) {
+            max-width: 60%;
+        }
+    }
+
+    .x59 {
+        @media only screen and (min-width: $break) {
+            max-width: 59%;
+        }
+    }
+
+    .x58 {
+        @media only screen and (min-width: $break) {
+            max-width: 58%;
+        }
+    }
+
+    .x57 {
+        @media only screen and (min-width: $break) {
+            max-width: 57%;
+        }
+    }
+
+    .x56 {
+        @media only screen and (min-width: $break) {
+            max-width: 56%;
+        }
+    }
+
+    .x55 {
+        @media only screen and (min-width: $break) {
+            max-width: 55%;
+        }
+    }
+
+    .x54 {
+        @media only screen and (min-width: $break) {
+            max-width: 54%;
+        }
+    }
+
+    .x53 {
+        @media only screen and (min-width: $break) {
+            max-width: 53%;
+        }
+    }
+
+    .x52 {
+        @media only screen and (min-width: $break) {
+            max-width: 52%;
+        }
+    }
+
+    .x51 {
+        @media only screen and (min-width: $break) {
+            max-width: 51%;
+        }
+    }
+
+    .x50 {
+        @media only screen and (min-width: $break) {
+            max-width: 50%;
+        }
+    }
+
+    .x49 {
+        @media only screen and (min-width: $break) {
+            max-width: 49%;
+        }
+    }
+
+    .x48 {
+        @media only screen and (min-width: $break) {
+            max-width: 48%;
+        }
+    }
+
+    .x47 {
+        @media only screen and (min-width: $break) {
+            max-width: 47%;
+        }
+    }
+
+    .x46 {
+        @media only screen and (min-width: $break) {
+            max-width: 46%;
+        }
+    }
+
+    .x45 {
+        @media only screen and (min-width: $break) {
+            max-width: 45%;
+        }
+    }
+
+    .x44 {
+        @media only screen and (min-width: $break) {
+            max-width: 44%;
+        }
+    }
+
+    .x43 {
+        @media only screen and (min-width: $break) {
+            max-width: 43%;
+        }
+    }
+
+    .x42 {
+        @media only screen and (min-width: $break) {
+            max-width: 42%;
+        }
+    }
+
+    .x41 {
+        @media only screen and (min-width: $break) {
+            max-width: 41%;
+        }
+    }
+
+    .x40 {
+        @media only screen and (min-width: $break) {
+            max-width: 40%;
+        }
+    }
+
+    .x39 {
+        @media only screen and (min-width: $break) {
+            max-width: 39%;
+        }
+    }
+
+    .x38 {
+        @media only screen and (min-width: $break) {
+            max-width: 38%;
+        }
+    }
+
+    .x37 {
+        @media only screen and (min-width: $break) {
+            max-width: 37%;
+        }
+    }
+
+    .x36 {
+        @media only screen and (min-width: $break) {
+            max-width: 36%;
+        }
+    }
+
+    .x35 {
+        @media only screen and (min-width: $break) {
+            max-width: 35%;
+        }
+    }
+
+    .x34 {
+        @media only screen and (min-width: $break) {
+            max-width: 34%;
+        }
+    }
+
+    .x33 {
+        @media only screen and (min-width: $break) {
+            max-width: 33%;
+        }
+    }
+
+    .x32 {
+        @media only screen and (min-width: $break) {
+            max-width: 32%;
+        }
+    }
+
+    .x31 {
+        @media only screen and (min-width: $break) {
+            max-width: 31%;
+        }
+    }
+
+    .x30 {
+        @media only screen and (min-width: $break) {
+            max-width: 30%;
+        }
+    }
+
+    .x29 {
+        @media only screen and (min-width: $break) {
+            max-width: 29%;
+        }
+    }
+
+    .x28 {
+        @media only screen and (min-width: $break) {
+            max-width: 28%;
+        }
+    }
+
+    .x27 {
+        @media only screen and (min-width: $break) {
+            max-width: 27%;
+        }
+    }
+
+    .x26 {
+        @media only screen and (min-width: $break) {
+            max-width: 26%;
+        }
+    }
+
+    .x25 {
+        @media only screen and (min-width: $break) {
+            max-width: 25%;
+        }
+    }
+
+    .x24 {
+        @media only screen and (min-width: $break) {
+            max-width: 24%;
+        }
+    }
+
+    .x23 {
+        @media only screen and (min-width: $break) {
+            max-width: 23%;
+        }
+    }
+
+    .x22 {
+        @media only screen and (min-width: $break) {
+            max-width: 22%;
+        }
+    }
+
+    .x21 {
+        @media only screen and (min-width: $break) {
+            max-width: 21%;
+        }
+    }
+
+    .x20 {
+        @media only screen and (min-width: $break) {
+            max-width: 20%;
+        }
+    }
+
+    .x19 {
+        @media only screen and (min-width: $break) {
+            max-width: 19%;
+        }
+    }
+
+    .x18 {
+        @media only screen and (min-width: $break) {
+            max-width: 18%;
+        }
+    }
+
+    .x17 {
+        @media only screen and (min-width: $break) {
+            max-width: 17%;
+        }
+    }
+
+    .x16 {
+        @media only screen and (min-width: $break) {
+            max-width: 16%;
+        }
+    }
+
+    .x15 {
+        @media only screen and (min-width: $break) {
+            max-width: 15%;
+        }
+    }
+
+    .x14 {
+        @media only screen and (min-width: $break) {
+            max-width: 14%;
+        }
+    }
+
+    .x13 {
+        @media only screen and (min-width: $break) {
+            max-width: 13%;
+        }
+    }
+
+    .x12 {
+        @media only screen and (min-width: $break) {
+            max-width: 12%;
+        }
+    }
+
+    .x11 {
+        @media only screen and (min-width: $break) {
+            max-width: 11%;
+        }
+    }
+
+    .x10 {
+        @media only screen and (min-width: $break) {
+            max-width: 10%;
+        }
+    }
+
+    .x9 {
+        @media only screen and (min-width: $break) {
+            max-width: 9%;
+        }
+    }
+
+    .x8 {
+        @media only screen and (min-width: $break) {
+            max-width: 8%;
+        }
+    }
+
+    .x7 {
+        @media only screen and (min-width: $break) {
+            max-width: 7%;
+        }
+    }
+
+    .x6 {
+        @media only screen and (min-width: $break) {
+            max-width: 6%;
+        }
+    }
+
+    .x5 {
+        @media only screen and (min-width: $break) {
+            max-width: 5%;
+        }
+    }
+
+    .x4 {
+        @media only screen and (min-width: $break) {
+            max-width: 4%;
+        }
+    }
+
+    .x3 {
+        @media only screen and (min-width: $break) {
+            max-width: 3%;
+        }
+    }
+
+    .x2 {
+        @media only screen and (min-width: $break) {
+            max-width: 2%;
+        }
+    }
+
+    .x1 {
+        @media only screen and (min-width: $break) {
+            max-width: 1%;
+        }
+    }
+
+    [class*="shift+"] {
+        unicode-bidi: normal;
+        @media only screen and (min-width: $break) {
+            unicode-bidi: isolate;
+        }
+    }
 }

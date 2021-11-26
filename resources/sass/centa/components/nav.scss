@@ -17,6 +17,7 @@ nav {
     a {
       color: $fc-light;
       text-decoration: none;
+        transition-duration: $transition;
       &:hover {
         color: $fc-light;
       }

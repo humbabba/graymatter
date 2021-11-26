@@ -1,43 +1,53 @@
 .btn {
-  background-color: $primary;
-  border: 1px solid $secondary;
-  border-radius: $border-radius-base;
-  color: $fc-light;
-  cursor: pointer;
-  display: inline-block;
-  font-family: $ff-base;
-  font-size: $fs-button;
-  font-weight: 900;
-  height: $lh-base;
-  // margin: 0 0 $margin-tiny 0;
-  padding: 0 $padding-base;
-  text-decoration: none;
-  text-transform: uppercase;
-  &:hover {
-    background-color: $secondary;
-    color: $fc-base;
-  }
-  &.secondary {
-    border: 1px solid $blue;
-    background-color: $blue;
-    &:hover {
-      color: $fc-base;
-      background-color: $blue-light;
+    background-color: $primary;
+    border: 1px solid $secondary;
+    border-radius: $border-radius-base;
+    color: $fc-light;
+    cursor: pointer;
+    display: inline-block;
+    font-family: $ff-base;
+    font-size: $fs-button;
+    font-weight: 900;
+    height: $lh-base;
+    margin-right: $margin-small;
+    padding: 0 $padding-base;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition-duration: $transition;
+
+    &:last-child {
+        margin-right: 0;
     }
-  }
-  &.danger {
-    border: 1px solid $red;
-    background-color: $red;
+
     &:hover {
-      color: $fc-base;
-      background-color: $red-light;
+        background-color: $secondary;
+        color: $fc-base;
     }
-  }
+
+    &.secondary {
+        border: 1px solid $blue;
+        background-color: $blue;
+
+        &:hover {
+            color: $fc-base;
+            background-color: $blue-light;
+        }
+    }
+
+    &.danger {
+        border: 1px solid $red;
+        background-color: $red;
+
+        &:hover {
+            color: $fc-base;
+            background-color: $red-light;
+        }
+    }
 }
 
 .btn-wrap { //This class goes on a container for multiple buttons
-  margin-bottom: -$margin-small; //This allows buttons to have a gap when they wrap
-  &>.btn {
-    margin-bottom: $margin-small;
-  }
+    margin-bottom: -$margin-small; //This allows buttons to have a gap when they wrap
+    & > .btn {
+        margin-bottom: $margin-small;
+    }
 }

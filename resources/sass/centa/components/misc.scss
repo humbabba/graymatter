@@ -4,3 +4,15 @@
 .inline {
   display: inline;
 }
+.hide-d {
+    display: inherit !important;
+    @media only screen and (min-width: $break) {
+        display: none !important;
+    }
+}
+.hide-m {
+    display: none !important;
+    @media only screen and (min-width: $break) {
+        display: inherit !important;
+    }
+}
