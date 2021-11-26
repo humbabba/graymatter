@@ -714,8 +714,8 @@
 }
 
 .btn {
-  background-color: #976435;
-  border: 1px solid #B87333;
+  background-color: #595959;
+  border: 1px solid #999999;
   border-radius: 5px;
   color: #e6e6e6;
   cursor: pointer;
@@ -736,7 +736,7 @@
 }
 
 .btn:hover {
-  background-color: #B87333;
+  background-color: #999999;
   color: #595959;
 }
 
@@ -1841,7 +1841,7 @@ h1.pl20 {
 /*Borders*/
 
 .border-basic {
-  border: 1px solid #B87333;
+  border: 1px solid #999999;
 }
 
 /*Positioning*/
@@ -1925,7 +1925,7 @@ main {
 }
 
 footer {
-  background-color: #976435;
+  background-color: #595959;
   color: #e6e6e6;
   font-size: 0.8rem;
   height: 30px;
@@ -1994,7 +1994,7 @@ form input[type=text],
 .cell input[type=search],
 .cell input[type=date],
 .cell input[type=text] {
-  border: 1px solid #976435;
+  border: 1px solid #595959;
   border-radius: 5px;
   font-size: 0.83rem;
   line-height: 1rem;
@@ -2033,7 +2033,7 @@ form input[type=checkbox],
 form select,
 .modal-content select,
 .cell select {
-  border: 1px solid #B87333;
+  border: 1px solid #999999;
   border-radius: 5px;
   height: 1.6rem;
   max-height: 1.8rem;
@@ -2050,7 +2050,7 @@ form select.is-invalid,
 form textarea,
 .modal-content textarea,
 .cell textarea {
-  border: 1px solid #B87333;
+  border: 1px solid #999999;
   border-radius: 5px;
   height: 100px;
   padding: 10px;
@@ -2081,13 +2081,13 @@ form textarea.is-invalid,
 }
 
 a {
-  color: #976435;
+  color: #595959;
   display: inline;
   text-decoration: underline;
 }
 
 a:hover {
-  color: #B87333;
+  color: #999999;
   text-decoration: none;
 }
 
@@ -2119,7 +2119,7 @@ a:hover {
 }
 
 .modal-background .modal-container .modal-title {
-  background-color: #976435;
+  background-color: #595959;
   color: #e6e6e6;
   padding: 10px;
 }
@@ -2139,7 +2139,7 @@ nav {
 }
 
 nav.main {
-  background-color: #976435;
+  background-color: #595959;
   color: #e6e6e6;
   display: flex;
   flex-direction: row;
@@ -2209,7 +2209,7 @@ nav.main .nav-links-container.nav-mobile-show {
 }
 
 nav.main .nav-links-container .nav-links {
-  background-color: #976435;
+  background-color: #595959;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -2257,7 +2257,7 @@ nav.main .nav-links-container .nav-links ul li a {
 }
 
 nav.main .nav-links-container .nav-links ul li a:hover {
-  background-color: #B87333;
+  background-color: #999999;
 }
 
 nav.main .nav-links-container .nav-links ul .nav-links-dropdown {
@@ -2266,7 +2266,7 @@ nav.main .nav-links-container .nav-links ul .nav-links-dropdown {
 }
 
 nav.main .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu {
-  background-color: #B87333;
+  background-color: #999999;
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -2283,11 +2283,11 @@ nav.main .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropd
 }
 
 nav.main .nav-links-container .nav-links ul .nav-links-dropdown .nav-links-dropdown-submenu li a:hover {
-  background-color: #976435;
+  background-color: #595959;
 }
 
 nav.main .nav-links-container .nav-links ul .nav-links-dropdown.nav-links-dropdown-open a:hover {
-  background-color: #976435;
+  background-color: #595959;
 }
 
 nav.main .nav-links-container .nav-links ul .nav-links-dropdown ul.nav-links-dropdown-submenu {
@@ -2314,7 +2314,7 @@ nav ul.pagination {
 }
 
 nav ul.pagination li.page-item {
-  background-color: #976435;
+  background-color: #595959;
   border-radius: 5px;
   color: #e6e6e6;
   display: flex;
@@ -2327,23 +2327,23 @@ nav ul.pagination li.page-item {
 }
 
 nav ul.pagination li.page-item:hover {
-  background-color: #B87333;
+  background-color: #999999;
 }
 
 nav ul.pagination li.page-item:hover a {
-  color: #976435;
+  color: #595959;
 }
 
 nav ul.pagination li.page-item.active {
   background-color: #fff;
-  border: 1px solid #976435;
+  border: 1px solid #595959;
   color: #595959;
   padding: 0 10px;
   cursor: not-allowed;
 }
 
 nav ul.pagination li.page-item.disabled {
-  background-color: #B87333;
+  background-color: #999999;
   color: #595959;
   padding: 0 10px;
   cursor: not-allowed;
@@ -2356,7 +2356,7 @@ nav ul.pagination li.page-item a.page-link {
 }
 
 nav ul.pagination li.page-item a.page-link:hover {
-  color: #976435;
+  color: #595959;
 }
 
 .short-field {
@@ -2397,8 +2397,8 @@ nav ul.pagination li.page-item a.page-link:hover {
 
 .centa-pagination ul.pagination li a,
 .centa-pagination ul.pagination li span {
-  background-color: #976435;
-  border: 1px solid #B87333;
+  background-color: #595959;
+  border: 1px solid #999999;
   border-radius: 5px;
   color: #e6e6e6;
   cursor: pointer;
@@ -2415,7 +2415,7 @@ nav ul.pagination li.page-item a.page-link:hover {
 }
 
 .centa-pagination ul.pagination li a:hover {
-  background-color: #B87333;
+  background-color: #999999;
   color: #595959;
 }
 
@@ -2441,7 +2441,7 @@ nav ul.pagination li.page-item a.page-link:hover {
 }
 
 .sorters i:hover {
-  color: #B87333;
+  color: #999999;
 }
 
 .centum.header-d,
@@ -2532,8 +2532,8 @@ span.striped-odd:nth-child(odd) {
 .more-tools-container .toolbar-button,
 .more-tools-holder .toolbar-button,
 .toolbar .toolbar-button {
-  background-color: #976435;
-  border: 1px solid #976435;
+  background-color: #595959;
+  border: 1px solid #595959;
   border-radius: 5px;
   color: #e6e6e6;
   cursor: pointer;
@@ -2545,7 +2545,7 @@ span.striped-odd:nth-child(odd) {
 .more-tools-container .toolbar-button.active,
 .more-tools-holder .toolbar-button.active,
 .toolbar .toolbar-button.active {
-  background-color: #B87333;
+  background-color: #999999;
   color: #fff;
 }
 
@@ -2563,7 +2563,7 @@ span.striped-odd:nth-child(odd) {
 }
 
 .fancy-text-div {
-  border: 1px solid #B87333;
+  border: 1px solid #999999;
   border-radius: 5px;
   color: #000;
   font-size: 0.83rem;
