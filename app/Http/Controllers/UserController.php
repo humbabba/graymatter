@@ -2,176 +2,171 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
+use App\Http\Roles\UserRoles;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\User;
-use App\Http\Roles\UserRoles;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
-use App\Http\Requests\UserStoreRequest;
 
 class UserController extends Controller
 {
   /**
-   * Display a listing of the resource.
-   * @param Request $request
-   * @param array $msg
-   * @return Factory|View
-   */
+  * Display a listing of the resource.
+  * @param Request $request
+  * @param array $msg
+  * @return Factory|View
+  */
   public function index(Request $request)
   {
-      $output = User::getSearchedUsers($request);
+    $output = User::getSearchedUsers($request);
 
-      return view('users.index')->with('output', $output)->with('error', $output->error);
+    return view('users.index')->with('output', $output)->with('error', $output->error);
   }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Factory|View
-     */
-    public function create()
-    {
-        //Check if user creation is allowed
-        abort_if(!config('users.new.create'),404);
+  /**
+  * Show the form for creating a new resource.
+  *
+  * @return Factory|View
+  */
+  public function create()
+  {
+    //Check if user creation is allowed
+    abort_if(!config('users.new.create'),404);
 
-        return view('users.create')->with('roles',UserRoles::getRoleList());
+    return view('users.create')->with('roles',UserRoles::getRoleList());
+  }
+
+  /**
+  * Store a newly created resource in storage.
+  *
+  * @param Request $request
+  * @return void
+  */
+  public function store(UserStoreRequest $request)
+  {
+    $data = $request->validated();
+    $data['password'] = Hash::make($data['password']);
+    $user = new User($data);
+    $user->save();
+    $user->writeNewUserLogger();
+    event(new Registered($user));
+
+    return redirect(route('users.edit', $user->id))->with('success', "User '{$user->name}' created. A verification email was sent to '{$user->email}.'");
+  }
+
+  /**
+  * Display the specified resource.
+  *
+  * @param int $id
+  * @return Factory|RedirectResponse|Redirector|View
+  */
+  public function show($id)
+  {
+    $user = User::find($id);
+
+    if(is_null($user)) { //User not found
+      return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
+    }
+    return view('users.show')->with('user',$user);
+  }
+
+  /**
+  * Show the form for editing the specified resource.
+  *
+  * @param int $id
+  * @return Factory|\Illuminate\Contracts\View\View|RedirectResponse|Redirector
+  */
+  public function edit($id)
+  {
+    $user = User::find($id);
+
+    if (is_null($user)) { //User not found
+      return redirect()->route('users.index')->with('error', 'No user found with ID ' . $id);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function store(UserStoreRequest $request)
-    {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $user = new User($data);
-        $user->save();
-        $user->writeNewUserLogger();
-        event(new Registered($user));
+    return view('users.edit')->with('user',$user)->with('roles',UserRoles::getRoleList());
+  }
 
-        return redirect(route('users.edit', $user->id))->with('success', "User '{$user->name}' created. A verification email was sent to '{$user->email}.'");
+  /**
+  * Update the specified resource in storage.
+  *
+  * @param Request $request
+  * @param int $id
+  * @return Factory|\Illuminate\Contracts\View\View|RedirectResponse
+  */
+  public function update(UserUpdateRequest $request, $id)
+  {
+    $user = User::find($id);
+
+    if (is_null($user)) { //User not found
+      return redirect()->route('users.index')->with('error', 'No user found with ID ' . $id);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return Factory|RedirectResponse|Redirector|View
-     */
-    public function show($id)
-    {
-        $user = User::find($id);
+    $user->updateUserInfo($request, $id);
 
-        if(is_null($user)) { //User not found
-            return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
-        }
-        return view('users.show',compact('user'));
+    return redirect()->route('users.edit',$user->id)->with('success', 'User update successful.');
+  }
+
+  /**
+  * Remove the specified resource from storage.
+  *
+  * @param int $id
+  * @return RedirectResponse|Redirector
+  */
+  public function destroy($id)
+  {
+    $user = User::find($id);
+
+    if (is_null($user)) { //User not found
+      return redirect()->route('users.index')->with('error', 'No user found with ID ' . $id);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        $user = User::find($id);
+    $user->delete();
 
-        if(is_null($user)) { //User not found
-            return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
-        }
-        $roles = UserRoles::getRoleList();
-        return view('users.edit',compact('user','roles'));
+    return redirect()->route('users.index')->with('success', "Successfully deleted user '{$user->name}' (ID: $id).");
+  }
+
+  /**
+  * Update the specified resource in storage.
+  *
+  * @param Request $request
+  * @param  int  $id
+  * @param  int  $days
+  * @return Response
+  */
+  public function suspend(Request $request, $id)
+  {
+    $user = User::find($id);
+
+    if (is_null($user)) { //User not found
+      return redirect()->route('users.index')->with('error', 'No user found with ID ' . $id);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
-    {
-        $user = User::find($id);
+    $userName = $user->name;
 
-        if(is_null($user)) { //User not found
-            return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
-        }
-
-        $user->name = $request->get('name');
-        $user->email = $request->get('email');
-        $updatedPassword = $request->get('password');
-        if(!empty($updatedPassword)) {
-            $user->password =  Hash::make($updatedPassword);
-        }
-        $user->role = $request->get('role');
-        $user->bio = $request->get('bio');
-
-        $user->save();
-
-        $roles = UserRoles::getRoleList();
-
-        return redirect(route('users.edit',$user->id));
+    $days = $request->get('suspendedDays');
+    if(!is_numeric($days)) {
+      return redirect(route('users.index'))->with('error','No suspension duration input found.');
     }
+    $message = $request->get('suspendedMessage');
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return RedirectResponse|Redirector
-     */
-    public function destroy($id)
-    {
-        $user = User::find($id);
-        if(!is_null($user)) {
-          $userName = $user->name;
-          $user->delete();
-          return redirect(route('users.index'))->with('success','Successfully deleted user "' . $userName . '" (ID: ' . $id .').');
-        }
-        return redirect(route('users.index'))->with('error','No user found with ID ' . $id);
-    }
+    $user->suspend($days,$message);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param  int  $id
-     * @param  int  $days
-     * @return Response
-     */
-    public function suspend(Request $request, $id)
-    {
-      $user = User::find($id);
-      if(!is_null($user)) {
-        $days = $request->get('suspendedDays');
-        if(!is_numeric($days)) {
-          return redirect(route('users.index'))->with('error','No suspension duration input found.');
-        }
-        $message = $request->get('suspendedMessage');
-        $userName = $user->name;
-        $user->suspended_till = date('Y-m-d H:i:s',strtotime('+' . $days . ' days'));
-        $user->suspended_message = $message;
-        $user->save();
-        if('0' === $days) {
-          return redirect(route('users.index'))->with('success','User "' . $userName . '" restored.');
-        }
-        $daysText = 'days';
-        if('1' === $days) {
-          $daysText = 'day';
-        }
-        return redirect(route('users.index'))->with('success','User "' . $userName . '" suspended for ' . $days . ' ' . $daysText . '.');
-      }
-      return redirect(route('users.index'))->with('error','No user found with ID ' . $id . '.');
+    if('0' === $days) {
+      return redirect()->route('users.index')->with('success',"User '$userName' restored.");
     }
+    $daysText = 'days';
+    if('1' === $days) {
+      $daysText = 'day';
+    }
+    return redirect()->route('users.index')->with('success',"User '$userName' suspended for $days $daysText.");
+  }
 }

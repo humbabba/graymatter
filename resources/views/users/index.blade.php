@@ -90,7 +90,11 @@
       </div>
       <div class="cell x20">
         <span class="header-m">Username:</span>
-        <span class="center-v">{{ $user->name }}</span>
+        <span class="center-v">
+          <div>
+              {!! renderLinkedUserDisplayName($user->id) !!}
+          </div>
+        </span>
         @if($user->isSuspended())
         <i class="fas fa-ban" title="Suspended till {{ $user->suspended_till }} {{ config('app.timezone') }}"></i>
         @else

@@ -47,7 +47,7 @@
           @endif
         @else
           <li class="nav-links-dropdown">
-            <a>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
+            <a><img src="{{ getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
             <ul class="nav-links-dropdown-submenu">
               <li>
                 <a href="{{ route('dashboard')}}">Dashboard</a>
