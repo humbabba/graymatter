@@ -7,7 +7,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\User;
-use App\Roles\UserRoles;
+use App\Http\Roles\UserRoles;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Hash;
@@ -15,63 +15,18 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @param Request $request
-     * @param array $msg
-     * @return Factory|View
-     */
-    public function index(Request $request, $msg = [])
-    {
-        //Deal with filter params
-        $search = $request->get('search');
-        $role = $request->get('role');
-        $from = $request->get('from');
-        $to = $request->get('to');
-        $orderBy = $request->get('orderBy') ?? 'id';
-        $direction = $request->get('direction') ?? 'asc';
+  /**
+   * Display a listing of the resource.
+   * @param Request $request
+   * @param array $msg
+   * @return Factory|View
+   */
+  public function index(Request $request)
+  {
+      $output = User::getSearchedUsers($request);
 
-        $output = new \stdClass();
-
-        //Users
-        $output->users = User::where(function($query) use($search) {
-          $query->where('name','like','%' . $search . '%')
-            ->orWhere('email','like','%' . $search . '%')
-            ->orWhere('id','=',$search);
-        })
-          ->where(function($query) use($role) {
-            if($role) {
-              $query->where('role','=',$role);
-            }
-          })
-          ->where(function($query) use($from) {
-            if($from) {
-              $query->where('last_login','>=',$from . ' 00:00:00');
-            }
-          })
-          ->where(function($query) use($to) {
-            if($to) {
-              $query->where('last_login','<=',$to . ' 23:59:59');
-            }
-          })
-          ->orderBy($orderBy,$direction)
-          ->paginate(10);
-
-        //Other output values
-        $output->roles = UserRoles::getRoleList();
-        $output->search = $search;
-        $output->role = $role;
-        $output->from = $from;
-        $output->to = $to;
-        $output->msg = $msg;
-
-
-        if(0 === $output->users->total()) {
-          $output->msg[] = ['notice' => 'No users found. Try <a href="' . route('users.index') . '">clearing the filters</a>.'];
-        }
-
-        return view('users.index',compact('output'));
-    }
+      return view('users.index')->with('output', $output)->with('error', $output->error);
+  }
 
     /**
      * Show the form for creating a new resource.

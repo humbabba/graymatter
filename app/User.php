@@ -5,7 +5,8 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Roles\UserRoles;
+use App\Http\Roles\UserRoles;
+use Illuminate\Http\Request;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -91,5 +92,79 @@ class User extends Authenticatable implements MustVerifyEmail
     {
       $this->setAttribute('suspended_till',null);
       $this->save();
+    }
+
+    public static function getSearchedUsers(Request $request)
+    {
+        //Deal with filter params
+        $search = $request->get('search');
+        $role = $request->get('role');
+        $from = $request->get('from');
+        $to = $request->get('to');
+        $orderBy = $request->get('orderBy') ?? 'id';
+        $direction = $request->get('direction') ?? 'asc';
+        $csv = $request->get('csv');
+
+        $output = new \stdClass();
+
+        //Users
+        $output->users = User::where(function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('id', '=', $search);
+        })
+            ->where(function ($query) use ($role) {
+                if ($role) {
+                    $query->where('role', '=', $role);
+                }
+            })
+            ->where(function ($query) use ($from) {
+                if ($from) {
+                    $query->where('last_login', '>=', $from . ' 00:00:00');
+                }
+            })
+            ->where(function ($query) use ($to) {
+                if ($to) {
+                    $query->where('last_login', '<=', $to . ' 23:59:59');
+                }
+            })
+            ->orderBy($orderBy, $direction)
+            ->paginate(10);
+
+        //Other output values
+        $output->roles = UserRoles::getRoleList();
+        $output->search = $search;
+        $output->role = $role;
+        $output->from = $from;
+        $output->to = $to;
+        $output->total = $output->users->total();
+
+        $output->error = '';
+        if (0 === $output->total) {
+            $output->error = 'No users found. Try <a href="' . route('users.index') . '">clearing the filters</a>.';
+        }
+
+        if($csv) {
+            $content = "ID,Username,Email,Role,Last Login\r\n";
+
+            foreach($output->users as $user) {
+                $content .= quotesWrap($user->id) . ',';
+                $content .= quotesWrap($user->name) . ',';
+                $content .= quotesWrap($user->email) . ',';
+                $content .= quotesWrap(ucfirst($user->getRole())) . ',';
+                $content .= quotesWrap($user->last_login) . "\r\n";
+            }
+
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-disposition: attachment; filename=users.csv');
+            header('Content-Length: '.strlen($content));
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Expires: 0');
+            header('Pragma: public');
+            echo $content;
+        }
+
+        return $output;
     }
 }

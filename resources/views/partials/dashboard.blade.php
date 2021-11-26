@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.broad')
 
 @section('view_title','Dashboard')
 
-@section('content')
+@section('content.broad')
   <div class="centum ph10">
     <h1>@yield('view_title') - {{ Auth::user()->name }}</h1>
   </div>

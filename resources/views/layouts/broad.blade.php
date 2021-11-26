@@ -25,7 +25,7 @@
           @include('partials.messages')
           {{-- End messages --}}
 
-          @yield('content')
+          @yield('content.broad')
         </main>
 
         <footer>
