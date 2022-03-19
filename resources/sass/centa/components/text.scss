@@ -3,6 +3,10 @@
   font-weight: 800;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .big {
   font-size: $fs-big;
 }
@@ -26,6 +30,10 @@
 
 .smaller {
     font-size: $fs-smaller;
+}
+
+.smallest {
+    font-size: $fs-smallest;
 }
 
 .tiny {

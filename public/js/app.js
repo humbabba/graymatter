@@ -30265,9 +30265,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderTextColorUi", function() { return renderTextColorUi; });
 /* harmony import */ var _components_text_editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/text-editor */ "./resources/js/centa/components/text-editor.js");
 /* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modal */ "./resources/js/centa/components/modal.js");
+/* harmony import */ var _components_save_flag__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/save-flag */ "./resources/js/centa/components/save-flag.js");
 /**
  * Imports
  */
+
 
 
 /**
@@ -30275,14 +30277,21 @@ __webpack_require__.r(__webpack_exports__);
  * Set to false for no callback.
  */
 
-var textEditorOnChangeCallback = function textEditorOnChangeCallback() {
+var textEditorOnChangeCallback = function textEditorOnChangeCallback(form) {
   var modalMaster = $('.modal-master');
 
   if (!modalMaster.length || 'none' === modalMaster.css('display')) {
     //We don't want this running when the modal is visible
-    console.log('showUnsavedFlag(documentForm)');
+    Object(_components_save_flag__WEBPACK_IMPORTED_MODULE_2__["maybeShowSaveFlag"])(form);
   }
 };
+/**
+ * Put change handlers on form items for each form with the .formSaver class.
+ */
+
+$(document).ready(function () {
+  Object(_components_save_flag__WEBPACK_IMPORTED_MODULE_2__["pickUpFlagSaverChanges"])();
+});
 /**
  * Creates UI for link insertion.
  * Must call back insertLinkViaUi in text-editor.js with params editArea, editAreaHtml, and url.
@@ -30396,11 +30405,15 @@ var renderTextColorUi = function renderTextColorUi(editArea) {
 
 __webpack_require__(/*! ./components/alerts */ "./resources/js/centa/components/alerts.js");
 
+__webpack_require__(/*! ./components/listSorter */ "./resources/js/centa/components/listSorter.js");
+
 __webpack_require__(/*! ./components/modal */ "./resources/js/centa/components/modal.js");
 
 __webpack_require__(/*! ./components/nav */ "./resources/js/centa/components/nav.js");
 
 __webpack_require__(/*! ./components/shift */ "./resources/js/centa/components/shift.js");
+
+__webpack_require__(/*! ./components/save-flag */ "./resources/js/centa/components/save-flag.js");
 
 __webpack_require__(/*! ./components/sorters */ "./resources/js/centa/components/sorters.js");
 
@@ -30427,6 +30440,58 @@ alerts.each(function (index, el) {
     alert.fadeOut(400);
   });
 });
+
+/***/ }),
+
+/***/ "./resources/js/centa/components/listSorter.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/centa/components/listSorter.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+$('.listSorter').each(function (index, el) {
+  var model = $(el).data('model');
+  $(el).sortable({
+    stop: function stop() {
+      var updatedOrder = {};
+      updatedOrder.model = model;
+      updatedOrder.order = [];
+      $(el).children().each(function (index, el) {
+        var itemOrder = {};
+        itemOrder.elementId = $(el).data('listSorterId');
+        itemOrder.elementOrder = index;
+        updatedOrder.order.push(itemOrder);
+      });
+      saveNewOrder(updatedOrder);
+    },
+    handle: '.listSorterHandle'
+  });
+});
+/**
+ * Pass an object here containing two properties: model and order.
+ * The model property is the name of the model involved (used in the AJAX route, defined in routes/wep.php).
+ * The order property is whatever data you want to pass to the "reorder" function in that model's controller.
+ * @param orderObject
+ */
+
+var saveNewOrder = function saveNewOrder(orderObject) {
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
+  var url = "/".concat(orderObject.model, "s/reorder");
+  $.ajax({
+    url: url,
+    headers: {
+      'X-CSRF-Token': csrfToken
+    },
+    method: 'POST',
+    data: {
+      order: orderObject.order
+    },
+    error: function error(response) {
+      console.log('Reordering error: ', response);
+    }
+  });
+};
 
 /***/ }),
 
@@ -30508,11 +30573,14 @@ var CentaModal = /*#__PURE__*/function () {
 
       var modalTemplate = $(this.template); //Stop clicks on main container from closing modal
 
-      modalTemplate.find('.modal-container').on('click', function (e) {
+      modalTemplate.find('.modal-container').on('click mousedown', function (e) {
         e.stopPropagation();
       }); //Make clicks on closer elements close modal
 
-      modalTemplate.find('.modal-background,.modal-cancel,.modal-closer,.modal-confirm').on('click', function () {
+      modalTemplate.find('.modal-cancel,.modal-closer,.modal-confirm').on('click', function () {
+        modalTemplate.remove();
+      });
+      modalTemplate.find('.modal-background').on('mousedown', function (e) {
         modalTemplate.remove();
       }); //Exec callback on confirm, if there's a callback
 
@@ -30584,7 +30652,7 @@ var modalUploadFiles = function modalUploadFiles(modalInstance, modalTemplate) {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             type: 'POST',
-            url: '/upload/images',
+            url: '/upload/files',
             contentType: false,
             processData: false,
             data: formData
@@ -30767,6 +30835,97 @@ function addWindowHandlers(el) {
     }
   });
 }
+
+/***/ }),
+
+/***/ "./resources/js/centa/components/save-flag.js":
+/*!****************************************************!*\
+  !*** ./resources/js/centa/components/save-flag.js ***!
+  \****************************************************/
+/*! exports provided: maybeShowSaveFlag, pickUpFlagSaverChanges */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "maybeShowSaveFlag", function() { return maybeShowSaveFlag; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pickUpFlagSaverChanges", function() { return pickUpFlagSaverChanges; });
+/**
+ * Show save flag if it doesn't already exist
+ * @param form
+ */
+var maybeShowSaveFlag = function maybeShowSaveFlag(form) {
+  var existingFlag = $('#saveFlag');
+
+  if (!existingFlag.length && form.hasClass('flagSaver')) {
+    showSaveFlag(form);
+    enableCtrlS(form);
+    form.on('submit', function () {
+      showSaveInProgress();
+    });
+  }
+};
+/**
+ * Show save flag when form item's value changes
+ */
+
+var pickUpFlagSaverChanges = function pickUpFlagSaverChanges() {
+  $('.flagSaver').each(function (index, el) {
+    var form = $(el);
+    form.find('input,textarea').each(function (childIndex, childEl) {
+      var formItem = $(childEl);
+      formItem.on('keydown', function () {
+        formItem.oldVal = formItem.val().trim();
+      }).on('keyup', function () {
+        var newVal = formItem.val().trim();
+
+        if (newVal !== formItem.oldVal) {
+          maybeShowSaveFlag(form);
+        }
+      });
+    });
+    form.find('input[type="checkbox"],select').each(function (childIndex, childEl) {
+      $(childEl).on('change', function () {
+        maybeShowSaveFlag(form);
+      });
+    });
+  });
+};
+/**
+ * Make Ctrl-S (or Cmd-S) submit the form
+ * @param form
+ */
+
+var enableCtrlS = function enableCtrlS(form) {
+  //Enable CTRL-S for form submit
+  $(document).on('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && 's' === String.fromCharCode(e.which).toLowerCase()) {
+      e.preventDefault();
+      form.submit();
+    }
+  });
+};
+/**
+ * Create and display HTML elements for save flag
+ * @param form
+ */
+
+
+var showSaveFlag = function showSaveFlag(form) {
+  var flagEl = $('<div>');
+  flagEl.html("<div class=\"centum\" id=\"saveFlag\">\n    <div class=\"cell\">\n        <b>Unsaved changes</b><br>Click or Ctrl-S to save\n    </div>\n</div>");
+  flagEl.on('click', function () {
+    form.submit();
+  });
+  $('main').prepend(flagEl);
+};
+/**
+ * Change save flag to loader as form submits
+ */
+
+
+var showSaveInProgress = function showSaveInProgress() {
+  $('#saveFlag').html("<div class=\"cell\"><span class=\"loader\"></span></div>");
+};
 
 /***/ }),
 
@@ -31254,7 +31413,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"])();
+        Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"])(el.closest('form'));
       }
     });
   } //Start editArea with a P element so the first line gets wrapped
@@ -31290,7 +31449,7 @@ var makeTextEditor = function makeTextEditor(el) {
 
       if (this.editAreaContent != this.newEditAreaContent) {
         //We have changes to content, so run the callback
-        Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"])();
+        Object(_centa_js__WEBPACK_IMPORTED_MODULE_1__["textEditorOnChangeCallback"])(el.closest('form'));
       }
     });
   } //Make sure we inactivate tools when exiting editArea

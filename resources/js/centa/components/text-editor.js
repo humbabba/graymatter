@@ -271,7 +271,7 @@ const makeTextEditor = el => {
         }).on('keyup',function() {
           this.newEditAreaContent = $(this).val();
           if(this.editAreaContent != this.newEditAreaContent) { //We have changes to content, so run the callback
-              textEditorOnChangeCallback();
+              textEditorOnChangeCallback(el.closest('form'));
           }
         });
     }
@@ -307,7 +307,7 @@ const makeTextEditor = el => {
         }).on('keyup',function() {
           this.newEditAreaContent = $(this).html();
           if(this.editAreaContent != this.newEditAreaContent) { //We have changes to content, so run the callback
-              textEditorOnChangeCallback();
+              textEditorOnChangeCallback(el.closest('form'));
           }
         });
     }

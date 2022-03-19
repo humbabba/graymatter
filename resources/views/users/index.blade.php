@@ -117,6 +117,7 @@
       </div>
       <div class="cell x20 btn-wrap">
         <a class="btn" href="{{ route('users.edit', $user->id) }}">Edit</a>
+        @if($user->id !== Auth::user()->id) {{-- Don't let admins suspend or delete themselves --}}
         <form class="inline" action="{{ route('users.suspend', $user->id) }}" method="get">
           @csrf
           <input type="hidden" name="suspendedDays" value="" />
@@ -132,6 +133,7 @@
           <input type="hidden" name="suspendedUserName" value="{{ $user->name }}" />
           <input type="submit" class="btn danger deleteUser" value="Delete" />
         </form>
+        @endif
       </div>
     </div>
     @endforeach

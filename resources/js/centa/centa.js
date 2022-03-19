@@ -3,17 +3,25 @@
  */
 import {insertLinkViaUi, insertImageViaUi, insertTextColorViaUi, insertOpenAndCloseMarkers} from "./components/text-editor";
 import {CentaModal} from "./components/modal";
+import {maybeShowSaveFlag,pickUpFlagSaverChanges} from "./components/save-flag";
 
 /**
  * Define the callback for changes in text-editor.
  * Set to false for no callback.
  */
-export const textEditorOnChangeCallback = () => {
+export const textEditorOnChangeCallback = form => {
     const modalMaster = $('.modal-master');
     if(!modalMaster.length || 'none' === modalMaster.css('display')) { //We don't want this running when the modal is visible
-        console.log('showUnsavedFlag(documentForm)');
+        maybeShowSaveFlag(form);
     }
 };
+
+/**
+ * Put change handlers on form items for each form with the .formSaver class.
+ */
+$(document).ready(() => {
+    pickUpFlagSaverChanges();
+});
 
 /**
  * Creates UI for link insertion.
@@ -124,8 +132,10 @@ export const renderTextColorUi = editArea => {
  * Included components
  */
 require('./components/alerts');
+require('./components/listSorter');
 require('./components/modal');
 require('./components/nav');
 require('./components/shift');
+require('./components/save-flag');
 require('./components/sorters');
 require('./components/text-editor');

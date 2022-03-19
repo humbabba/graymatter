@@ -20,6 +20,9 @@
         @media only screen and (min-width: $break) {
             padding-bottom: $padding-base;
         }
+        &.allow-overflow-x {
+            overflow-x: auto;
+        }
     }
 
     .x99 {

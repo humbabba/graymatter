@@ -1,6 +1,7 @@
 .centum,
 .cell,
-h1
+h1,
+hr
  {
    //Spacers and padding
    &.spacer-d { //Spacer desktop
@@ -558,6 +559,21 @@ h1
     }
     &.x-max1000 {
       max-width: 1000px;
+    }
+    &.x-max1100 {
+      max-width: 1100px;
+    }
+    &.x-max1200 {
+      max-width: 1200px;
+    }
+    &.x-max1300 {
+      max-width: 1300px;
+    }
+    &.x-max1400 {
+      max-width: 1400px;
+    }
+    &.x-max1500 {
+      max-width: 1500px;
     }
   }
 }

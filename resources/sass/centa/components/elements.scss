@@ -57,3 +57,22 @@ h1 {
   line-height: $lh-bigger;
   margin: $margin-base 0;
 }
+
+h2 {
+  font-size: $fs-big;
+  font-weight: 800;
+  line-height: $lh-base;
+  margin: $margin-base 0;
+}
+
+h3 {
+  font-size: $fs-base;
+  font-weight: 800;
+  line-height: $lh-small;
+  margin: $margin-base 0;
+}
+
+sup {
+    font-size: $fs-smaller;
+    vertical-align: text-top;
+}

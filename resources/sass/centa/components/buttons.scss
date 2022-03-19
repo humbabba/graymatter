@@ -1,6 +1,6 @@
 .btn {
     background-color: $primary;
-    border: 1px solid $secondary;
+    border: 0;
     border-radius: $border-radius-base;
     color: $fc-light;
     cursor: pointer;
@@ -25,21 +25,28 @@
     }
 
     &.secondary {
-        border: 1px solid $blue;
         background-color: $blue;
 
         &:hover {
-            color: $fc-base;
+            color: $fc-light;
             background-color: $blue-light;
         }
     }
 
-    &.danger {
-        border: 1px solid $red;
-        background-color: $red;
+    &.tertiary {
+        background-color: $cyan;
 
         &:hover {
             color: $fc-base;
+            background-color: $cyan;
+        }
+    }
+
+    &.danger {
+        background-color: $red;
+
+        &:hover {
+            color: $fc-light;
             background-color: $red-light;
         }
     }

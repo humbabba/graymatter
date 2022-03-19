@@ -2,7 +2,6 @@
 .more-tools-holder,
 .toolbar {
   display: inline-block;
-  margin-bottom: $margin-base;
   .toolbar-button {
     background-color: $primary;
     border: 1px solid $primary;
@@ -11,6 +10,7 @@
     cursor: pointer;
     font-size: $fs-small;
     margin-right: $margin-tiny;
+    margin-bottom: $margin-base;
     padding: $padding-small;
     &.active {
       background-color: $secondary;
@@ -30,10 +30,11 @@
     border: 1px solid $secondary;
     border-radius: $border-radius-base;
     color: $black;
-    font-size: $fs-form;
+    font-size: $fs-base;
     line-height: $lh-small;
     height: $textarea-height;
     padding: $padding-base;
+    margin-bottom: $margin-base;
     resize: vertical;
     overflow: auto;
     white-space: pre-wrap;

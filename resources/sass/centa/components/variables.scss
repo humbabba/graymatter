@@ -1,18 +1,19 @@
 // Typography
 $ff-base: 'Mukta', sans-serif;
+$fs-tiny: 0.5rem;
+$fs-smallest: 0.6rem;
+$fs-smaller: 0.7rem;
 $fs-small: 0.8rem;
-$fs-smaller: 0.6rem;
-$fs-tiny: 0.4rem;
-$fs-form: 0.83rem;
-$fs-button: 0.9rem;
-$fs-base: 1rem;
-$fs-big: 1.3rem;
-$fs-bigger: 1.6rem;
-$fs-biggest: 2rem;
-$fs-giant: 6rem;
+$fs-base: 0.9rem;
+$fs-big: 1.2rem;
+$fs-bigger: 1.4rem;
+$fs-biggest: 1.6rem;
+$fs-giant: 3rem;
+$fs-form: 0.9rem;
+$fs-button: 0.8rem;
 $lh-tiny: 0.1rem;
 $lh-smaller: 0.8rem;
-$lh-small: 1rem;
+$lh-small: 1.3rem;
 $lh-base: 1.6rem;
 $lh-big: 1.8rem;
 $lh-bigger: 2rem;
@@ -26,7 +27,7 @@ $indigo: #6574cd;
 $purple: #9561e2;
 $pink: #f66d9b;
 $red: #800000;
-$red-light: #ff4d4d;
+$red-light: #b30000;
 $orange: #f6993f;
 $yellow: #ffed4a;
 $green: #004d1a;
@@ -47,21 +48,24 @@ $fc-less-light: #b3b3b3;
 
 //Measurements
 $break: 768px;
-$nav-height: 54px;
+$nav-height: 40px;
 $footer-height: 30px;
-$body-margin: 10px;
-$padding-base: 10px;
+$body-margin: 8px;
+$padding-base: 8px;
 $padding-small: 5px;
 $padding-tiny: 2px;
-$margin-big: 15px;
-$margin-base: 10px;
+$margin-double: 16px;
+$margin-big: 11px;
+$margin-base: 8px;
 $margin-small: 5px;
 $margin-tiny: 2px;
 $border-radius-base: 5px;
-$main-height: calc(100vh - 104px); //This 100vh minus the sum of $nav-height and $footer-height plus 2x $body-margin
+$main-height: calc(100vh - 86px); //This 100vh minus the sum of $nav-height and $footer-height plus 2x $body-margin
 $modal-max-width: 500px;
 $modal-min-width: 400px;
-$short-field: 100px; //The max width of fileds for very short inputs, such as 2- or 3-digit numbers
+$short-field: 100px; //The max width of fields for very short inputs, such as 2- or 3-digit numbers
+$medium-field: 200px; //The max width of fields for medium inputs
+$long-field: 300px; //The max width of fields for longer inputs, such as titles
 $sorter-top: -5px; //Used to align the sorter icon vertically
 $textarea-height: 100px;
 

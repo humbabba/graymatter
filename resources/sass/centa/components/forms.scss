@@ -18,11 +18,11 @@ form,
     input[type="password"],
     input[type="search"],
     input[type="date"],
-    input[type="text"] {
+    input[type="text"],
+    input[type="url"] {
         border: 1px solid $primary;
         border-radius: $border-radius-base;
         font-size: $fs-form;
-        line-height: $lh-small;
         height: $lh-base;
         padding: 0 $padding-base;
         width: 100%;
@@ -39,6 +39,7 @@ form,
     select {
         border: 1px solid $secondary;
         border-radius: $border-radius-base;
+        font-size: $fs-form;
         height: $lh-base;
         max-height: $lh-big;
         padding: 0 $padding-base;

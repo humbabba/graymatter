@@ -1,5 +1,11 @@
 .short-field {
-  max-width: $short-field;
+    max-width: $short-field;
+}
+.medium-field {
+    max-width: $medium-field;
+}
+.long-field {
+    max-width: $long-field;
 }
 .inline {
   display: inline;
@@ -15,4 +21,28 @@
     @media only screen and (min-width: $break) {
         display: inherit !important;
     }
+}
+
+.listSorterHandle {
+    cursor: grab;
+    display: none;
+    @media only screen and (min-width: $break) {
+        display: inline;
+    }
+}
+
+.margin-top {
+    margin-top: $margin-base;
+}
+
+.margin-bottom {
+    margin-bottom: $margin-base;
+}
+
+.margin-right {
+    margin-right: $margin-base;
+}
+
+.margin-left {
+    margin-left: $margin-base;
 }

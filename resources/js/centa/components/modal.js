@@ -60,12 +60,16 @@ export class CentaModal {
         const modalTemplate = $(this.template);
 
         //Stop clicks on main container from closing modal
-        modalTemplate.find('.modal-container').on('click',e => {
+        modalTemplate.find('.modal-container').on('click mousedown',e => {
             e.stopPropagation();
         });
 
         //Make clicks on closer elements close modal
-        modalTemplate.find('.modal-background,.modal-cancel,.modal-closer,.modal-confirm').on('click',() => {
+        modalTemplate.find('.modal-cancel,.modal-closer,.modal-confirm').on('click',() => {
+            modalTemplate.remove();
+        });
+
+        modalTemplate.find('.modal-background').on('mousedown',e => {
             modalTemplate.remove();
         });
 
@@ -131,7 +135,7 @@ const modalUploadFiles = (modalInstance,modalTemplate) => {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         type: 'POST',
-                        url: '/upload/images',
+                        url: '/upload/files',
                         contentType: false,
                         processData: false,
                         data: formData
