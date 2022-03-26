@@ -72,7 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
   */
   public function setRole(array $role)
   {
-    $this->setAttribute('role', $role);
+    $this->role = $role;
     return $this;
   }
 
@@ -81,7 +81,7 @@ class User extends Authenticatable implements MustVerifyEmail
   */
   public function getRole()
   {
-    return $this->getAttribute('role');
+    return $this->role;
   }
 
   /**
@@ -90,7 +90,7 @@ class User extends Authenticatable implements MustVerifyEmail
   public function isSuspended()
   {
     $date = date('Y-m-d H:i:s');
-    return $this->getAttribute('suspended_till') > $date;
+    return $this->suspended_till > $date;
   }
 
   /**
@@ -98,12 +98,12 @@ class User extends Authenticatable implements MustVerifyEmail
   */
   public function isSelf()
   {
-    return $this->getAttribute('id') === Auth::user()->id;
+    return $this->id === Auth::user()->id;
   }
 
   public function nullSuspended()
   {
-    $this->setAttribute('suspended_till',null);
+    $this->suspended_till = null;
     $this->save();
   }
 
@@ -243,8 +243,9 @@ class User extends Authenticatable implements MustVerifyEmail
       $this->logAction('Update',$loggerNotes);
     }
 
-    $this->name = $data['name'];
-    $this->email =  $data['email'];
+    if(isset($data['name'])) $this->name = $data['name'];
+    if(isset($data['email'])) $this->email =  $data['email'];
+    if(isset($data['bio'])) $this->bio =  $data['bio'];
     $this->role = $data['role'];
 
     $this->save();

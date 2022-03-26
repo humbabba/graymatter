@@ -25,8 +25,9 @@ class UserUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:50,' . $this->route()->parameters()['user'],
-            'email'=> 'required|email:rfc,dns|unique:users,email,' . $this->route()->parameters()['user'],
+            'name' => 'sometimes|required|string|max:50,' . $this->route()->parameters()['user'],
+            'email' => 'sometimes|required|email:rfc,dns|unique:users,email,' . $this->route()->parameters()['user'],
+            'bio' => 'nullable',
             'role' => 'required'
         ];
     }

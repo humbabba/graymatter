@@ -129,6 +129,10 @@ class UserController extends Controller
       return redirect()->route('users.index')->with('error', 'No user found with ID ' . $id);
     }
 
+    if($user->isSelf()) { //Trying to suspend self
+      return redirect()->route('users.index')->with('error', 'Self-deletion is prohibited by the laws of robotics.');
+    }
+
     $user->delete();
 
     return redirect()->route('users.index')->with('success', "Successfully deleted user '{$user->name}' (ID: $id).");
@@ -148,6 +152,10 @@ class UserController extends Controller
 
     if (is_null($user)) { //User not found
       return redirect()->route('users.index')->with('error', 'No user found with ID ' . $id);
+    }
+
+    if($user->isSelf()) { //Trying to suspend self
+      return redirect()->route('users.index')->with('error', 'Self-suspension is prohibited by the laws of robotics.');
     }
 
     $userName = $user->name;

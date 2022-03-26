@@ -11,7 +11,7 @@ class LoggerController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return \Illuminate\Contracts\View\View
      */
     public function index(Request $request)
     {

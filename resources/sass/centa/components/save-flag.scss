@@ -1,0 +1,13 @@
+#saveFlag {
+    background-color: $white;
+    border: 1px solid $primary;
+    border-radius: $border-radius-base;
+    box-shadow: 3px 3px 5px $modal-background-color;
+    color: $red;
+    cursor: pointer;
+    max-width: 150px;
+    position: fixed;
+    top: 60px;
+    right: 40px;
+    text-align: center;
+}

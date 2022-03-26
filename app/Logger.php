@@ -36,7 +36,6 @@ class Logger extends Model
 
         $output = new \stdClass();
 
-        //Users
         $output->loggers = Logger::where(function ($query) use ($search) {
             $query->where('username', 'like', '%' . $search . '%')
                 ->orWhere('notes', 'like', '%' . $search . '%')
