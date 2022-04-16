@@ -24,6 +24,8 @@ Route::middleware(['verified','suspended'])->group(function() {
 
     Route::get('users/profile/{id}', 'UserController@show')->name('users.profile');
 
+    Route::resource('loggers','LoggerController');
+
     //Admin stuff
     Route::middleware('role:admin')->group(function() {
         Route::get('/info', function () {

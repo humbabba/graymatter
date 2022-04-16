@@ -7,8 +7,9 @@
       <ul class="nav-links-primary">
         @guest
         @else
-          <li><a href="{{ url('/starter')}} ">Starter app</a></li>
-          <li><a href="{{ url('/centa')}} ">Centa</a></li>
+          <li><a href="{{ url('/starter')}} ">Laravel starter app</a></li>
+          <li><a href="{{ url('/centa')}} ">Centa CSS/JS package</a></li>
+          <li><a href="{{ url('/loggers')}} ">Loggers</a></li>
         @endguest
         @role('admin')
           <li class="nav-links-dropdown">
@@ -18,7 +19,7 @@
                 <a href="/users">Users</a>
               </li>
               <li>
-                <a href="/radar">Settings</a>
+                <a href="/settings">Settings</a>
               </li>
             </ul>
           </li>
