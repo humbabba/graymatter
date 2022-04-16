@@ -7,19 +7,8 @@
       <ul class="nav-links-primary">
         @guest
         @else
-          <li><a href="{{ url('/news')}} ">News</a></li>
-          <li><a href="{{ url('/sports')}} ">Sports</a></li>
-          <li class="nav-links-dropdown">
-            <a>Weather <i class="fas fa-caret-down"></i></a>
-            <ul class="nav-links-dropdown-submenu">
-              <li>
-                <a href="/forecast">Forecast</a>
-              </li>
-              <li>
-                <a href="/radar">Radar</a>
-              </li>
-            </ul>
-          </li>
+          <li><a href="{{ url('/starter')}} ">Starter app</a></li>
+          <li><a href="{{ url('/centa')}} ">Centa</a></li>
         @endguest
         @role('admin')
           <li class="nav-links-dropdown">
