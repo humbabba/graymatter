@@ -28,6 +28,13 @@
         </div>
       @endif
     </div>
+    @if($user->isSelf())
+      <a href="{{ route('users.edit', $user->id) }}" class="btn">Edit</a>
+    @else
+      @role('admin')
+        <a href="{{ route('users.edit', $user->id) }}" class="btn">Edit</a>
+      @endrole
+    @endif
   </div>
   {{-- End content --}}
 </div>
