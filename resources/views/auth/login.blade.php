@@ -3,7 +3,7 @@
     <h1>{{ __('Log in') }}</h1>
     <div class="centum">
         <div class="cell x-max300 p0">
-            <form class="input-spacing" method="POST" action="{{ route('login') }}">
+            <form class="inputspace" method="POST" action="{{ route('login') }}">
                 @csrf
                 <label for="email">{{ __('Email address') }}</label>
                 <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email"

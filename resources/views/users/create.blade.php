@@ -9,7 +9,7 @@
         </div>
 
         {{-- Begin form --}}
-        <form class="input-spacing" action="{{ route('users.store') }}" method="post">
+        <form class="inputspace" action="{{ route('users.store') }}" method="post">
             @csrf
             <div class="cell x-max700 p0">
                 <div class="centum">
@@ -34,7 +34,7 @@
                     </div>
                     <div class="cell pt0">
                         <label>Bio</label>
-                        <input type="hidden" name="bio" class="text-editor" value="" />
+                        <input type="hidden" name="bio" class="textEditor" value="" />
                     </div>
                 </div>
             </div>

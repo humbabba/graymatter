@@ -11,16 +11,17 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/fontawesome/all.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/app.css') }}?v={{ getVersion() }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}?v={{ getVersion() }}" rel="stylesheet">
 
 </head>
 <body>
     <div id="app">
-        <nav class="main">
+        <nav class="main bg-primary text-secondary flex flex-row flex-nowrap justify-between content-center text-lg h-10 px-10">
           @include('partials.nav')
         </nav>
 
         <main>
+          <p class="text-red-900 p-[8px]">Testing</p>
           {{-- Begin messages --}}
           @include('partials.messages')
           {{-- End messages --}}

@@ -1,12 +1,12 @@
 /**
  * Imports
  */
-import {insertLinkViaUi, insertImageViaUi, insertTextColorViaUi, insertOpenAndCloseMarkers} from "./components/text-editor";
-import {CentaModal} from "./components/modal";
-import {maybeShowSaveFlag,pickUpFlagSaverChanges} from "./components/save-flag";
+import {insertLinkViaUi, insertImageViaUi, insertTextColorViaUi, insertOpenAndCloseMarkers} from "./textEditor";
+import {CentaModal} from "./modal";
+import {maybeShowSaveFlag,pickUpFlagSaverChanges} from "./saveFlag";
 
 /**
- * Define the callback for changes in text-editor.
+ * Define the callback for changes in textEditor.
  * Set to false for no callback.
  */
 export const textEditorOnChangeCallback = form => {
@@ -25,7 +25,7 @@ $(document).ready(() => {
 
 /**
  * Creates UI for link insertion.
- * Must call back insertLinkViaUi in text-editor.js with params editArea, editAreaHtml, and url.
+ * Must call back insertLinkViaUi in textEditor.js with params editArea, editAreaHtml, and url.
  * Param editAreaHtml may be set to false if no manipulation is done and editArea focus is not changed - otherwise it's necessary to restore selection in insertLinkViaUi.
  * @param editArea
  */
@@ -60,7 +60,7 @@ export const renderInsertLinkUi = editArea => {
 
 /**
  * Creates UI for image insertion.
- * Must call back insertImageViaUi in text-editor.js with params editArea, editAreaHtml, and url.
+ * Must call back insertImageViaUi in textEditor.js with params editArea, editAreaHtml, and url.
  * Param editAreaHtml may be set to false if no manipulation is done and editArea focus is not changed - otherwise it's necessary to restore selection in insertImageViaUi.
  * @param editArea
  */
@@ -94,7 +94,7 @@ export const renderInsertImageUi = editArea => {
 
 /**
  * Creates UI for text color.
- * Must call back insertTextColorViaUi in text-editor.js with params editArea, editAreaHtml, and color.
+ * Must call back insertTextColorViaUi in textEditor.js with params editArea, editAreaHtml, and color.
  * Param editAreaHtml may be set to false if no manipulation is done and editArea focus is not changed - otherwise it's necessary to restore selection in insertTextColorViaUi.
  * @param editArea
  */
@@ -131,11 +131,10 @@ export const renderTextColorUi = editArea => {
 /**
  * Included components
  */
-require('./components/alerts');
-require('./components/listSorter');
-require('./components/modal');
-require('./components/nav');
-require('./components/shift');
-require('./components/save-flag');
-require('./components/sorters');
-require('./components/text-editor');
+require('./alerts');
+require('./listSorter');
+require('./modal');
+require('./nav');
+require('./saveFlag');
+require('./sorters');
+require('./textEditor');

@@ -6,7 +6,7 @@
     <h1>{{ __('Reset password') }}</h1>
   </div>
   <div class="cell x-max350">
-    <form class="input-spacing" method="POST" action="{{ route('password.update') }}">
+    <form class="inputspace" method="POST" action="{{ route('password.update') }}">
       @csrf
       <input type="hidden" name="token" value="{{ $token }}">
       <label for="email">{{ __('Email address') }}</label>

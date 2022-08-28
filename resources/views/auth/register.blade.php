@@ -7,7 +7,7 @@
   </div>
 
   <div class="cell x-max350">
-    <form class="input-spacing" method="POST" action="{{ route('register') }}">
+    <form class="inputspace" method="POST" action="{{ route('register') }}">
       @csrf
       <label for="name">{{ __('Username (public on site)') }}</label>
       <input id="name" type="text" name="name" value="{{ old('name') }}" class="@error('name') is-invalid @enderror" required autofocus>

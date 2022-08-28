@@ -8,7 +8,7 @@
  * The inputNames property is an array of the names of inputs included in contentHtml; values entered will be added, in order listed in inputNames, to the params property before all are passed to callback.
  * The fileInputNames property is an array of inputNames that are meant to be populated by the frontend URL of a file after it is uploaded; the input name must be in both arrays, inputNames and fileInputNames. File inputs should occur in contentHtml in the same order they're listed in the fileInputNames array.
  */
-import {initTextEditors} from "./text-editor";
+import {initTextEditors} from "./textEditor";
 
 export class CentaModal {
     constructor(configs = {},callback = false) {

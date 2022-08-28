@@ -1,5 +1,7 @@
 @extends('layouts.narrow')
 
+@section('view_title','Home')
+
 @section('content.narrow')
   <div class="centum">
       <div class="cell align-center bold giant">

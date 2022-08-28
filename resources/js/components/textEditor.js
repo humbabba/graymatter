@@ -19,7 +19,7 @@ const advancedFormat = ['ul','ol','hr','indent','outdent','justifyCenter','justi
 const blockNodeNames = ['P','H1','H2','H3','H4','H5','H6','PRE'];
 const blockNodeNamesString = 'p,h1,h2,h3,h4,h5,h6,pre';
 
-import { textEditorOnChangeCallback,renderInsertLinkUi,renderInsertImageUi,renderTextColorUi } from '../centa.js';
+import { textEditorOnChangeCallback,renderInsertLinkUi,renderInsertImageUi,renderTextColorUi } from './index.js';
 
 /**
  * Define rich-text editing tools
@@ -49,13 +49,13 @@ const toolsArray = [
 ];
 
 /**
-* Find all hidden inputs with text-editor class and replace them with rich-text editors.
+* Find all hidden inputs with textEditor class and replace them with rich-text editors.
 */
 export const initTextEditors = (timeout = 0) => {
-    //Turn hidden inputs with 'text-editor' class into rich-text editors
+    //Turn hidden inputs with 'textEditor' class into rich-text editors
     $('input[type="hidden"]').each(function(index,item) {
-        if($(item).hasClass('text-editor')) {
-            //Bail if it's already a text-editor
+        if($(item).hasClass('textEditor')) {
+            //Bail if it's already a textEditor
             const itemParent = $(item).parent();
             if(itemParent.hasClass('textEditorMasterDiv')) {
                 return;
@@ -123,7 +123,7 @@ const processToolbarForWidth = toolbar => {
 };
 
 /**
-* Handle window resize events viz. text-editors.
+* Handle window resize events viz. textEditors.
 * This will make sure the toolbars display correctly.
 */
 $(window).resize(function() {
@@ -133,7 +133,7 @@ $(window).resize(function() {
     textEditors.each(function(index,el) {
         //Find the hidden input at the core of each
         const hiddenInput = $(el).find('input[type="hidden"]').first();
-        //Reset hidden input in DOM instead of text-editor
+        //Reset hidden input in DOM instead of textEditor
         $(el).replaceWith(hiddenInput);
     });
 
@@ -214,7 +214,7 @@ const makeTextEditor = el => {
                         copyDiv = $(this).closest('.textEditorMasterDiv').find('.fancy-text-div').first();
                         codeDiv = $(this).closest('.textEditorMasterDiv').find('.code-editor').first();
                         let numberOfLinks = copyDiv.find('a').length;
-                        let targetInput = copyDiv.next('.text-editor');
+                        let targetInput = copyDiv.next('.textEditor');
                         let x = 0;
                         while (copyDiv.find('*').length > numberOfLinks) {
                             copyDiv.children().each(function (index, el) {
@@ -514,7 +514,7 @@ const execFormattingTool = (tool,editArea,format = true,props = false) => {
     //Update hidden and code divs to match
     const masterDiv = editArea.closest('.textEditorMasterDiv');
     const codeDiv = masterDiv.find('.code-editor');
-    const hiddenInput = masterDiv.find('.text-editor');
+    const hiddenInput = masterDiv.find('.textEditor');
     const code = editArea.html();
     codeDiv.val(code);
     hiddenInput.val(code);
@@ -1345,7 +1345,7 @@ const updateBlockTag = selector => {
 
     //Updated hidden input and code editor
     masterDiv.find('.code-editor').val(editArea.html());
-    masterDiv.find('.text-editor').val(editArea.html());
+    masterDiv.find('.textEditor').val(editArea.html());
 };
 
 /**
@@ -1465,7 +1465,7 @@ export const insertLinkViaUi = (editArea,editAreaHtml,url) => {
             replaceMarkersWithSelection(editArea);
         }
         const codeEditArea = editArea.closest('.textEditorMasterDiv').find('.code-editor').first();
-        const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.text-editor').first();
+        const hiddenInput = editArea.closest('.textEditorMasterDiv').find('.textEditor').first();
         unlinkSelection(editArea,codeEditArea,hiddenInput);
         const props = {
             "href":url,
