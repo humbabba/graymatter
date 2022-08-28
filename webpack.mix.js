@@ -12,14 +12,16 @@ require('laravel-mix-clean');
  |
  */
 
-mix.clean({
-        cleanOnceBeforeBuildPatterns: [
-            'public/css/*',
-            'public/js/*',
+mix.clean()
+    .js('resources/js/app.js', 'public/js')
+    .postCss('resources/css/style.css', 'public/css')
+    .copy('resources/root/*.*','public')
+    .copy('resources/img/*.*','public/img')
+    .options({
+        processCssUrls: false,
+        postCss: [
+            require('tailwindcss/nesting'),
+            require('tailwindcss'),
+            require('autoprefixer')
         ]
-    }).js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/style.css', 'public/css', [
-        require('tailwindcss/nesting'),
-        require('tailwindcss'),
-        require('autoprefixer')
-      ]);
+    });

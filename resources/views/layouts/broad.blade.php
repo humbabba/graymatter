@@ -13,10 +13,16 @@
     <link href="{{ asset('css/fontawesome/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}?v={{ getVersion() }}" rel="stylesheet">
 
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
 </head>
 <body>
     <div id="app">
-        <nav class="main bg-primary text-secondary flex flex-row flex-nowrap justify-between content-center text-lg h-10 px-10">
+        <nav class="main bg-primary text-secondary flex flex-row flex-nowrap justify-between content-center text-lg h-10 px-2">
           @include('partials.nav')
         </nav>
 
