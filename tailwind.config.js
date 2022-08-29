@@ -25,7 +25,7 @@ module.exports = {
       }
     },
     fontFamily: {
-      sans: ['Roboto', 'sans-serif'],
+      sans: ['Mukta', 'sans-serif'],
       serif: ['Merriweather', 'serif'],
     },
     listStyleType: {

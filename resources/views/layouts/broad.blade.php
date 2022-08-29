@@ -22,11 +22,11 @@
 </head>
 <body class="text-primary max-h-full m-0">
     <div id="app">
-        <nav class="main bg-primary text-secondary flex flex-row flex-nowrap justify-between content-center text-lg h-10 px-2">
+        <nav class="main bg-primary text-secondary flex flex-row flex-nowrap justify-between text-lg h-[40px] px-[8px]">
           @include('partials.nav')
         </nav>
 
-        <main class="bg-white">
+        <main class="bg-white m-2 p-2 h-[calc(100vh-86px)] overflow-auto">
           <p class="text-red-900 p-[8px]">Testing</p>
           {{-- Begin messages --}}
           @include('partials.messages')
@@ -35,7 +35,7 @@
           @yield('content.broad')
         </main>
 
-        <footer>
+        <footer class="bg-primary text-secondary text-sm h-[36px] p-[5px] flex flex-row flex-nowrap justify-center items-center">
           @include('partials.footer')
         </footer>
     </div>

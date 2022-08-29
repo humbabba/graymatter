@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css?family=Mukta);
 
 
 
@@ -35,7 +36,7 @@ html {
   -moz-tab-size: 4; /* 3 */
   -o-tab-size: 4;
      tab-size: 4; /* 3 */
-  font-family: Roboto, sans-serif; /* 4 */
+  font-family: Mukta, sans-serif; /* 4 */
 }
 
 /*
@@ -562,6 +563,9 @@ video {
 .m-0 {
   margin: 0px;
 }
+.m-2 {
+  margin: 0.5rem;
+}
 .block {
   display: block;
 }
@@ -583,11 +587,23 @@ video {
 .h-full {
   height: 100%;
 }
-.h-10 {
-  height: 2.5rem;
+.h-\[40px\] {
+  height: 40px;
+}
+.h-\[calc\(100vh-86px\)\] {
+  height: calc(100vh - 86px);
+}
+.h-\[36px\] {
+  height: 36px;
 }
 .max-h-full {
   max-height: 100%;
+}
+.w-full {
+  width: 100%;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 .resize {
   resize: both;
@@ -598,11 +614,23 @@ video {
 .flex-nowrap {
   flex-wrap: nowrap;
 }
-.content-center {
-  align-content: center;
+.items-center {
+  align-items: center;
+}
+.justify-start {
+  justify-content: flex-start;
+}
+.justify-center {
+  justify-content: center;
 }
 .justify-between {
   justify-content: space-between;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.overflow-auto {
+  overflow: auto;
 }
 .break-all {
   word-break: break-all;
@@ -619,18 +647,36 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
+.p-2 {
+  padding: 0.5rem;
+}
 .p-\[8px\] {
   padding: 8px;
 }
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+.p-\[5px\] {
+  padding: 5px;
+}
+.px-\[8px\] {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.pl-\[20px\] {
+  padding-left: 20px;
 }
 .text-sm {
   font-size: .875rem;
 }
 .text-lg {
   font-size: 1.125rem;
+}
+.text-xs {
+  font-size: .75rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+}
+.text-base {
+  font-size: 1rem;
 }
 .uppercase {
   text-transform: uppercase;
@@ -652,5 +698,11 @@ video {
 }
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+@media (min-width: 996px) {
+
+  .md-lg\:hidden {
+    display: none;
+  }
 }
 
