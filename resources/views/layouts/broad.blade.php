@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-tertiary text-sm">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,13 +20,13 @@
     <link rel="manifest" href="/site.webmanifest">
 
 </head>
-<body>
+<body class="text-primary max-h-full m-0">
     <div id="app">
         <nav class="main bg-primary text-secondary flex flex-row flex-nowrap justify-between content-center text-lg h-10 px-2">
           @include('partials.nav')
         </nav>
 
-        <main>
+        <main class="bg-white">
           <p class="text-red-900 p-[8px]">Testing</p>
           {{-- Begin messages --}}
           @include('partials.messages')

@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         primary: '#595959',
         secondary: '#e6e6e6',
-        tertiary: '#154390',
+        tertiary: '#eee',
         highlight: '#fff200',
         'highlight-hover': '#ffe029'
       },
