@@ -26,7 +26,7 @@
           @include('partials.nav')
         </nav>
 
-        <main class="bg-white m-2 p-2 h-[calc(100vh-86px)] overflow-auto">
+        <main class="bg-white m-[8px] p-[8px] h-[calc(100vh-86px)] overflow-auto">
           <p class="text-red-900 p-[8px]">Testing</p>
           {{-- Begin messages --}}
           @include('partials.messages')
@@ -35,7 +35,7 @@
           @yield('content.broad')
         </main>
 
-        <footer class="bg-primary text-secondary text-sm h-[36px] p-[5px] flex flex-row flex-nowrap justify-center items-center">
+        <footer class="bg-primary text-secondary text-sm h-[30px] p-[5px] flex flex-row flex-nowrap justify-center items-center">
           @include('partials.footer')
         </footer>
     </div>

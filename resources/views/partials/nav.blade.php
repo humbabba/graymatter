@@ -1,10 +1,9 @@
 
-  <div class="brand text-xl flex flex-row flex-nowrap items-center">
+  <div class="brand text-2xl flex flex-row flex-nowrap items-center">
     <a href="{{ url('/')}}">{{ config('app.name') }}</a>
   </div>
-  <div class="nav-links-container pl-[20px] w-full">
-    <div class="nav-links flex flex-row flex-nowrap justify-between items-center h-full text-lg">
-      <ul class="nav-links-primary flex flex-row flex-nowrap items-center justify-start gap-4">
+    <div class="nav-links flex flex-row flex-nowrap justify-between items-center h-full text-lg pl-[20px] w-full">
+      <ul class="nav-links-primary flex flex-row flex-nowrap items-center gap-[12px]">
         @guest
         @else
           <li><a href="{{ url('/starter')}} ">Laravel starter app</a></li>
@@ -24,7 +23,7 @@
           </li>
         @endrole
       </ul>
-      <ul class="nav-links-secondary flex flex-row flex-nowrap gap-4">
+      <ul class="nav-links-secondary flex flex-row flex-nowrap items-center gap-[12px]">
         @guest
           <li>
               <a href="{{ route('login') }}">Log in</a>
@@ -35,7 +34,7 @@
             </li>
           @endif
         @else
-          <li class="nav-links-dropdown flex flex-row flex-nowrap gap-4">
+          <li class="nav-links-dropdown flex flex-row flex-nowrap gap-[12px] items-center">
             <a><img src="{{ getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/></a><a>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
             <ul class="nav-links-dropdown-submenu hidden">
               <li>
@@ -57,7 +56,6 @@
         @endguest
       </ul>
     </div>
-  </div>
   <div class="nav-hamburger md-lg:hidden">
     <i class="fas fa-bars"></i>
   </div>
