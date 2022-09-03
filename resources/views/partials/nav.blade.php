@@ -35,8 +35,8 @@
           @endif
         @else
           <li class="nav-links-dropdown flex flex-row flex-nowrap gap-[12px] items-center">
-            <a><img src="{{ getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/></a><a>{{ Auth::user()->name }} <i class="fas fa-caret-down"></i></a>
             <ul class="nav-links-dropdown-submenu hidden">
+              <a><img src="{{ \App\Helpers\getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/></a><a>{{ Auth::user()->name }} <?= \App\Helpers\getSvgCodeWithClasses('chevron-down.svg',['text-amber-600']) ?></a>
               <li>
                 <a href="{{ route('dashboard')}}">Dashboard</a>
               </li>
