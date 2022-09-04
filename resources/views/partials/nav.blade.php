@@ -1,9 +1,8 @@
-
   <div class="brand text-2xl flex flex-row flex-nowrap items-center">
     <a href="{{ url('/')}}">{{ config('app.name') }}</a>
   </div>
-    <div class="nav-links flex flex-row flex-nowrap justify-between items-center h-full text-lg pl-[20px] w-full">
-      <ul class="nav-links-primary flex flex-row flex-nowrap items-center gap-[12px]">
+    <div class="nav-links hidden md-lg:flex flex-row flex-nowrap justify-between items-center h-full text-lg w-full">
+      <ul class="nav-links-primary flex flex-row flex-nowrap items-center gap-[12px] px-[20px]">
         @guest
         @else
           <li><a href="{{ url('/starter')}} ">Laravel starter app</a></li>
@@ -34,9 +33,14 @@
             </li>
           @endif
         @else
-          <li class="nav-links-dropdown flex flex-row flex-nowrap gap-[12px] items-center">
+          <li class="nav-links-dropdown">
+            <div class="cursor-pointer">
+              <span class="flex flex-row flex-nowrap gap-[12px] items-center">
+                <img src="{{ Helpers::getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/>
+                {{ Auth::user()->name }}
+                {!! Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[22px]']) !!}
+            </div>
             <ul class="nav-links-dropdown-submenu hidden">
-              <a><img src="{{ \App\Helpers\getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/></a><a>{{ Auth::user()->name }} <?= \App\Helpers\getSvgCodeWithClasses('chevron-down.svg',['text-amber-600']) ?></a>
               <li>
                 <a href="{{ route('dashboard')}}">Dashboard</a>
               </li>
@@ -56,6 +60,6 @@
         @endguest
       </ul>
     </div>
-  <div class="nav-hamburger md-lg:hidden">
-    <i class="fas fa-bars"></i>
+  <div class="nav-hamburger md-lg:hidden flex flex-row items-center">
+    {!! Helpers::getSvgCodeWithClasses('bars-3.svg',['w-[22px]']) !!}
   </div>

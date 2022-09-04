@@ -596,11 +596,23 @@ video {
 .h-\[30px\] {
   height: 30px;
 }
+.h-\[22px\] {
+  height: 22px;
+}
+.h-\[42px\] {
+  height: 42px;
+}
+.h-\[7px\] {
+  height: 7px;
+}
 .max-h-full {
   max-height: 100%;
 }
 .w-full {
   width: 100%;
+}
+.w-\[22px\] {
+  width: 22px;
 }
 .cursor-pointer {
   cursor: pointer;
@@ -654,6 +666,10 @@ video {
   padding-left: 8px;
   padding-right: 8px;
 }
+.px-\[20px\] {
+  padding-left: 20px;
+  padding-right: 20px;
+}
 .pl-\[20px\] {
   padding-left: 20px;
 }
@@ -684,18 +700,22 @@ video {
   --tw-text-opacity: 1;
   color: rgb(127 29 29 / var(--tw-text-opacity));
 }
-.text-white {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
 .text-amber-600 {
   --tw-text-opacity: 1;
   color: rgb(217 119 6 / var(--tw-text-opacity));
+}
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 @media (min-width: 996px) {
+
+  .md-lg\:flex {
+    display: flex;
+  }
 
   .md-lg\:hidden {
     display: none;
