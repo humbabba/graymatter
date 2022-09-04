@@ -2,10 +2,12 @@
     <a href="{{ url('/')}}">{{ config('app.name') }}</a>
   </div>
     <div class="nav-links hidden md-lg:flex flex-row flex-nowrap justify-between items-center h-full text-lg w-full">
-      <ul class="nav-links-primary flex flex-row flex-nowrap items-center gap-[12px] px-[20px]">
+      <ul class="nav-links-primary flex flex-row flex-nowrap items-center px-[20px] h-full">
         @guest
         @else
-          <li><a href="{{ url('/starter')}} ">Laravel starter app</a></li>
+          <li>
+            <a href="{{ url('/starter')}} ">Laravel starter app</a>
+          </li>
           <li><a href="{{ url('/loggers')}} ">Loggers</a></li>
         @endguest
         @role('admin')
@@ -34,12 +36,11 @@
           @endif
         @else
           <li class="nav-links-dropdown">
-            <div class="cursor-pointer">
-              <span class="flex flex-row flex-nowrap gap-[12px] items-center">
+            <a class="flex flex-row flex-nowrap gap-[12px] items-center">
                 <img src="{{ Helpers::getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/>
                 {{ Auth::user()->name }}
                 {!! Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[22px]']) !!}
-            </div>
+            </a>
             <ul class="nav-links-dropdown-submenu hidden">
               <li>
                 <a href="{{ route('dashboard')}}">Dashboard</a>
