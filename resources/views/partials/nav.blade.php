@@ -37,9 +37,9 @@
         @else
           <li class="nav-links-dropdown">
             <a class="flex flex-row flex-nowrap gap-[12px] items-center">
-                <img src="{{ Helpers::getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/>
+                <img src="{{Helpers::getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/>
                 {{ Auth::user()->name }}
-                {!! Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[22px]']) !!}
+                {!!Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[22px]']) !!}
             </a>
             <ul class="nav-links-dropdown-submenu hidden">
               <li>
@@ -49,12 +49,12 @@
                 <a href="{{ route('users.profile',Auth::user()->id)}}">Profile</a>
               </li>
               <li>
-                <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                <!-- <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     Log out
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
-                </form>
+                </form> -->
               </li>
             </ul>
           </li>
@@ -62,5 +62,5 @@
       </ul>
     </div>
   <div class="nav-hamburger md-lg:hidden flex flex-row items-center">
-    {!! Helpers::getSvgCodeWithClasses('bars-3.svg',['w-[22px]']) !!}
+    {!!Helpers::getSvgCodeWithClasses('bars-3.svg',['w-[22px]']) !!}
   </div>

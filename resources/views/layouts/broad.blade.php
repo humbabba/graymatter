@@ -10,7 +10,7 @@
     <title>{{ config('app.name') }} - @yield('view_title')</title>
 
     <!-- Styles -->
-    <link href="{{ asset('css/style.css') }}?v={{ Helpers::getVersion() }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}?v={{Helpers::getVersion() }}" rel="stylesheet">
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -40,7 +40,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}?v={{ Helpers::getVersion() }}"></script>
+    <script src="{{ asset('js/app.js') }}?v={{Helpers::getVersion() }}"></script>
 
 </body>
 </html>

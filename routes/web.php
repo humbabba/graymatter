@@ -19,12 +19,14 @@ Auth::routes(['verify' => true,'register' => config('users.new.register')]);
 Route::middleware(['verified','suspended'])->group(function() {
 
     //User stuff
+    Route::get('/loggers', [\App\Http\Controllers\LoggerController::class, 'index'])->name('loggers');
+
+
+
     Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
     Route::post('/upload/{directory}', 'FileController@writeFile');
 
     Route::get('users/profile/{id}', 'UserController@show')->name('users.profile');
-
-    Route::resource('loggers','LoggerController');
 
     //Admin stuff
     Route::middleware('role:admin')->group(function() {
