@@ -9,5 +9,6 @@
     "/favicon.ico": "/favicon.ico",
     "/index.php": "/index.php",
     "/robots.txt": "/robots.txt",
-    "/site.webmanifest": "/site.webmanifest"
+    "/site.webmanifest": "/site.webmanifest",
+    "/.htaccess": "/.htaccess"
 }

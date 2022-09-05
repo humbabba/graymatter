@@ -54,7 +54,7 @@
                     <div class="centum">
                         <div class="cell btn-wrap pt0 pb10">
                             <input type="submit" class="btn" value="Search"/>
-                            <a class="btn" href="{{ route('loggers.index') }}">Clear</a>
+                            <a class="btn" href="{{ route('loggers') }}">Clear</a>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
             @foreach($output->loggers as $logger)
                 <div class="centum striped-odd">
                     <div class="cell x20">
-                        {!! renderLinkedUserDisplayName($logger->user_id) !!}
+                        {!! Helpers::renderLinkedUserDisplayName($logger->user_id) !!}
                     </div>
                     <div class="cell x15">
                         @if(!empty($logger->model_link))

@@ -16,6 +16,7 @@ mix.clean()
     .js('resources/js/app.js', 'public/js')
     .postCss('resources/css/style.css', 'public/css')
     .copy('resources/root/*.*','public')
+    .copy('resources/root/.*','public')
     .copy('resources/img/*.*','public/img')
     .options({
         processCssUrls: false,

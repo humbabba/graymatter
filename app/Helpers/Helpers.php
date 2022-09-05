@@ -58,7 +58,7 @@ class Helpers
           if(!is_null($user)) {
               $profileLink = route('users.profile',$user->id);
               if($withGravatar) {
-                  $gravatarSrc = getGravatarSrc($user->email,14);
+                  $gravatarSrc = self::getGravatarSrc($user->email,14);
                   $output .= "<a href='$profileLink'><img class='display-name-gravatar' src='$gravatarSrc' /></a> ";
               }
               $output .= "<a href='$profileLink'>{$user->name}</a>";

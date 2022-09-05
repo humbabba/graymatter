@@ -21,8 +21,6 @@ Route::middleware(['verified','suspended'])->group(function() {
     //User stuff
     Route::get('/loggers', [\App\Http\Controllers\LoggerController::class, 'index'])->name('loggers');
 
-
-
     Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
     Route::post('/upload/{directory}', 'FileController@writeFile');
 
