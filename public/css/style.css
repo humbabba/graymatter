@@ -596,8 +596,8 @@ video {
 .h-\[30px\] {
   height: 30px;
 }
-.h-\[22px\] {
-  height: 22px;
+.h-\[20px\] {
+  height: 20px;
 }
 .max-h-full {
   max-height: 100%;
@@ -628,6 +628,9 @@ video {
 }
 .justify-between {
   justify-content: space-between;
+}
+.gap-\[8px\] {
+  gap: 8px;
 }
 .gap-\[12px\] {
   gap: 12px;
@@ -669,6 +672,9 @@ video {
 }
 .text-lg {
   font-size: 1.125rem;
+}
+.text-\[18px\] {
+  font-size: 18px;
 }
 .text-2xl {
   font-size: 1.5rem;

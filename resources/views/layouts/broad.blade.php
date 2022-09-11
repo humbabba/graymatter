@@ -11,6 +11,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/style.css') }}?v={{Helpers::getVersion() }}" rel="stylesheet">
+    @livewireStyles
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -26,7 +27,7 @@
         </nav>
 
         <main class="bg-white m-[8px] p-[8px] h-[calc(100vh-86px)] overflow-auto">
-          <p class="text-red-900 p-[8px]">Testing</p>
+          <p class="text-red-900 text-[18px] p-[8px]">Testing</p>
           {{-- Begin messages --}}
           @include('partials.messages')
           {{-- End messages --}}
@@ -41,6 +42,6 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}?v={{Helpers::getVersion() }}"></script>
-
+    @livewireScripts
 </body>
 </html>
