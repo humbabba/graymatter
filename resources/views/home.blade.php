@@ -16,7 +16,6 @@
           <P>It's designed to be simple for Laravel beginners. Rudimentary. Remedial, even.</p>
           <P><i>"A simple developer is capable of crazily complicated code." - humbabba</i></p>
       </div>
-      <!-- <livewire:dropdown /> -->
       @include('partials/test')
   </div>
 @endsection

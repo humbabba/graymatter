@@ -5454,6 +5454,7 @@ __webpack_require__(/*! ./components/index */ "./resources/js/components/index.j
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alpinejs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alpinejs */ "./node_modules/alpinejs/dist/module.esm.js");
+/* harmony import */ var _components_dropdown_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/dropdown.js */ "./resources/js/components/dropdown.js");
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -5465,11 +5466,42 @@ window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /**
  * We'll load Alpine to handle state-dependent DOM maniputlation on the frontend.
+ * Component JS files (like 'dropdown.js') are imported here to allow common
+ * component objects to be used across the app.
  */
 
 
+
+alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"].data('dropdown', _components_dropdown_js__WEBPACK_IMPORTED_MODULE_1__["default"]);
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"];
 alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"].start();
+
+/***/ }),
+
+/***/ "./resources/js/components/dropdown.js":
+/*!*********************************************!*\
+  !*** ./resources/js/components/dropdown.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (function () {
+  return {
+    open: false,
+    trigger: _defineProperty({}, '@click', function click() {
+      this.open = !this.open;
+    }),
+    toggle: _defineProperty({}, 'x-show', function xShow() {
+      return this.open;
+    })
+  };
+});
 
 /***/ }),
 

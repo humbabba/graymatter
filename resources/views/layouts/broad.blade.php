@@ -41,7 +41,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}?v={{Helpers::getVersion() }}"></script>
     @livewireScripts
+    <script src="{{ asset('js/app.js') }}?v={{Helpers::getVersion() }}"></script>
 </body>
 </html>

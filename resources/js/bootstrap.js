@@ -12,9 +12,13 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**
  * We'll load Alpine to handle state-dependent DOM maniputlation on the frontend.
+ * Component JS files (like 'dropdown.js') are imported here to allow common
+ * component objects to be used across the app.
  */
 import Alpine from 'alpinejs'
+import dropdown from './components/dropdown.js'
 
-window.Alpine = Alpine
+Alpine.data('dropdown', dropdown);
 
-Alpine.start()
+window.Alpine = Alpine;
+Alpine.start();
