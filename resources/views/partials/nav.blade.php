@@ -11,11 +11,11 @@
           <li><a href="{{ url('/loggers')}} ">Loggers</a></li>
         @endguest
         @role('admin')
-          <li class="nav-links-dropdown cursor-pointer">
-            <a class="flex flex-row flex-nowrap gap-[8px] items-center">
+          <li class="nav-links-dropdown" x-data="dropdown">
+            <a class="flex flex-row flex-nowrap gap-[8px] items-center w-full" x-bind="trigger">
               Admin {!!Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[20px]']) !!}
             </a>
-            <ul class="nav-links-dropdown-submenu hidden">
+            <ul class="nav-links-dropdown-submenu" x-bind="content" style="display: none">
               <li>
                 <a href="/users">Users</a>
               </li>
@@ -37,20 +37,20 @@
             </li>
           @endif
         @else
-          <li class="nav-links-dropdown" @click="toggle = !toggle">
-            <a class="flex flex-row flex-nowrap gap-[8px] items-center">
+          <li class="" x-data="dropdown">
+            <a class="flex flex-row flex-nowrap gap-[8px] items-center" x-bind="trigger">
                 <img src="{{ Helpers::getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/>
                 {{ Auth::user()->name }}
                 {!! Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[20px]']) !!}
             </a>
-            <ul class="nav-links-dropdown-submenu" v-show="toggle">
-              <li>
+            <ul x-bind="content" style="display: none">
+              <li class="">
                 <a href="{{ route('dashboard')}}">Dashboard</a>
               </li>
-              <li>
+              <li class="">
                 <a href="{{ route('users.profile',Auth::user()->id)}}">Profile</a>
               </li>
-              <li>
+              <li class="">
                 <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     Log out
                 </a>

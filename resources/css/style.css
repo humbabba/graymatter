@@ -8,9 +8,14 @@ nav.main {
   ul {
     @apply h-full;
     li {
-      @apply h-full px-[8px] hover:bg-[#999999] duration-[400ms];
+      @apply h-full hover:bg-[#999999] hover:text-secondary duration-[400ms];
       a {
-        @apply h-full flex flex-row flex-nowrap items-center cursor-pointer;
+        @apply h-full px-[8px] flex flex-row flex-nowrap items-center cursor-pointer;
+      }
+      ul {
+        li {
+          @apply bg-secondary text-primary;
+        }
       }
     }
   }
