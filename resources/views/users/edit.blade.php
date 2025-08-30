@@ -9,7 +9,7 @@
         </div>
 
         {{-- Begin form --}}
-        <form class="centum input-spacing" action="{{ route('users.update',$user->id) }}" method="post">
+        <form class="centum inputspace" action="{{ route('users.update',$user->id) }}" method="post">
             @method('PATCH')
             @csrf
             <div class="cell x-max700 p0">
@@ -45,7 +45,7 @@
                       </div>
                       <div class="cell pv0">
                           <label>Bio</label>
-                          <input type="hidden" name="bio" class="text-editor" value="{{ $user->bio }}" />
+                          <input type="hidden" name="bio" class="textEditor" value="{{ $user->bio }}" />
                       </div>
                     @endif
                 </div>

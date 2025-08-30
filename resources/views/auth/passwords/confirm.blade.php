@@ -10,7 +10,7 @@
           </div>
         @enderror
         <p>{{ __('Please confirm your password before continuing.') }}</p>
-        <form class="input-spacing" method="POST" action="{{ route('password.confirm') }}">
+        <form class="inputspace" method="POST" action="{{ route('password.confirm') }}">
           @csrf
           <label for="email">{{ __('Password') }}</label>
           <input id="password" type="password" class="@error('password') is-invalid @enderror" name="password" required autocomplete="current-password" autofocus>

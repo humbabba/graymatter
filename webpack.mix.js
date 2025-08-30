@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+require('laravel-mix-clean');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,5 +12,17 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+mix.clean()
+    .js('resources/js/app.js', 'public/js')
+    .postCss('resources/css/style.css', 'public/css')
+    .copy('resources/root/*.*','public')
+    .copy('resources/root/.*','public')
+    .copy('resources/img/*.*','public/img')
+    .options({
+        processCssUrls: false,
+        postCss: [
+            require('tailwindcss/nesting'),
+            require('tailwindcss'),
+            require('autoprefixer')
+        ]
+    });

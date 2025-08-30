@@ -1,0 +1,76 @@
+form,
+.modal-content,
+.cell {
+    label {
+        display: block;
+
+        &.small {
+            font-size: $fs-small;
+        }
+
+        &.inline {
+            display: inline;
+        }
+    }
+
+    input[type="email"],
+    input[type="number"],
+    input[type="password"],
+    input[type="search"],
+    input[type="date"],
+    input[type="text"],
+    input[type="url"] {
+        border: 1px solid $primary;
+        border-radius: $border-radius-base;
+        font-size: $fs-form;
+        height: $lh-base;
+        padding: 0 $padding-base;
+        width: 100%;
+
+        &.is-invalid {
+            border: 1px solid $red;
+        }
+    }
+
+    input[type="checkbox"] {
+        margin: 0 0 $margin-big 0;
+    }
+
+    select {
+        border: 1px solid $secondary;
+        border-radius: $border-radius-base;
+        font-size: $fs-form;
+        height: $lh-base;
+        max-height: $lh-big;
+        padding: 0 $padding-base;
+        width: 100%;
+
+        &.is-invalid {
+            border: 1px solid $red;
+        }
+    }
+
+    textarea {
+        border: 1px solid $secondary;
+        border-radius: $border-radius-base;
+        height: $textarea-height;
+        padding: $padding-base;
+        resize: vertical;
+        overflow: auto;
+        width: 100%;
+
+        &.is-invalid {
+            border: 1px solid $red;
+        }
+    }
+}
+
+.inputspace {
+    input, select {
+        margin-bottom: $margin-base;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}

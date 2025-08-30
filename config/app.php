@@ -248,6 +248,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        //Custom Helpers class in /App/Helpers
+        'Helpers' => App\Helpers\Helpers::class,
     ],
 
 ];

@@ -3,7 +3,7 @@
  */
 
 //Imports
-import { CentaModal } from '../centa/components/modal';
+import { CentaModal } from './modal';
 
 //User suspension
 const suspendUser = (form,suspendedDays,suspendedMessage) => {
@@ -21,7 +21,7 @@ $('.suspendUser').each((index,el) => {
 <p><input type="number" name="suspendedDays" class="short-field" step="1" min="0" value="1"></p>
 <p>days.</p>
 <p>Suspension message for user:</p>
-<input type="hidden" name="suspendedMessage" class="text-editor">`;
+<input type="hidden" name="suspendedMessage" class="textEditor">`;
     button.on('click',(e) => {
         e.preventDefault();
         const modal = new CentaModal({
