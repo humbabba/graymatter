@@ -82,6 +82,7 @@ class Helpers
       */
       public static function getSvgCodeWithClasses($name = '',$classNames = [],$classOverwrite = false)
       {
+        return '';
         if(empty($name)) {
           return '';
         }
