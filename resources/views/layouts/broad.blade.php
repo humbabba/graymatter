@@ -27,7 +27,6 @@
         </nav>
 
         <main class="bg-white m-[8px] p-[8px] h-[calc(100vh-86px)] overflow-auto">
-          <p class="text-red-900 text-[18px] p-[8px]">Testing</p>
           {{-- Begin messages --}}
           @include('partials.messages')
           {{-- End messages --}}

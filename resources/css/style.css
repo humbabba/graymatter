@@ -20,3 +20,11 @@ nav.main {
     }
   }
 }
+
+p {
+  @apply mb-[8px];
+}
+
+h1 {
+  @apply text-[2rem] font-bold;
+}

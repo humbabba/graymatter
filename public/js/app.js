@@ -5492,15 +5492,15 @@ __webpack_require__.r(__webpack_exports__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (function () {
-  var _trigger, _content;
+  var _dropdownTrigger, _content;
 
   return {
     open: false,
-    trigger: (_trigger = {}, _defineProperty(_trigger, '@click', function click() {
+    dropdownTrigger: (_dropdownTrigger = {}, _defineProperty(_dropdownTrigger, '@click', function click() {
       this.open = !this.open;
-    }), _defineProperty(_trigger, '@click.outside', function clickOutside() {
+    }), _defineProperty(_dropdownTrigger, '@click.outside', function clickOutside() {
       this.open = false;
-    }), _trigger),
+    }), _dropdownTrigger),
     content: (_content = {}, _defineProperty(_content, 'x-show', function xShow() {
       return this.open;
     }), _defineProperty(_content, 'x-transition:enter', "transition ease-out duration-[400ms]"), _defineProperty(_content, 'x-transition:enter-start', "transform opacity-0 scale-100"), _defineProperty(_content, 'x-transition:enter-end', "transform opacity-100 scale-100"), _defineProperty(_content, 'x-transition:leave', "transition ease-out duration-[400ms]"), _defineProperty(_content, 'x-transition:leave-start', "transform opacity-100 scale-100"), _defineProperty(_content, 'x-transition:leave-end', "transform opacity-0 scale-100"), _content)

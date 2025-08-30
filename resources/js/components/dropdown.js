@@ -1,7 +1,7 @@
 export default () => ({
     open: false,
 
-    trigger: {
+    dropdownTrigger: {
       ['@click']() {
         this.open = ! this.open
       },

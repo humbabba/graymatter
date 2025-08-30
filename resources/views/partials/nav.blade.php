@@ -12,7 +12,7 @@
         @endguest
         @role('admin')
           <li class="nav-links-dropdown" x-data="dropdown">
-            <a class="flex flex-row flex-nowrap gap-[8px] items-center w-full" x-bind="trigger">
+            <a class="flex flex-row flex-nowrap gap-[8px] items-center w-full" x-bind="dropdownTrigger">
               Admin {!!Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[20px]']) !!}
             </a>
             <ul class="nav-links-dropdown-submenu" x-bind="content" style="display: none">
@@ -38,7 +38,7 @@
           @endif
         @else
           <li class="" x-data="dropdown">
-            <a class="flex flex-row flex-nowrap gap-[8px] items-center" x-bind="trigger">
+            <a class="flex flex-row flex-nowrap gap-[8px] items-center" x-bind="dropdownTrigger">
                 <img src="{{ Helpers::getGravatarSrc(Auth::user()->email,30) }}" class="gravatar-icon"/>
                 {{ Auth::user()->name }}
                 {!! Helpers::getSvgCodeWithClasses('chevron-down.svg',['h-[20px]']) !!}
