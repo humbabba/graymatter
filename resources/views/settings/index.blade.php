@@ -1,0 +1,136 @@
+<x-layouts.app>
+    <div class="p-4 md:p-8">
+        <div class="flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-8">
+            <h1>Settings</h1>
+            <a href="{{ route('settings.nav') }}" class="btn btn-secondary">Navigation</a>
+        </div>
+
+        @if (session('status'))
+            <div class="mb-6 p-4 bg-graymatter-green/20 border border-graymatter-green/50 text-graymatter-green rounded-sm">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('settings.update') }}" data-ajax-save>
+            @csrf
+            @method('PUT')
+
+            @foreach($settings as $group => $groupSettings)
+                <div class="mb-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-3 h-8 bg-graymatter-green rounded-none"></div>
+                        <h2 class="capitalize">{{ $group }}</h2>
+                    </div>
+
+                    <div class="bg-graymatter-panel-light rounded-sm p-6 space-y-6">
+                        @foreach($groupSettings as $setting)
+                            <div class="flex flex-col md:flex-row md:items-start gap-4">
+                                <label for="settings_{{ $setting->key }}" class="font-semibold text-graymatter-teal md:w-64 uppercase text-sm tracking-wider md:pt-2" style="font-family: var(--font-display);">
+                                    {{ str_replace('_', ' ', ucwords($setting->key, '_')) }}
+                                </label>
+                                <div class="flex-1">
+                                    @if($setting->type === 'select')
+                                        <div>
+                                            <select
+                                                name="settings[{{ $setting->key }}]"
+                                                id="settings_{{ $setting->key }}"
+                                                class="bg-graymatter-panel border border-divider rounded-sm px-4 py-2 text-text w-full max-w-md"
+                                            >
+                                                @foreach($setting->options ?? [] as $optionValue => $optionLabel)
+                                                    <option value="{{ $optionValue }}" {{ $setting->value === $optionValue ? 'selected' : '' }}>
+                                                        {{ $optionLabel }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @if($setting->description)
+                                                <p class="text-text-muted text-sm mt-2">{{ $setting->description }}</p>
+                                            @endif
+                                        </div>
+                                    @elseif($setting->type === 'boolean')
+                                        <label class="flex items-center gap-3 cursor-pointer">
+                                            <input type="hidden" name="settings[{{ $setting->key }}]" value="0">
+                                            <div class="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    name="settings[{{ $setting->key }}]"
+                                                    id="settings_{{ $setting->key }}"
+                                                    value="1"
+                                                    {{ $setting->casted_value ? 'checked' : '' }}
+                                                    class="sr-only peer"
+                                                >
+                                                <div class="w-12 h-6 border border-subtle rounded-full peer-checked:bg-graymatter-green peer-checked:border-graymatter-green transition-colors"></div>
+                                                <div class="absolute left-1 top-1 w-4 h-4 bg-subtle rounded-full peer-checked:bg-graymatter-black peer-checked:translate-x-6 transition-all"></div>
+                                            </div>
+                                            <span class="text-text-muted text-sm">{{ $setting->description }}</span>
+                                        </label>
+                                    @elseif($setting->type === 'json' && is_array($setting->options))
+                                        <div>
+                                            @php $selected = is_array($setting->casted_value) ? $setting->casted_value : []; @endphp
+                                            <div class="flex flex-wrap gap-3">
+                                                @foreach($setting->options as $optionValue => $optionLabel)
+                                                    <label class="flex items-center gap-2 px-3 py-2 bg-graymatter-panel rounded-sm cursor-pointer hover:bg-graymatter-dark transition-colors">
+                                                        <input
+                                                            type="checkbox"
+                                                            name="settings[{{ $setting->key }}][]"
+                                                            value="{{ $optionValue }}"
+                                                            {{ in_array($optionValue, $selected) ? 'checked' : '' }}
+                                                            class="w-4 h-4 accent-graymatter-lime"
+                                                        >
+                                                        <span class="text-text text-sm">{{ $optionLabel }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            @if($setting->description)
+                                                <p class="text-text-muted text-sm mt-2">{{ $setting->description }}</p>
+                                            @endif
+                                        </div>
+                                    @elseif($setting->type === 'integer')
+                                        <div>
+                                            <input
+                                                type="number"
+                                                name="settings[{{ $setting->key }}]"
+                                                id="settings_{{ $setting->key }}"
+                                                value="{{ $setting->value }}"
+                                                class="bg-graymatter-panel border border-divider rounded-sm px-4 py-2 text-text w-32"
+                                            >
+                                            @if($setting->description)
+                                                <p class="text-text-muted text-sm mt-2">{{ $setting->description }}</p>
+                                            @endif
+                                        </div>
+                                    @elseif($setting->type === 'richtext')
+                                        <div class="w-full">
+                                            <x-rich-editor id="settings_{{ $setting->key }}" name="settings[{{ $setting->key }}]" :value="$setting->value" />
+                                            @if($setting->description)
+                                                <p class="text-text-muted text-sm mt-2">{{ $setting->description }}</p>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <div>
+                                            <input
+                                                type="text"
+                                                name="settings[{{ $setting->key }}]"
+                                                id="settings_{{ $setting->key }}"
+                                                value="{{ $setting->value }}"
+                                                class="bg-graymatter-panel border border-divider rounded-sm px-4 py-2 text-text w-full max-w-md"
+                                            >
+                                            @if($setting->description)
+                                                <p class="text-text-muted text-sm mt-2">{{ $setting->description }}</p>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+
+            <div class="flex gap-4">
+                <button type="submit" class="btn btn-primary">
+                    Save settings
+                </button>
+            </div>
+        </form>
+
+    </div>
+</x-layouts.app>
