@@ -22,10 +22,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (Schema::hasTable('permissions')) {
-            foreach (SyncPermissions::getManageableModels() as $modelClass) {
-                $modelClass::syncPermissions();
+        try {
+            if (Schema::hasTable('permissions')) {
+                foreach (SyncPermissions::getManageableModels() as $modelClass) {
+                    $modelClass::syncPermissions();
+                }
             }
+        } catch (\Throwable) {
+            // Database not available yet (e.g., during composer install before migration)
         }
     }
 }

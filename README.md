@@ -24,8 +24,16 @@ Configure your `.env` file with database credentials, then:
 
 ```bash
 php artisan migrate --seed
+php artisan storage:link
+mkdir -p storage/app/public/project-images
 npm run build
 php artisan serve
+```
+
+The `storage:link` command creates the `public/storage` symlink so uploaded files are web-accessible. The `mkdir` creates the image upload directory. On shared hosts where `storage:link` doesn't work, create the symlink manually:
+
+```bash
+ln -s /absolute/path/to/storage/app/public /absolute/path/to/public/storage
 ```
 
 The default admin account is `admin@example.com`. With the default auth mode (email code), enter this email on the login page. In local development, the 6-digit code is displayed on-screen instead of emailed.
