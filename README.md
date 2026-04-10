@@ -107,6 +107,8 @@ Images are uploaded to `storage/app/public/project-images` (max 5 MB). Content i
 
 All fonts are hosted locally. A system default option uses the browser's native font stack.
 
+**Link appearance:** Inline links have their own color and typographic styles, configurable independently from the accent. The link color defaults to the active accent's teal, but can be pinned to grayscale, green, blue, amber, or rose. Bold, italic, and underline can be toggled in any combination. Hover state has its own color and style controls: hover color defaults to a slightly darkened version of the link color, and hover styles are authoritative — whatever is checked under hover is exactly what shows on hover, so you can have an underlined base that loses its underline on hover, or vice versa. All four settings live in the appearance section of `/settings`.
+
 **Dark/light mode:** Toggled per user via the nav bar button, persisted to the user's profile and localStorage.
 
 ### Typography and styling
