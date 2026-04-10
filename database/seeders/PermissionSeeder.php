@@ -71,7 +71,7 @@ class PermissionSeeder extends Seeder
         ]);
         AppSetting::create([
             'key' => 'news',
-            'value' => '',
+            'value' => $isDemo ? '<h1 style="text-align: center;">Welcome to the Graymatter demo site</h1><p style="text-align: center;">Go nuts.</p>' : '',
             'type' => 'richtext',
             'group' => 'general',
             'description' => 'News or announcements to display to users (supports HTML)',
