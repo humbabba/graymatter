@@ -16,6 +16,7 @@ return new class extends Migration
             $table->json('options')->nullable();
             $table->string('group')->default('general');
             $table->string('description')->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
         });
 

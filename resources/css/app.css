@@ -298,12 +298,53 @@
     li { margin-top: 0.25em; }
 
     a {
-        color: var(--color-graymatter-teal);
+        color: var(--color-link, var(--color-graymatter-teal));
         transition: color 0.2s;
     }
     a:hover {
-        color: color-mix(in srgb, var(--color-graymatter-teal) 80%, black);
+        color: var(--color-link-hover, color-mix(in srgb, var(--color-link, var(--color-graymatter-teal)) 80%, black));
     }
+
+    /* Link color overrides — explicit palette choices.
+       data-link-color="accent" intentionally has no rule, so links inherit
+       --color-graymatter-teal from the active accent theme. */
+    [data-link-color="grayscale"] { --color-link: #6b7280; }
+    [data-link-color="green"]     { --color-link: #0891b2; }
+    [data-link-color="blue"]      { --color-link: #0ea5e9; }
+    [data-link-color="amber"]     { --color-link: #b45309; }
+    [data-link-color="rose"]      { --color-link: #be185d; }
+
+    [data-theme="dark"][data-link-color="grayscale"] { --color-link: #9ca3af; }
+    [data-theme="dark"][data-link-color="green"]     { --color-link: #06b6d4; }
+    [data-theme="dark"][data-link-color="blue"]      { --color-link: #38bdf8; }
+    [data-theme="dark"][data-link-color="amber"]     { --color-link: #d97706; }
+    [data-theme="dark"][data-link-color="rose"]      { --color-link: #ec4899; }
+
+    /* Link hover color overrides — "auto" leaves --color-link-hover unset
+       so the a:hover rule falls back to the darken-on-hover behavior.
+       "accent" pins hover to the active accent's teal regardless of link_color. */
+    [data-link-hover-color="accent"]    { --color-link-hover: var(--color-graymatter-teal); }
+    [data-link-hover-color="grayscale"] { --color-link-hover: #6b7280; }
+    [data-link-hover-color="green"]     { --color-link-hover: #0891b2; }
+    [data-link-hover-color="blue"]      { --color-link-hover: #0ea5e9; }
+    [data-link-hover-color="amber"]     { --color-link-hover: #b45309; }
+    [data-link-hover-color="rose"]      { --color-link-hover: #be185d; }
+
+    [data-theme="dark"][data-link-hover-color="grayscale"] { --color-link-hover: #9ca3af; }
+    [data-theme="dark"][data-link-hover-color="green"]     { --color-link-hover: #06b6d4; }
+    [data-theme="dark"][data-link-hover-color="blue"]      { --color-link-hover: #38bdf8; }
+    [data-theme="dark"][data-link-hover-color="amber"]     { --color-link-hover: #d97706; }
+    [data-theme="dark"][data-link-hover-color="rose"]      { --color-link-hover: #ec4899; }
+
+    /* Base link style flags. Scoped to :not(:hover) so the hover state is
+       controlled entirely by data-link-hover-style, even when it's empty. */
+    [data-link-style~="bold"] a:not(:hover)       { font-weight: 700; }
+    [data-link-style~="italic"] a:not(:hover)     { font-style: italic; }
+    [data-link-style~="underline"] a:not(:hover)  { text-decoration: underline; }
+
+    [data-link-hover-style~="bold"] a:hover       { font-weight: 700; }
+    [data-link-hover-style~="italic"] a:hover     { font-style: italic; }
+    [data-link-hover-style~="underline"] a:hover  { text-decoration: underline; }
 
     /* Form elements */
     input[type="text"],

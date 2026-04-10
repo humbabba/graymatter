@@ -11,6 +11,7 @@ class AppSettingController extends Controller
     public function index()
     {
         $settings = AppSetting::orderBy('group')
+            ->orderBy('sort_order')
             ->orderBy('key')
             ->get()
             ->groupBy('group');

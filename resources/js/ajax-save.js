@@ -17,26 +17,29 @@ document.addEventListener('alpine:init', () => {
 
             if (!this.form) return;
 
-            // Store initial values of all form fields
+            // Checkbox groups (json settings) share a name like "settings[key][]",
+            // so keys must include the value to disambiguate boxes within a group.
+            const checkboxKey = (el) => el.name + '__' + el.value + '__checked';
+
             this.initialFieldValues = {};
             this.form.querySelectorAll('input, textarea, select').forEach(el => {
                 if (!el.name) return;
                 if (el.type === 'checkbox') {
-                    this.initialFieldValues[el.name + '__checked'] = el.checked;
+                    this.initialFieldValues[checkboxKey(el)] = el.checked;
                 } else {
                     this.initialFieldValues[el.name] = el.value;
                 }
             });
 
-            // Listen for form changes — compare against initial values to avoid false dirty
             const hasChanged = (target) => {
-                const name = target.name;
-                if (!name) return true;
+                if (!target.name) return true;
                 if (target.type === 'checkbox') {
-                    return this.initialFieldValues[name + '__checked'] !== target.checked;
+                    return this.initialFieldValues[checkboxKey(target)] !== target.checked;
                 }
-                return this.initialFieldValues[name] !== target.value;
+                return this.initialFieldValues[target.name] !== target.value;
             };
+
+            this._checkboxKey = checkboxKey;
 
             this.form.addEventListener('input', (e) => {
                 if (hasChanged(e.target)) this.markDirty();
@@ -91,11 +94,10 @@ document.addEventListener('alpine:init', () => {
                     this.isDirty = false;
                     this.justSaved = true;
 
-                    // Update saved snapshots
                     this.form.querySelectorAll('input, textarea, select').forEach(el => {
                         if (!el.name) return;
                         if (el.type === 'checkbox') {
-                            this.initialFieldValues[el.name + '__checked'] = el.checked;
+                            this.initialFieldValues[this._checkboxKey(el)] = el.checked;
                         } else {
                             this.initialFieldValues[el.name] = el.value;
                         }

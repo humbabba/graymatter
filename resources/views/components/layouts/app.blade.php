@@ -1,7 +1,17 @@
 <!DOCTYPE html>
+@php
+    $linkStyleSetting = \App\Models\AppSetting::get('link_style', []);
+    $linkStyleAttr = is_array($linkStyleSetting) ? implode(' ', $linkStyleSetting) : '';
+    $linkHoverStyleSetting = \App\Models\AppSetting::get('link_hover_style', []);
+    $linkHoverStyleAttr = is_array($linkHoverStyleSetting) ? implode(' ', $linkHoverStyleSetting) : '';
+@endphp
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full"
       data-accent="{{ \App\Models\AppSetting::get('theme_accent', 'grayscale') }}"
-      data-font="{{ \App\Models\AppSetting::get('theme_font', 'inter') }}">
+      data-font="{{ \App\Models\AppSetting::get('theme_font', 'inter') }}"
+      data-link-color="{{ \App\Models\AppSetting::get('link_color', 'accent') }}"
+      data-link-style="{{ $linkStyleAttr }}"
+      data-link-hover-color="{{ \App\Models\AppSetting::get('link_hover_color', 'auto') }}"
+      data-link-hover-style="{{ $linkHoverStyleAttr }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

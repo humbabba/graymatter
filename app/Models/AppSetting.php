@@ -16,6 +16,7 @@ class AppSetting extends Model
         'options',
         'group',
         'description',
+        'sort_order',
     ];
 
     protected $casts = [

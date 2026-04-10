@@ -109,6 +109,66 @@ class PermissionSeeder extends Seeder
             'options' => ['grayscale' => 'Grayscale', 'green' => 'Green', 'blue' => 'Blue', 'amber' => 'Amber', 'rose' => 'Rose'],
             'group' => 'appearance',
             'description' => 'Accent color theme applied across the interface',
+            'sort_order' => 10,
+        ]);
+        AppSetting::create([
+            'key' => 'link_color',
+            'value' => 'accent',
+            'type' => 'select',
+            'options' => [
+                'accent' => 'Accent (default)',
+                'grayscale' => 'Grayscale',
+                'green' => 'Green',
+                'blue' => 'Blue',
+                'amber' => 'Amber',
+                'rose' => 'Rose',
+            ],
+            'group' => 'appearance',
+            'description' => 'Color used for inline links. Defaults to the current accent color.',
+            'sort_order' => 30,
+        ]);
+        AppSetting::create([
+            'key' => 'link_style',
+            'value' => json_encode([]),
+            'type' => 'json',
+            'options' => [
+                'bold' => 'Bold',
+                'underline' => 'Underline',
+                'italic' => 'Italic',
+            ],
+            'group' => 'appearance',
+            'description' => 'Typographic styles applied to inline links.',
+            'sort_order' => 40,
+        ]);
+        AppSetting::create([
+            'key' => 'link_hover_color',
+            'value' => 'auto',
+            'type' => 'select',
+            'options' => [
+                'auto' => 'Auto (darken link color)',
+                'accent' => 'Accent',
+                'grayscale' => 'Grayscale',
+                'green' => 'Green',
+                'blue' => 'Blue',
+                'amber' => 'Amber',
+                'rose' => 'Rose',
+            ],
+            'group' => 'appearance',
+            'description' => 'Color used for links on hover. Defaults to a slightly darker version of the link color.',
+            'sort_order' => 50,
+        ]);
+        AppSetting::create([
+            'key' => 'link_hover_style',
+            'value' => json_encode([]),
+            'type' => 'json',
+            'options' => [
+                'bold' => 'Bold',
+                'underline' => 'Underline',
+                'italic' => 'Italic',
+            ],
+            'group' => 'appearance',
+            'description' => 'Typographic styles applied to inline links on hover.',
+            'sort_order' => 60,
         ]);
         AppSetting::create([
             'key' => 'theme_font',
@@ -126,6 +186,7 @@ class PermissionSeeder extends Seeder
             ],
             'group' => 'appearance',
             'description' => 'Font pairing used for body text and display elements',
+            'sort_order' => 20,
         ]);
 
         // Seed default navigation
