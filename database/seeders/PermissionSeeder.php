@@ -13,6 +13,8 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
+        $isDemo = app()->environment('demo');
+
         // Create all permissions
         $this->createPermissionsForModel('users', 'Users');
         $this->createPermissionsForModel('roles', 'Roles');
@@ -35,8 +37,11 @@ class PermissionSeeder extends Seeder
             'name' => 'user',
             'description' => 'Standard user with project access.',
         ]);
+        $userPermissions = $isDemo
+            ? ['projects.view', 'projects.create', 'projects.update', 'projects.delete', 'settings.manage', 'trash.view', 'trash.restore']
+            : ['projects.create'];
         $userRole->permissions()->attach(
-            Permission::where('name', 'projects.create')->pluck('id')
+            Permission::whereIn('name', $userPermissions)->pluck('id')
         );
 
         // Admin can assign all roles (including itself)
@@ -104,7 +109,7 @@ class PermissionSeeder extends Seeder
         // Appearance settings
         AppSetting::create([
             'key' => 'theme_accent',
-            'value' => 'grayscale',
+            'value' => $isDemo ? 'amber' : 'grayscale',
             'type' => 'select',
             'options' => ['grayscale' => 'Grayscale', 'green' => 'Green', 'blue' => 'Blue', 'amber' => 'Amber', 'rose' => 'Rose'],
             'group' => 'appearance',
@@ -172,7 +177,7 @@ class PermissionSeeder extends Seeder
         ]);
         AppSetting::create([
             'key' => 'theme_font',
-            'value' => 'inter',
+            'value' => $isDemo ? 'oswald' : 'inter',
             'type' => 'select',
             'options' => [
                 'system' => 'System default',
@@ -190,15 +195,15 @@ class PermissionSeeder extends Seeder
         ]);
 
         // Seed default navigation
-        $projects = NavItem::create(['label' => 'Projects', 'url' => '/projects', 'sort_order' => 1, 'roles' => ['guest', 'admin', 'user']]);
+        $projects = NavItem::create(['label' => 'Projects', 'url' => '/projects', 'sort_order' => 1, 'roles' => $isDemo ? ['guest'] : ['guest', 'admin', 'user']]);
 
-        $utils = NavItem::create(['label' => 'Utils', 'url' => '#', 'sort_order' => 2]);
-        NavItem::create(['label' => 'Settings', 'url' => '/settings', 'parent_id' => $utils->id, 'sort_order' => 1, 'roles' => ['admin']]);
-        NavItem::create(['label' => 'Users', 'url' => '/users', 'parent_id' => $utils->id, 'sort_order' => 2, 'roles' => ['guest', 'admin', 'user']]);
-        NavItem::create(['label' => 'Roles', 'url' => '/roles', 'parent_id' => $utils->id, 'sort_order' => 3, 'roles' => ['guest', 'admin', 'user']]);
-        NavItem::create(['label' => 'Navigation', 'url' => '/settings/nav', 'parent_id' => $utils->id, 'sort_order' => 4, 'roles' => ['admin']]);
-        NavItem::create(['label' => 'Activity log', 'url' => '/activity-logs', 'parent_id' => $utils->id, 'sort_order' => 5, 'roles' => ['admin', 'guest']]);
-        NavItem::create(['label' => 'Trash', 'url' => '/trash', 'parent_id' => $utils->id, 'sort_order' => 6, 'roles' => ['guest', 'admin', 'user']]);
+        $utils = NavItem::create(['label' => 'Utils', 'url' => '#', 'sort_order' => 2] + ($isDemo ? ['roles' => ['guest']] : []));
+        NavItem::create(['label' => 'Settings', 'url' => '/settings', 'parent_id' => $utils->id, 'sort_order' => 1, 'roles' => $isDemo ? ['admin', 'user'] : ['admin']]);
+        NavItem::create(['label' => 'Users', 'url' => '/users', 'parent_id' => $utils->id, 'sort_order' => 2, 'roles' => $isDemo ? ['guest'] : ['guest', 'admin', 'user']]);
+        NavItem::create(['label' => 'Roles', 'url' => '/roles', 'parent_id' => $utils->id, 'sort_order' => 3, 'roles' => $isDemo ? ['guest'] : ['guest', 'admin', 'user']]);
+        NavItem::create(['label' => 'Navigation', 'url' => '/settings/nav', 'parent_id' => $utils->id, 'sort_order' => 4, 'roles' => $isDemo ? ['admin', 'user'] : ['admin']]);
+        NavItem::create(['label' => 'Activity log', 'url' => '/activity-logs', 'parent_id' => $utils->id, 'sort_order' => 5, 'roles' => $isDemo ? ['guest'] : ['admin', 'guest']]);
+        NavItem::create(['label' => 'Trash', 'url' => '/trash', 'parent_id' => $utils->id, 'sort_order' => 6, 'roles' => $isDemo ? ['guest'] : ['guest', 'admin', 'user']]);
 
         NavItem::clearCache();
     }
