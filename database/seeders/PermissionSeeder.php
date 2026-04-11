@@ -38,8 +38,8 @@ class PermissionSeeder extends Seeder
             'description' => 'Standard user with project access.',
         ]);
         $userPermissions = $isDemo
-            ? ['projects.view', 'projects.create', 'projects.update', 'projects.delete', 'settings.manage', 'trash.view', 'trash.restore']
-            : ['projects.create'];
+            ? ['projects.view', 'projects.create', 'projects.edit', 'projects.delete', 'settings.manage', 'trash.view', 'trash.restore']
+            : ['projects.view', 'projects.create', 'projects.edit'];
         $userRole->permissions()->attach(
             Permission::whereIn('name', $userPermissions)->pluck('id')
         );
